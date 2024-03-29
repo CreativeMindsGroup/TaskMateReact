@@ -19,6 +19,8 @@ import {
   faUserGroup,
   faLink,
   faEllipsis,
+  faChartLine,
+  faXmark
 } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import jwtDecode from "jwt-decode";
@@ -57,6 +59,7 @@ export default function Header() {
   const [createBoardSlide2, setCreateBoardSlide2] = useState(false);
   const [modalShow, setModalShow] = useState(false);
   const [notificationModalShow, setNotificationModalShow] = useState(false);
+  const [userActivityModalShow, setUserActivitModalShow] = useState(true);
   const [modalShow2, setWorkspaceModal1] = useState(true);
   const [modalShow3, setWorkspaceModal2] = useState(false);
   const [inputResult, setInputResult] = useState(false);
@@ -837,6 +840,49 @@ export default function Header() {
           </div>
         </Modal.Body>
       </Modal>
+
+      <Modal
+        show={userActivityModalShow}
+        onHide={() => {
+          setUserActivitModalShow(false);
+        }}
+        className="create-workspace-modal"
+        id={Styles.NotificationModal}
+      >
+        <Modal.Body
+        >
+          <div className={Styles.userActivityModalShow}>
+            <div>
+              <div className={Styles.userActivityModalShowHeader}>
+                <div className={Styles.userActivityModalShowHeaderLeft}>
+                  <FontAwesomeIcon icon={faChartLine} />
+                  <h2>Ulvi Kerimov{"("}ulvikerimof1{")"}</h2>
+                </div>
+                <div><FontAwesomeIcon fontSize={"30px"} icon={faXmark} /></div>
+              </div>
+              <div className={Styles.userActivityModalShowActivity}>
+                <div>
+                  <div className={Styles.userActivityModalShowActivityUserButton}>
+                    UK
+                  </div>
+                  <div className={Styles.userActivityModalShowActivityMessage}>
+                    <div>
+                      <p>
+                        <strong style={{ marginRight: "10px", fontSize: '20px' }}>
+                          Ulvi Kerimov
+                        </strong>
+                        moved asdasd adsas to asdmoved asdasd from asddasadsas to asd
+                        <br></br>2024-01-01 01:01
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
     </Navbar>
   );
 }
