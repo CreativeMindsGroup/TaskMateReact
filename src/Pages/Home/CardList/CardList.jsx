@@ -3,9 +3,9 @@ import Board from "react-trello";
 import Styles from "./CardList.module.css";
 import { transformBoardData } from "./Data";
 import Modal from "react-bootstrap/Modal";
-import { FocusLock, Grid, GridItem } from '@chakra-ui/react'
+import { FocusLock, Grid, GridItem } from "@chakra-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import userSvg from '../../../Images/user.svg'
+import userSvg from "../../../Images/user.svg";
 import {
   faBarsProgress,
   faEye,
@@ -34,11 +34,28 @@ import {
   faX,
   faEllipsis,
   faTrash,
-  faClipboard
+  faClipboard,
 } from "@fortawesome/free-solid-svg-icons";
-import { Box, ChakraProvider, Flex, FormControl, Input, Portal, Text, useDisclosure, } from "@chakra-ui/react";
+import {
+  Box,
+  ChakraProvider,
+  Flex,
+  FormControl,
+  Input,
+  Portal,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import Card from "react-bootstrap/Card";
-import { Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverCloseButton, PopoverBody, PopoverFooter } from "@chakra-ui/react";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverHeader,
+  PopoverCloseButton,
+  PopoverBody,
+  PopoverFooter,
+} from "@chakra-ui/react";
 import Form from "react-bootstrap/Form";
 import Image from "react-bootstrap/Image";
 import { useSelector } from "react-redux";
@@ -46,29 +63,33 @@ import { getByBoard } from "../../../Service/BoardService";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import { useFormik } from "formik";
-import { GetUsersInBoard, getByCard, getCardDelete } from "../../../Service/CardService";
-import { Button, ButtonGroup, Dropdown } from "react-bootstrap";
 import {
-  MenuItem,
-  Menu,
-  MenuButton,
-  MenuList
-} from '@chakra-ui/react'
+  GetUsersInBoard,
+  getByCard,
+  getCardDelete,
+} from "../../../Service/CardService";
+import { Button, ButtonGroup, Dropdown } from "react-bootstrap";
+import { MenuItem, Menu, MenuButton, MenuList } from "@chakra-ui/react";
 import TextEditor from "./TextEditor/TextEditor";
-import { CreateChecklist, CreateChecklistitem, DeleteChecklist, DeleteChecklistItem, GetAllChecklist, UpdateChecklistItem } from "../../../Service/CheckListService";
-import { Progress } from '@chakra-ui/react'
-import { Checkbox, CheckboxGroup } from '@chakra-ui/react'
-import { Select } from '@chakra-ui/react'
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import {
+  CreateChecklist,
+  CreateChecklistitem,
+  DeleteChecklist,
+  DeleteChecklistItem,
+  GetAllChecklist,
+  UpdateChecklistItem,
+} from "../../../Service/CheckListService";
+import { Progress } from "@chakra-ui/react";
+import { Checkbox, CheckboxGroup } from "@chakra-ui/react";
+import { Select } from "@chakra-ui/react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { Col } from "react-bootstrap";
 import { CirclePicker, HuePicker } from "react-color";
-import { getCardInCustomFields } from '../../../Service/CustomFieldService'
+import { getCardInCustomFields } from "../../../Service/CustomFieldService";
 import { CreateCover } from "../../../Service/CoverService";
 
-
-
-const data = require('./data.json')
+const data = require("./data.json");
 const ListStyle = {
   width: "280px",
   backgroundColor: "#101204",
@@ -100,8 +121,8 @@ const CardList = () => {
 
   const [boardData, setBoardData] = useState({ lanes: [] });
   const [cardListId, SetCardListId] = useState("");
-  const { BoardId, userId } = useSelector((x) => x.Data)
-  const [BId, setBoardId] = useState(BoardId)
+  const { BoardId, userId } = useSelector((x) => x.Data);
+  const [BId, setBoardId] = useState(BoardId);
   const [card, SetCard] = useState({});
   const eventBusRef = useRef(null);
 
@@ -137,7 +158,7 @@ const CardList = () => {
   const [dragCardId, setDragCardId] = useState();
   const [dragLineId, setDragLineId] = useState();
 
-  const handleDragStart = (cardId, laneId) => { }; //El Deyme
+  const handleDragStart = (cardId, laneId) => {}; //El Deyme
 
   const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
     setDragCardId(cardId);
@@ -154,15 +175,16 @@ const CardList = () => {
     }
   }, [dragCardId, dragLineId]);
 
-
   const dragAndDropFormik = useFormik({
     initialValues: {
+      AppUserId: userId,
       CardId: dragCardId,
       CardListId: dragLineId,
     },
     onSubmit: async (values) => {
       const formData = new FormData();
 
+      formData.append("AppUserId", userId ? userId : "");
       formData.append("CardId", dragCardId);
       formData.append("CardListId", dragLineId);
 
@@ -179,7 +201,7 @@ const CardList = () => {
         if (response.status === 201) {
           queryClient.invalidateQueries(["BoardInCardList"]);
         }
-      } catch (error) { }
+      } catch (error) {}
     },
     // validationSchema: reservationScheme,
   });
@@ -210,9 +232,10 @@ const CardList = () => {
 
   const updateCardFormik = useFormik({
     initialValues: {
-      CardId: updateCard && updateCard.length > 0 ? updateCard[0].id : '',
-      Title: updateCard && updateCard.length > 0 ? updateCard[0].title : '',
-      Description: updateCard && updateCard.length > 0 ? updateCard[0].description : '',
+      CardId: updateCard && updateCard.length > 0 ? updateCard[0].id : "",
+      Title: updateCard && updateCard.length > 0 ? updateCard[0].title : "",
+      Description:
+        updateCard && updateCard.length > 0 ? updateCard[0].description : "",
     },
     onSubmit: async (values) => {
       const formData = new FormData();
@@ -234,7 +257,7 @@ const CardList = () => {
         if (response.status === 201) {
           queryClient.invalidateQueries(["BoardInCardList"]);
         }
-      } catch (error) { }
+      } catch (error) {}
     },
     // validationSchema: reservationScheme,
   });
@@ -252,16 +275,21 @@ const CardList = () => {
   function findUpdatedCards(boardData, nextData) {
     const updatedCards = [];
 
-
     nextData.lanes.forEach((nextLane) => {
-      const prevLane = boardData.lanes.find(lane => lane.id === nextLane.id);
+      const prevLane = boardData.lanes.find((lane) => lane.id === nextLane.id);
 
       if (prevLane) {
         nextLane.cards.forEach((nextCard) => {
-          const prevCard = prevLane.cards.find(card => card.id === nextCard.id);
+          const prevCard = prevLane.cards.find(
+            (card) => card.id === nextCard.id
+          );
 
           // Kartın title veya description alanında değişiklik var mı kontrol et
-          if (prevCard && (prevCard.title !== nextCard.title || prevCard.description !== nextCard.description)) {
+          if (
+            prevCard &&
+            (prevCard.title !== nextCard.title ||
+              prevCard.description !== nextCard.description)
+          ) {
             updatedCards.push(nextCard);
           }
         });
@@ -271,10 +299,9 @@ const CardList = () => {
     return updatedCards;
   }
 
-
-
   const formik = useFormik({
     initialValues: {
+      AppUserId: userId,
       Title: card.title,
       Description: card.description,
       CardListId: cardListId,
@@ -282,6 +309,7 @@ const CardList = () => {
     onSubmit: async (values) => {
       const formData = new FormData();
 
+      formData.append("AppUserId", userId ? userId : "");
       formData.append("Title", card.title);
       formData.append("Description", card.description);
       formData.append("CardListId", cardListId);
@@ -299,7 +327,7 @@ const CardList = () => {
         if (response.status === 201) {
           queryClient.invalidateQueries(["BoardInCardList"]);
         }
-      } catch (error) { }
+      } catch (error) {}
     },
     // validationSchema: reservationScheme,
   });
@@ -359,34 +387,38 @@ const CardList = () => {
         if (response.status === 201) {
           queryClient.invalidateQueries(["BoardInCardList"]);
         }
-      } catch (error) { }
+      } catch (error) {}
     },
     // validationSchema: reservationScheme,
   });
-  const { mutate } = useMutation(({ AppUserId, CardId }) => getCardDelete(AppUserId, CardId), {
-    onSuccess: (data) => {
-      queryClient.invalidateQueries(['BoardInCardList']);
-    },
-    onError: (error) => {
+  const { mutate } = useMutation(
+    ({ AppUserId, CardId }) => getCardDelete(AppUserId, CardId),
+    {
+      onSuccess: (data) => {
+        queryClient.invalidateQueries(["BoardInCardList"]);
+      },
+      onError: (error) => {},
     }
-  });
+  );
 
-  const [openModal, setOpenModal] = useState()
+  const [openModal, setOpenModal] = useState();
   const HandeOpenModal = () => {
-    setOpenModal(!openModal)
-  }
+    setOpenModal(!openModal);
+  };
   const CreateChecklistFormik = useFormik({
     initialValues: {
+      AppUserId: "",
       Name: "",
-      CardId: ""
+      CardId: "",
     },
     onSubmit: async (values) => {
       const formData2 = new FormData();
+      formData2.append("AppUserId", userId ? userId : "");
       formData2.append("Name", values.Name);
       formData2.append("CardId", values.CardId);
       await AddChekclistMutation(formData2);
       queryClient.cancelQueries(["getAllCheklist", cardId]);
-    }
+    },
   });
   const { mutate: AddChekclistMutation } = useMutation(
     (data) => CreateChecklist(data),
@@ -399,7 +431,9 @@ const CardList = () => {
       },
     }
   );
-  const { data: ChecklistData } = useQuery(["getAllCheklist", cardId], () => GetAllChecklist(cardId))
+  const { data: ChecklistData } = useQuery(["getAllCheklist", cardId], () =>
+    GetAllChecklist(cardId)
+  );
   const cardDelete = async (userId, cardId) => {
     mutate({ AppUserId: userId, CardId: cardId });
   };
@@ -408,9 +442,9 @@ const CardList = () => {
   };
   const handleOnLaneDelete = (laneId) => {
     if (eventBusRef.current) {
-      eventBusRef.current.publish({ type: 'REMOVE_LANE', laneId: laneId });
+      eventBusRef.current.publish({ type: "REMOVE_LANE", laneId: laneId });
     }
-  }
+  };
   const handleCheckboxChange = async (data, isChecked) => {
     console.log(data);
     UpdateChecklistItemsFormik.setFieldValue("Check", isChecked);
@@ -420,25 +454,27 @@ const CardList = () => {
     await UpdateChecklistItemsFormik.submitForm();
   };
 
-  const [dateInput, setDateInput] = useState('');
-  const [titleInput, setTitleInput] = useState('');
-  const [timeInput, setTimeInput] = useState('');
+  const [dateInput, setDateInput] = useState("");
+  const [titleInput, setTitleInput] = useState("");
+  const [timeInput, setTimeInput] = useState("");
 
   const handleCreateItem = async (id) => {
     CreateChecklistItemFormik.setFieldValue("ChecklistId", id);
     await CreateChecklistItemFormik.submitForm();
-  }
+  };
   const CreateChecklistItemFormik = useFormik({
     initialValues: {
+      AppUserId: "",
       Text: "",
     },
     onSubmit: async (values) => {
       const formData = new FormData();
+      formData.append("AppUserId", userId ? userId : "");
       formData.append("Text", values.Text);
       formData.append("ChecklistId", values.ChecklistId);
       await AddChekclistitemMutation(formData);
       queryClient.cancelQueries(["getAllCheklist", cardId]);
-    }
+    },
   });
   const { mutate: AddChekclistitemMutation } = useMutation(
     (Id) => CreateChecklistitem(Id),
@@ -455,9 +491,21 @@ const CardList = () => {
     const padZero = (num) => (num < 10 ? `0${num}` : num);
     const now = new Date();
     const selectedDate = dateInput ? new Date(dateInput) : now;
-    const selectedTime = timeInput ? timeInput.split(':') : [now.getHours(), now.getMinutes()];
-    const dueDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), parseInt(selectedTime[0]), parseInt(selectedTime[1]));
-    const formattedDueDate = `${dueDate.getFullYear()}-${padZero(dueDate.getMonth() + 1)}-${padZero(dueDate.getDate())}T${padZero(dueDate.getHours())}:${padZero(dueDate.getMinutes())}:${padZero(dueDate.getSeconds())}`;
+    const selectedTime = timeInput
+      ? timeInput.split(":")
+      : [now.getHours(), now.getMinutes()];
+    const dueDate = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate(),
+      parseInt(selectedTime[0]),
+      parseInt(selectedTime[1])
+    );
+    const formattedDueDate = `${dueDate.getFullYear()}-${padZero(
+      dueDate.getMonth() + 1
+    )}-${padZero(dueDate.getDate())}T${padZero(dueDate.getHours())}:${padZero(
+      dueDate.getMinutes()
+    )}:${padZero(dueDate.getSeconds())}`;
     UpdateChecklistItemsFormik.setFieldValue("Check", data.check);
     UpdateChecklistItemsFormik.setFieldValue("Text", data.text);
     UpdateChecklistItemsFormik.setFieldValue("DueDate", formattedDueDate);
@@ -487,24 +535,26 @@ const CardList = () => {
 
   const UpdateChecklistItemsFormik = useFormik({
     initialValues: {
+      AppUserId: "",
       Id: "",
       Text: "",
       DueDate: "",
-      Check: ""
+      Check: "",
     },
     onSubmit: async (values) => {
       const formData = new FormData();
+      formData.append("AppUserId", userId ? userId : "");
       formData.append("Id", values.Id);
       formData.append("Text", values.Text);
       formData.append("DueDate", values.DueDate);
       formData.append("Check", values.Check);
       await UpdateChecklistItem(formData);
       queryClient.invalidateQueries(["getAllCheklist", cardId]);
-    }
+    },
   });
   const HandeDeleteCheklistItem = (Id) => {
-    DeleteChekclistItem(Id)
-  }
+    DeleteChekclistItem(Id);
+  };
   const { mutate: DeleteChekclistItem } = useMutation(
     (Id) => DeleteChecklistItem(Id),
     {
@@ -516,32 +566,35 @@ const CardList = () => {
       },
     }
   );
-  const [state, setState] = useState({ ShowUpdateInputsChecklistItem: false, selectedIndex: 0 });
+  const [state, setState] = useState({
+    ShowUpdateInputsChecklistItem: false,
+    selectedIndex: 0,
+  });
   const flexContainerRef = useRef(null);
   const HandeOpenChecklistItem = (index) => {
     setState({ ShowUpdateInputsChecklistItem: true, selectedIndex: index });
-  }
+  };
   const CloseEditCheckList = () => {
     setState({ ShowUpdateInputsChecklistItem: false, selectedIndex: null });
-  }
-  const [ShowAddItem, setShowAddItem] = useState(false)
-  const { onOpen, onClose, isOpen } = useDisclosure()
-  const initRef = React.useRef()
-  const { mutate: DeleteChekclist } = useMutation(
-    (Id) => DeleteChecklist(Id),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries("getAllCheklist");
-      },
-      onError: (err) => {
-        console.log(err);
-      },
-    }
+  };
+  const [ShowAddItem, setShowAddItem] = useState(false);
+  const { onOpen, onClose, isOpen } = useDisclosure();
+  const initRef = React.useRef();
+  const { mutate: DeleteChekclist } = useMutation((Id) => DeleteChecklist(Id), {
+    onSuccess: () => {
+      queryClient.invalidateQueries("getAllCheklist");
+    },
+    onError: (err) => {
+      console.log(err);
+    },
+  });
+  const [addItemIndex, setAddItemIndex] = useState(-1);
+
+  const [isCardDateStatus, setIsCardDateStatus] = useState(
+    thisCard?.data?.isDateStatus
   );
-  const [addItemIndex, setAddItemIndex] = useState(-1)
-
-
-  const [isCardDateStatus, setIsCardDateStatus] = useState(thisCard?.data?.isDateStatus);
+  console.log("isCardDateStatus>>>>", isCardDateStatus);
+  console.log("data>>>>", thisCard?.data);
   const handleCardDateStatusCheckboxChange = (event) => {
     setIsCardDateStatus((prev) => !prev);
     sendRequest();
@@ -554,11 +607,16 @@ const CardList = () => {
   }, [isSuccess, thisCard]);
 
   const sendRequest = () => {
-    axios.put(`https://localhost:7101/api/Cards/EditCardDateStatus?CardId=${cardId ? cardId : ''}`)
-      .then(response => {
+    axios
+      .put(
+        `https://localhost:7101/api/Cards/EditCardDateStatus?CardId=${
+          cardId ? cardId : ""
+        }`
+      )
+      .then((response) => {
         // console.log('PUT request successful:', response);
       })
-      .catch(error => {
+      .catch((error) => {
         // console.error('Error making PUT request:', error);
       });
   };
@@ -575,7 +633,6 @@ const CardList = () => {
     setIsStartChecked(false);
   };
 
-
   const [startDate, setStartDate] = useState(null);
 
   const handlStartDateChange = (date) => {
@@ -585,7 +642,7 @@ const CardList = () => {
   const [dueDate, setDueDate] = useState(new Date());
   const [reminderDate, setReminderDate] = useState(null);
 
-  const defaultOption = 'None';
+  const defaultOption = "None";
   const [selectedOption, setSelectedOption] = useState(defaultOption);
 
   const handleDueDateChange = (date) => {
@@ -605,52 +662,59 @@ const CardList = () => {
   const calculateReminderDate = (option) => {
     let reminderTime = 0;
     switch (option) {
-      case 'option1':
+      case "option1":
         reminderTime = 0;
         break;
-      case 'option2':
+      case "option2":
         reminderTime = 5;
         break;
-      case 'option3':
+      case "option3":
         reminderTime = 10;
         break;
-      case 'option4':
+      case "option4":
         reminderTime = 15;
         break;
-      case 'option5':
+      case "option5":
         reminderTime = 60;
         break;
-      case 'option6':
+      case "option6":
         reminderTime = 120;
         break;
-      case 'option7':
+      case "option7":
         reminderTime = 1440;
         break;
-      case 'option8':
+      case "option8":
         reminderTime = 2880;
         break;
       default:
         reminderTime = 0;
     }
     const millisecondsInMinute = 60000;
-    const newReminderDate = new Date(dueDate.getTime() - reminderTime * millisecondsInMinute);
+    const newReminderDate = new Date(
+      dueDate.getTime() - reminderTime * millisecondsInMinute
+    );
     setReminderDate(newReminderDate);
   };
 
   const cardAddDateFormik = useFormik({
     initialValues: {
-      CardId: cardId ? cardId : '',
-      StartDate: startDate ? startDate : '',
-      EndDate: dueDate ? dueDate : '',
-      Reminder: reminderDate ? reminderDate : '',
+      AppUserId: userId ? userId : "",
+      CardId: cardId ? cardId : "",
+      StartDate: startDate ? startDate : "",
+      EndDate: dueDate ? dueDate : "",
+      Reminder: reminderDate ? reminderDate : "",
     },
     onSubmit: async (values) => {
       setCardDateModalShow(false);
       const formData = new FormData();
-      formData.append("CardId", cardId ? cardId : '');
-      formData.append("StartDate", startDate ? startDate.toISOString() : '');
-      formData.append("EndDate", dueDate ? dueDate.toISOString() : '');
-      formData.append("Reminder", reminderDate ? reminderDate.toISOString() : '');
+      formData.append("AppUserId", userId ? userId : "");
+      formData.append("CardId", cardId ? cardId : "");
+      formData.append("StartDate", startDate ? startDate.toISOString() : "");
+      formData.append("EndDate", dueDate ? dueDate.toISOString() : "");
+      formData.append(
+        "Reminder",
+        reminderDate ? reminderDate.toISOString() : ""
+      );
       try {
         const response = await axios.put(
           "https://localhost:7101/api/Cards/UpdateCard",
@@ -659,12 +723,12 @@ const CardList = () => {
             headers: {
               "Content-Type": "multipart/form-data",
             },
-          },
+          }
         );
         if (response.status === 200 || response.status === 204) {
           queryClient.invalidateQueries(["ModalCardDetails"]);
         }
-      } catch (error) { }
+      } catch (error) {}
     },
     // validationSchema: reservationScheme,
   });
@@ -674,10 +738,14 @@ const CardList = () => {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "";
 
-    const options = { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-    return new Intl.DateTimeFormat('en-US', options).format(date);
+    const options = {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    };
+    return new Intl.DateTimeFormat("en-US", options).format(date);
   };
-
 
   // ----------------------------------------------------------
   const [createViewShow, setCreateViewShow] = useState(false);
@@ -712,14 +780,13 @@ const CardList = () => {
       setViewAddDripdownItemShow(false);
     }
   };
-  const [titleField, setTitleField] = useState('');
+  const [titleField, setTitleField] = useState("");
 
   const handleFieldTitleInputChange = (e) => {
     setTitleField(e.target.value);
   };
 
-
-  const [dropdownItem, setDropdownItem] = useState('');
+  const [dropdownItem, setDropdownItem] = useState("");
   const handleDropdownItemChange = (e) => {
     setDropdownItem(e.target.value);
   };
@@ -735,18 +802,16 @@ const CardList = () => {
     console.log("index", index);
   };
 
-
-
   const [options, setOptions] = useState([]);
   const handleAddDropdownItemButtonClick = () => {
-    if (dropdownItem.trim() === '') return;
+    if (dropdownItem.trim() === "") return;
 
     const newOption = {
       Option: dropdownItem,
       Color: selectedColor,
     };
     setOptions([...options, newOption]);
-    setDropdownItem('');
+    setDropdownItem("");
   };
 
   const addDropdownItemColor = (index) => {
@@ -754,7 +819,7 @@ const CardList = () => {
       if (i === index) {
         return {
           ...option,
-          Color: selectedColor
+          Color: selectedColor,
         };
       }
       return option;
@@ -779,22 +844,25 @@ const CardList = () => {
 
   const createCustomField = async () => {
     const data = {
-      Title: titleField ? titleField : '',
-      Type: selectedFieldTypeOption ? selectedFieldTypeOption : '',
-      CardId: cardId ? cardId : '',
+      Title: titleField ? titleField : "",
+      Type: selectedFieldTypeOption ? selectedFieldTypeOption : "",
+      CardId: cardId ? cardId : "",
       CardFrontOff: isFieldChecked,
-      CreateCustomFieldDropdownOptions: selectedFieldTypeOption === 2 ? (options ? options : null) : null
+      CreateCustomFieldDropdownOptions:
+        selectedFieldTypeOption === 2 ? (options ? options : null) : null,
     };
 
     try {
-      const response = await axios.post('https://localhost:7101/api/CustomFields', data);
+      const response = await axios.post(
+        "https://localhost:7101/api/CustomFields",
+        data
+      );
       queryClient.invalidateQueries("CardInCustomFields");
       setCardCustomField(false);
-      setTitleField('');
+      setTitleField("");
       setSelectedFieldTypeOption(null);
-    } catch (error) {
-    }
-  }
+    } catch (error) {}
+  };
   // const [customFieldDropdownItem, setCustomFieldDropdownItem] = useState({
   //   color: '',
   //   customFieldsId: '',
@@ -802,29 +870,40 @@ const CardList = () => {
   //   option: ''
   // });
 
-
-  const { onOpen: onPopoverOpen, onClose: onPopoverClose, isOpen: isPopoverOpen } = useDisclosure();
+  const {
+    onOpen: onPopoverOpen,
+    onClose: onPopoverClose,
+    isOpen: isPopoverOpen,
+  } = useDisclosure();
   const firstFieldRef = React.useRef(null);
   const ColorArr = [
-    "#216E4E", "#7F5F01", "#A54800", "#AE2E24", "#5e4dd7",
-    "#0055cc", "#206a83", "#4c6b1f", "#943d73", "#596773"
+    "#216E4E",
+    "#7F5F01",
+    "#A54800",
+    "#AE2E24",
+    "#5e4dd7",
+    "#0055cc",
+    "#206a83",
+    "#4c6b1f",
+    "#943d73",
+    "#596773",
   ];
-  const [selectedColor2, setSelectedColor2] = useState()
+  const [selectedColor2, setSelectedColor2] = useState();
   const HandleSaveCover = async (ThisCard, isRemove) => {
     let data;
     if (isRemove) {
       data = {
         color: "0",
-        cardId: ThisCard
+        cardId: ThisCard,
       };
     } else {
       data = {
         color: selectedColor2,
-        cardId: ThisCard
+        cardId: ThisCard,
       };
     }
     await CreateCover(data);
-    await queryClient.invalidateQueries(['ModalCardDetails']);
+    await queryClient.invalidateQueries(["ModalCardDetails"]);
   };
   const { data: BoardMembers } = useQuery(
     ["GetAllBoardMembers", BoardId],
@@ -838,21 +917,23 @@ const CardList = () => {
   const [staticCustomFieldId, setStaticCustomFieldId] = useState();
 
   const createStaticCustomField = (staticFeieldId) => {
-    console.log("staticFeieldId>>>", staticFeieldId);
     setStaticCustomFieldId(staticFeieldId);
     staticCustomField.submitForm();
-  }
+  };
 
   const staticCustomField = useFormik({
     initialValues: {
-      staticFieldId: staticCustomFieldId ? staticCustomFieldId : '',
-      CardId: cardId ? cardId : ''
+      staticFieldId: staticCustomFieldId ? staticCustomFieldId : "",
+      CardId: cardId ? cardId : "",
     },
     onSubmit: async (values) => {
       const formData = new FormData();
 
-      formData.append("staticFieldId", staticCustomFieldId ? staticCustomFieldId : '');
-      formData.append("CardId", cardId ? cardId : '');
+      formData.append(
+        "staticFieldId",
+        staticCustomFieldId ? staticCustomFieldId : ""
+      );
+      formData.append("CardId", cardId ? cardId : "");
 
       try {
         const response = await axios.post(
@@ -867,13 +948,12 @@ const CardList = () => {
         if (response.status === 201) {
           queryClient.invalidateQueries(["CardInCustomFields"]);
         }
-      } catch (error) { }
+      } catch (error) {}
     },
   });
 
   //Update CustomFields
   const [ctmFieldId, setCtmFieldId] = useState(); //Generl
-
 
   //---Number
   const [number, setNumber] = useState();
@@ -887,8 +967,7 @@ const CardList = () => {
     setNumberHandle(true);
     setNumber(dataNumber);
     setCtmFieldId(customFieldId);
-  }
-
+  };
 
   useEffect(() => {
     if (numberHandle === true) {
@@ -901,14 +980,14 @@ const CardList = () => {
 
   const numberFieldUpdate = useFormik({
     initialValues: {
-      Id: ctmFieldId ? ctmFieldId : '',
-      Number: number ? number : ''
+      Id: ctmFieldId ? ctmFieldId : "",
+      Number: number ? number : "",
     },
     onSubmit: async (values) => {
       const formData = new FormData();
 
-      formData.append("Id", ctmFieldId ? ctmFieldId : '');
-      formData.append("Number", number ? number : '');
+      formData.append("Id", ctmFieldId ? ctmFieldId : "");
+      formData.append("Number", number ? number : "");
 
       try {
         const response = await axios.put(
@@ -924,7 +1003,7 @@ const CardList = () => {
           queryClient.invalidateQueries(["CardInCustomFields"]);
           setCtmFieldId(null);
         }
-      } catch (error) { }
+      } catch (error) {}
     },
   });
 
@@ -942,7 +1021,7 @@ const CardList = () => {
     setCustomTextHandle(true);
     setCustomText(dataText);
     setCtmFieldId(customFieldId);
-  }
+  };
 
   useEffect(() => {
     if (customTextHandle === true) {
@@ -953,17 +1032,16 @@ const CardList = () => {
     }
   }, [customText]);
 
-
   const textFieldUpdate = useFormik({
     initialValues: {
-      Id: ctmFieldId ? ctmFieldId : '',
-      Number: customText ? customText : ''
+      Id: ctmFieldId ? ctmFieldId : "",
+      Number: customText ? customText : "",
     },
     onSubmit: async (values) => {
       const formData = new FormData();
 
-      formData.append("Id", ctmFieldId ? ctmFieldId : '');
-      formData.append("Text", customText ? customText : '');
+      formData.append("Id", ctmFieldId ? ctmFieldId : "");
+      formData.append("Text", customText ? customText : "");
 
       try {
         const response = await axios.put(
@@ -979,12 +1057,11 @@ const CardList = () => {
           queryClient.invalidateQueries(["CardInCustomFields"]);
           setCtmFieldId(null);
         }
-      } catch (error) { }
+      } catch (error) {}
     },
   });
 
   //---Text
-
 
   //---Date
   const [customFieldDate, setCustomFieldDate] = useState();
@@ -995,10 +1072,10 @@ const CardList = () => {
     setCustomFieldDate(date);
     setCustomDateHandle(true);
     setCtmFieldId(customFieldId);
-  }
+  };
 
   useEffect(() => {
-    if(customDateHandle===true){
+    if (customDateHandle === true) {
       const timer = setTimeout(() => {
         dateFieldUpdate.submitForm();
       }, 6000);
@@ -1006,19 +1083,22 @@ const CardList = () => {
     }
   }, [customFieldDate]);
 
-  //Burdan devam eliyersen. demeli update meselesinde ey state;e gore 
+  //Burdan devam eliyersen. demeli update meselesinde ey state;e gore
   //bir coxu birden update olur bug var yeni
 
   const dateFieldUpdate = useFormik({
     initialValues: {
-      Id: ctmFieldId ? ctmFieldId : '',
-      DateTime: customFieldDate ? customFieldDate.toISOString() : ''
+      Id: ctmFieldId ? ctmFieldId : "",
+      DateTime: customFieldDate ? customFieldDate.toISOString() : "",
     },
     onSubmit: async (values) => {
       const formData = new FormData();
 
-      formData.append("Id", ctmFieldId ? ctmFieldId : '');
-      formData.append("DateTime", customFieldDate ? customFieldDate.toISOString() : '');
+      formData.append("Id", ctmFieldId ? ctmFieldId : "");
+      formData.append(
+        "DateTime",
+        customFieldDate ? customFieldDate.toISOString() : ""
+      );
 
       try {
         const response = await axios.put(
@@ -1034,11 +1114,9 @@ const CardList = () => {
           queryClient.invalidateQueries(["CardInCustomFields"]);
           setCtmFieldId(null);
         }
-      } catch (error) { }
+      } catch (error) {}
     },
   });
-
-
 
   console.log("cardInCustomFields", cardInCustomFields?.data);
   return (
@@ -1054,11 +1132,11 @@ const CardList = () => {
           eventBusHandle={setEventBus}
           handleDragStart={handleDragStart}
           handleDragEnd={handleDragEnd}
-          onCardClick={handleCardClick} CreateCover
+          onCardClick={handleCardClick}
+          CreateCover
           onCardDelete={handleCardDelete}
           onLaneDelete={handleOnLaneDelete}
-        >
-        </Board>
+        ></Board>
         <div style={{ margin: "10px" }} className={Styles.createCardList}>
           <form onSubmit={reservFormik.handleSubmit}>
             <FormControl>
@@ -1072,7 +1150,11 @@ const CardList = () => {
                 placeholder="Card List Title"
                 size="sm"
               />
-              <Button onClick={reservFormik.handleSubmit} className={Styles.createcardlistbtn} type="submit">
+              <Button
+                onClick={reservFormik.handleSubmit}
+                className={Styles.createcardlistbtn}
+                type="submit"
+              >
                 Create
               </Button>
             </FormControl>
@@ -1095,14 +1177,19 @@ const CardList = () => {
             className="p-3 mb-3 position-relative"
             id="contained-modal-title-vcenter"
           >
-            {thisCard.data.coverColor && thisCard.data.coverColor !== "0" ?
-              <div className={Styles.Cover} style={{ backgroundColor: thisCard.data.coverColor }}>
+            {thisCard.data.coverColor && thisCard.data.coverColor !== "0" ? (
+              <div
+                className={Styles.Cover}
+                style={{ backgroundColor: thisCard.data.coverColor }}
+              >
                 <Button
                   className="create-workspace-close btn-close black"
                   onClick={() => setModalShow(false)}
                 ></Button>
               </div>
-              : ""}
+            ) : (
+              ""
+            )}
             <Modal.Title>
               <div className="container-fluid position-relative mt-2">
                 <Card.Body className=" p-0px-1 position-relative d-flex">
@@ -1121,12 +1208,15 @@ const CardList = () => {
                       </a>
                     </Card.Text>
                   </div>
-                  {!thisCard.data.coverColor || thisCard.data.coverColor === "0" ?
+                  {!thisCard.data.coverColor ||
+                  thisCard.data.coverColor === "0" ? (
                     <Button
                       className="create-workspace-close btn-close position-absolute top-50 end-0 translate-middle-y"
                       onClick={() => setModalShow(false)}
                     ></Button>
-                    : ""}
+                  ) : (
+                    ""
+                  )}
                 </Card.Body>
               </div>
             </Modal.Title>
@@ -1145,125 +1235,336 @@ const CardList = () => {
                     </div>
                   </Card.Body>
                 </div>
-                {thisCard?.data?.endDate !== null &&
+                {thisCard?.data?.endDate !== null && (
                   <div className={Styles.DueDates}>
                     <span>Due Date</span>
                     <div>
                       <div>
-                        <input type="checkbox"
+                        <input
+                          type="checkbox"
                           checked={isCardDateStatus === true ? true : false}
-                          onChange={handleCardDateStatusCheckboxChange} />
+                          onChange={handleCardDateStatusCheckboxChange}
+                        />
                       </div>
                       <div>
-                        <button onClick={() => setCardDateModalShow((prev) => !prev)}>{formatDate(thisCard?.data?.endDate)}
-                          <span style={{ display: thisCard?.data?.dateColor !== "red" ? '' : 'none', backgroundColor: isCardDateStatus === true && '#1f845a' }}>
-                            {thisCard?.data?.dateColor !== 'transparent' ? (isCardDateStatus ? 'Complate' : 'Overdue') : ''}
+                        <button
+                          onClick={() => setCardDateModalShow((prev) => !prev)}
+                        >
+                          {formatDate(thisCard?.data?.endDate)}
+                          <span
+                            style={{
+                              display:
+                                thisCard?.data?.dateColor === "transparent" && isCardDateStatus===true
+                                  ? ""
+                                  : "none",
+                              backgroundColor:
+                                isCardDateStatus === true && "#1f845a",
+                            }}
+                          >
+                            {isCardDateStatus === true ? "Complate" : "Overdue"}
+                            {/* {thisCard?.data?.dateColor !== "transparent"
+                              ? isCardDateStatus
+                                ? "Complate"
+                                : "Overdue"
+                              : ""} */}
                           </span>
                         </button>
                       </div>
                     </div>
                   </div>
-                }
+                )}
                 <ChakraProvider>
                   {ChecklistData?.map((Data, Index) => {
                     return (
                       <div key={Index} className={Styles.ChecklistMain}>
                         <p>{Data.name}</p>
                         <div className={Styles.ChecklistMainConatiner}>
-                          <div >
+                          <div>
                             <FontAwesomeIcon icon={faSquareCheck} />
                           </div>
                           <div className={Styles.ChecHeader}>
                             <p editable={"true"}>{Data.name}</p>
-                            <button onClick={() => DeleteChekclist(Data.id)}>Delete</button>
+                            <button onClick={() => DeleteChekclist(Data.id)}>
+                              Delete
+                            </button>
                           </div>
                         </div>
-                        <Flex pt={3} gap={5} alignItems={'center'}>
-                          <Text fontSize={14} m={0}>{Data?.checkPercentage}%</Text>
-                          <Progress borderRadius={5} h={2} w={'100%'} value={Data?.checkPercentage} />
+                        <Flex pt={3} gap={5} alignItems={"center"}>
+                          <Text fontSize={14} m={0}>
+                            {Data?.checkPercentage}%
+                          </Text>
+                          <Progress
+                            borderRadius={5}
+                            h={2}
+                            w={"100%"}
+                            value={Data?.checkPercentage}
+                          />
                         </Flex>
-                        <Flex alignItems={'center'} w={"100%"} gap={1} justifyContent={'center'} flexDirection={'column'}>
+                        <Flex
+                          alignItems={"center"}
+                          w={"100%"}
+                          gap={1}
+                          justifyContent={"center"}
+                          flexDirection={"column"}
+                        >
                           {Data?.getCheckitemDtos?.map((data, index) => (
                             <>
-                              <Flex pl={3} w={"100%"} gap={3} alignItems={'center'} key={index}>
-                                {state.selectedIndex === data.id && state.ShowUpdateInputsChecklistItem === true ?
+                              <Flex
+                                pl={3}
+                                w={"100%"}
+                                gap={3}
+                                alignItems={"center"}
+                                key={index}
+                              >
+                                {state.selectedIndex === data.id &&
+                                state.ShowUpdateInputsChecklistItem === true ? (
                                   <>
-                                    <Flex backgroundColor={"#A1BDD914"} padding={3} borderRadius={14} gap={2} flexDir={'column'} w={"100%"}>
+                                    <Flex
+                                      backgroundColor={"#A1BDD914"}
+                                      padding={3}
+                                      borderRadius={14}
+                                      gap={2}
+                                      flexDir={"column"}
+                                      w={"100%"}
+                                    >
                                       {/* // change-------------------------------------------------------------- */}
                                       <Input
                                         backgroundColor={"#22272B"}
-                                        border={'#579DFF 1px solid'}
+                                        border={"#579DFF 1px solid"}
                                         w={"100%"}
                                         defaultValue={data.text}
-                                        color={'white'}
+                                        color={"white"}
                                         onChange={(e) => {
-                                          const newValue = e.target.value.trim();
+                                          const newValue =
+                                            e.target.value.trim();
                                           if (newValue !== data.text) {
                                             setTitleInput(newValue);
                                           }
                                         }}
                                         name="Text"
                                       />
-                                      <Flex justifyContent={'space-between'} alignItems={'center'}>
-                                        <Flex gap={2} alignItems={'center'}>
-                                          <button onClick={() => { HandeTitleİnCheckList(data); CloseEditCheckList() }} style={{ backgroundColor: "#579DFF", color: "#1D2125", fontSize: "14px", fontWeight: "600" }}>Save</button>
-                                          <button style={{ backgroundColor: "rgb(231 240 249 / 8%)", color: "#acb6c1;", fontSize: "14px", fontWeight: "600" }} onClick={() => CloseEditCheckList()}>Close</button>
+                                      <Flex
+                                        justifyContent={"space-between"}
+                                        alignItems={"center"}
+                                      >
+                                        <Flex gap={2} alignItems={"center"}>
+                                          <button
+                                            onClick={() => {
+                                              HandeTitleİnCheckList(data);
+                                              CloseEditCheckList();
+                                            }}
+                                            style={{
+                                              backgroundColor: "#579DFF",
+                                              color: "#1D2125",
+                                              fontSize: "14px",
+                                              fontWeight: "600",
+                                            }}
+                                          >
+                                            Save
+                                          </button>
+                                          <button
+                                            style={{
+                                              backgroundColor:
+                                                "rgb(231 240 249 / 8%)",
+                                              color: "#acb6c1;",
+                                              fontSize: "14px",
+                                              fontWeight: "600",
+                                            }}
+                                            onClick={() => CloseEditCheckList()}
+                                          >
+                                            Close
+                                          </button>
                                         </Flex>
-                                        <Flex gap={10} alignItems={'center'}>
-                                          <Popover closeOnBlur={false} placement='left' initialFocusRef={initRef}>
+                                        <Flex gap={10} alignItems={"center"}>
+                                          <Popover
+                                            closeOnBlur={false}
+                                            placement="left"
+                                            initialFocusRef={initRef}
+                                          >
                                             {({ isOpen, onClose }) => (
                                               <>
                                                 <PopoverTrigger>
-                                                  <Button className={Styles.MenuButton}>
-                                                    <Flex gap={2} alignItems={'center'}>
-                                                      {data.dueDate > "2000" ?
+                                                  <Button
+                                                    className={
+                                                      Styles.MenuButton
+                                                    }
+                                                  >
+                                                    <Flex
+                                                      gap={2}
+                                                      alignItems={"center"}
+                                                    >
+                                                      {data.dueDate > "2000" ? (
                                                         <>
-                                                          <FontAwesomeIcon style={{ marginBottom: "2px" }} fontSize={"14px"} icon={faClock} />
-                                                          <p style={{ margin: "0" }}>{new Date(data.dueDate).toLocaleString('en-US', { year: "numeric", month: 'short', day: '2-digit', hour: 'numeric', minute: 'numeric' })}</p>
+                                                          <FontAwesomeIcon
+                                                            style={{
+                                                              marginBottom:
+                                                                "2px",
+                                                            }}
+                                                            fontSize={"14px"}
+                                                            icon={faClock}
+                                                          />
+                                                          <p
+                                                            style={{
+                                                              margin: "0",
+                                                            }}
+                                                          >
+                                                            {new Date(
+                                                              data.dueDate
+                                                            ).toLocaleString(
+                                                              "en-US",
+                                                              {
+                                                                year: "numeric",
+                                                                month: "short",
+                                                                day: "2-digit",
+                                                                hour: "numeric",
+                                                                minute:
+                                                                  "numeric",
+                                                              }
+                                                            )}
+                                                          </p>
                                                         </>
-                                                        :
+                                                      ) : (
                                                         <>
-                                                          <Flex gap={2} alignItems={'center'}>
-                                                            <FontAwesomeIcon fontSize={"14px"} icon={faClock} />
-                                                            <p style={{ margin: "0" }}> Set due Date</p>
+                                                          <Flex
+                                                            gap={2}
+                                                            alignItems={
+                                                              "center"
+                                                            }
+                                                          >
+                                                            <FontAwesomeIcon
+                                                              fontSize={"14px"}
+                                                              icon={faClock}
+                                                            />
+                                                            <p
+                                                              style={{
+                                                                margin: "0",
+                                                              }}
+                                                            >
+                                                              {" "}
+                                                              Set due Date
+                                                            </p>
                                                           </Flex>
                                                         </>
-                                                      }
+                                                      )}
                                                     </Flex>
                                                   </Button>
                                                 </PopoverTrigger>
-                                                <PopoverContent className={Styles.PopoverMain} border={"#3a3d41 1px solid"} backgroundColor={"#1D2125"}>
+                                                <PopoverContent
+                                                  className={Styles.PopoverMain}
+                                                  border={"#3a3d41 1px solid"}
+                                                  backgroundColor={"#1D2125"}
+                                                >
                                                   <Flex alignItems={"center"}>
-                                                    <PopoverHeader border={"none"}>Change due date</PopoverHeader>
-                                                    <PopoverCloseButton style={{ marginTop: "2px", backgroundColor: "transparent" }} />
+                                                    <PopoverHeader
+                                                      border={"none"}
+                                                    >
+                                                      Change due date
+                                                    </PopoverHeader>
+                                                    <PopoverCloseButton
+                                                      style={{
+                                                        marginTop: "2px",
+                                                        backgroundColor:
+                                                          "transparent",
+                                                      }}
+                                                    />
                                                   </Flex>
                                                   <PopoverBody border={"none"}>
-                                                    <Flex gap={2} alignItems={'center'}>
+                                                    <Flex
+                                                      gap={2}
+                                                      alignItems={"center"}
+                                                    >
                                                       <Input
                                                         id="timeInput"
-                                                        onChange={(e) => setDateInput(e.target.value)}
-                                                        defaultValue={data.dueDate && new Date(data.dueDate).getFullYear() < 2000 ?
-                                                          new Date().toISOString().split('T')[0] :
-                                                          (data.dueDate ? data.dueDate.split('T')[0] : '')}
-                                                        className={Styles.DateInput}
+                                                        onChange={(e) =>
+                                                          setDateInput(
+                                                            e.target.value
+                                                          )
+                                                        }
+                                                        defaultValue={
+                                                          data.dueDate &&
+                                                          new Date(
+                                                            data.dueDate
+                                                          ).getFullYear() < 2000
+                                                            ? new Date()
+                                                                .toISOString()
+                                                                .split("T")[0]
+                                                            : data.dueDate
+                                                            ? data.dueDate.split(
+                                                                "T"
+                                                              )[0]
+                                                            : ""
+                                                        }
+                                                        className={
+                                                          Styles.DateInput
+                                                        }
                                                         type="date"
                                                       />
                                                       <Input
-                                                        onChange={(e) => setTimeInput(e.target.value)}
-                                                        defaultValue={
-                                                          data.dueDate && new Date(data.dueDate).getFullYear() < 2000 ?
-                                                            "12:00" :
-                                                            (data.dueDate ? (data.dueDate.split('T')[1] ? data.dueDate.split('T')[1].split(':')[0] + ':' + data.dueDate.split('T')[1].split(':')[1] : '') : '')
+                                                        onChange={(e) =>
+                                                          setTimeInput(
+                                                            e.target.value
+                                                          )
                                                         }
-                                                        className={Styles.DateInput}
+                                                        defaultValue={
+                                                          data.dueDate &&
+                                                          new Date(
+                                                            data.dueDate
+                                                          ).getFullYear() < 2000
+                                                            ? "12:00"
+                                                            : data.dueDate
+                                                            ? data.dueDate.split(
+                                                                "T"
+                                                              )[1]
+                                                              ? data.dueDate
+                                                                  .split("T")[1]
+                                                                  .split(
+                                                                    ":"
+                                                                  )[0] +
+                                                                ":" +
+                                                                data.dueDate
+                                                                  .split("T")[1]
+                                                                  .split(":")[1]
+                                                              : ""
+                                                            : ""
+                                                        }
+                                                        className={
+                                                          Styles.DateInput
+                                                        }
                                                         type="time"
                                                       />
                                                     </Flex>
                                                   </PopoverBody>
-                                                  <PopoverFooter border={"none"}>
-                                                    <Flex gap={2} >
-                                                      <button onClick={() => { HandeUpdateCheckList(data); onClose() }} style={{ backgroundColor: "#579DFF", color: "#1D2125", fontSize: "14px", fontWeight: "600" }}>Save</button>
-                                                      <button onClick={() => { HandeRemoveDateİnCheckList(data); onClose() }}>Remove</button>
+                                                  <PopoverFooter
+                                                    border={"none"}
+                                                  >
+                                                    <Flex gap={2}>
+                                                      <button
+                                                        onClick={() => {
+                                                          HandeUpdateCheckList(
+                                                            data
+                                                          );
+                                                          onClose();
+                                                        }}
+                                                        style={{
+                                                          backgroundColor:
+                                                            "#579DFF",
+                                                          color: "#1D2125",
+                                                          fontSize: "14px",
+                                                          fontWeight: "600",
+                                                        }}
+                                                      >
+                                                        Save
+                                                      </button>
+                                                      <button
+                                                        onClick={() => {
+                                                          HandeRemoveDateİnCheckList(
+                                                            data
+                                                          );
+                                                          onClose();
+                                                        }}
+                                                      >
+                                                        Remove
+                                                      </button>
                                                     </Flex>
                                                   </PopoverFooter>
                                                 </PopoverContent>
@@ -1271,14 +1572,45 @@ const CardList = () => {
                                             )}
                                           </Popover>
                                           <Menu>
-                                            <MenuButton className={Styles.MenuButton} as={Button} >
-                                              <FontAwesomeIcon icon={faEllipsis} />
+                                            <MenuButton
+                                              className={Styles.MenuButton}
+                                              as={Button}
+                                            >
+                                              <FontAwesomeIcon
+                                                icon={faEllipsis}
+                                              />
                                             </MenuButton>
-                                            <MenuList w={"100%"} backgroundColor={"#22272B"} border={'none'}>
-                                              <MenuItem onClick={() => { HandeDeleteCheklistItem(data.id); CloseEditCheckList() }} mt={"5px !important"} w={"100% !important"}>
-                                                <Flex gap={2} alignItems={'center'}>
-                                                  <FontAwesomeIcon fontSize={"14px"} icon={faTrash} />
-                                                  <p style={{ margin: "0", padding: '0' }}>Delete</p>
+                                            <MenuList
+                                              w={"100%"}
+                                              backgroundColor={"#22272B"}
+                                              border={"none"}
+                                            >
+                                              <MenuItem
+                                                onClick={() => {
+                                                  HandeDeleteCheklistItem(
+                                                    data.id
+                                                  );
+                                                  CloseEditCheckList();
+                                                }}
+                                                mt={"5px !important"}
+                                                w={"100% !important"}
+                                              >
+                                                <Flex
+                                                  gap={2}
+                                                  alignItems={"center"}
+                                                >
+                                                  <FontAwesomeIcon
+                                                    fontSize={"14px"}
+                                                    icon={faTrash}
+                                                  />
+                                                  <p
+                                                    style={{
+                                                      margin: "0",
+                                                      padding: "0",
+                                                    }}
+                                                  >
+                                                    Delete
+                                                  </p>
                                                 </Flex>
                                               </MenuItem>
                                             </MenuList>
@@ -1287,42 +1619,108 @@ const CardList = () => {
                                       </Flex>
                                     </Flex>
                                   </>
-                                  :
+                                ) : (
                                   <>
-                                    <Checkbox mb={1} checked={data.check} isChecked={data.check} onChange={(e) => handleCheckboxChange(data, e.target.checked)} />
-                                    <Text userSelect={'none'} borderRadius={10} cursor={'pointer'} w={"100%"} p={"6px 12px"} _hover={{ background: "var(--ds-background-neutral, #A1BDD914)" }}
-                                      onClick={() => HandeOpenChecklistItem(data.id)} m={0}>{data.text}</Text>
+                                    <Checkbox
+                                      mb={1}
+                                      checked={data.check}
+                                      isChecked={data.check}
+                                      onChange={(e) =>
+                                        handleCheckboxChange(
+                                          data,
+                                          e.target.checked
+                                        )
+                                      }
+                                    />
+                                    <Text
+                                      userSelect={"none"}
+                                      borderRadius={10}
+                                      cursor={"pointer"}
+                                      w={"100%"}
+                                      p={"6px 12px"}
+                                      _hover={{
+                                        background:
+                                          "var(--ds-background-neutral, #A1BDD914)",
+                                      }}
+                                      onClick={() =>
+                                        HandeOpenChecklistItem(data.id)
+                                      }
+                                      m={0}
+                                    >
+                                      {data.text}
+                                    </Text>
                                   </>
-                                }
+                                )}
                               </Flex>
-
                             </>
                           ))}
                         </Flex>
-                        {!ShowAddItem &&
-                          <button onClick={() => { setShowAddItem(!ShowAddItem); setAddItemIndex(Index) }} style={{ margin: '20px 10px' }}>Add an item</button>
-                        }
-                        {ShowAddItem && addItemIndex === Index &&
-                          <Flex padding={2} borderRadius={14} gap={2} flexDir={'column'} w={"100%"}>
+                        {!ShowAddItem && (
+                          <button
+                            onClick={() => {
+                              setShowAddItem(!ShowAddItem);
+                              setAddItemIndex(Index);
+                            }}
+                            style={{ margin: "20px 10px" }}
+                          >
+                            Add an item
+                          </button>
+                        )}
+                        {ShowAddItem && addItemIndex === Index && (
+                          <Flex
+                            padding={2}
+                            borderRadius={14}
+                            gap={2}
+                            flexDir={"column"}
+                            w={"100%"}
+                          >
                             <Input
                               backgroundColor={"#22272B"}
-                              border={'#579DFF 1px solid'}
+                              border={"#579DFF 1px solid"}
                               w={"100%"}
-                              color={'white'}
+                              color={"white"}
                               placeholder="Add an Item"
                               onChange={CreateChecklistItemFormik.handleChange}
                               name="Text"
                             />
-                            <Flex justifyContent={'space-between'} alignItems={'center'}>
-                              <Flex gap={2} alignItems={'center'}>
-                                <button onClick={() => { CloseEditCheckList(); handleCreateItem(Data.id) }} style={{ backgroundColor: "#579DFF", color: "#1D2125", fontSize: "14px", fontWeight: "600" }}>Add</button>
-                                <button style={{ backgroundColor: "rgb(231 240 249 / 8%)", color: "#acb6c1;", fontSize: "14px", fontWeight: "600" }} onClick={() => { setShowAddItem(!ShowAddItem) }}>Cancel</button>
+                            <Flex
+                              justifyContent={"space-between"}
+                              alignItems={"center"}
+                            >
+                              <Flex gap={2} alignItems={"center"}>
+                                <button
+                                  onClick={() => {
+                                    CloseEditCheckList();
+                                    handleCreateItem(Data.id);
+                                  }}
+                                  style={{
+                                    backgroundColor: "#579DFF",
+                                    color: "#1D2125",
+                                    fontSize: "14px",
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  Add
+                                </button>
+                                <button
+                                  style={{
+                                    backgroundColor: "rgb(231 240 249 / 8%)",
+                                    color: "#acb6c1;",
+                                    fontSize: "14px",
+                                    fontWeight: "600",
+                                  }}
+                                  onClick={() => {
+                                    setShowAddItem(!ShowAddItem);
+                                  }}
+                                >
+                                  Cancel
+                                </button>
                               </Flex>
                             </Flex>
                           </Flex>
-                        }
+                        )}
                       </div>
-                    )
+                    );
                   })}
                 </ChakraProvider>
                 <div className="position-relative mt-2">
@@ -1349,66 +1747,167 @@ const CardList = () => {
                 <div className={Styles.CardInCustomFieldss}>
                   <div className={Styles.CardInCustomFieldssTitle}>
                     <span>
-                      <FontAwesomeIcon fontSize={"24px"} className="me-2" icon={faClipboard} />
+                      <FontAwesomeIcon
+                        fontSize={"24px"}
+                        className="me-2"
+                        icon={faClipboard}
+                      />
                     </span>
                     <h4>Custom Fields</h4>
                   </div>
 
-                  {cardInCustomFields?.data && cardInCustomFields?.data?.map((customField, index) => {
-                    return (
-                      <div className={Styles.CustomFieldes}>
-                        {customField.type === 2 &&
-                          <div className={Styles.CustomFieldDropdown}>
-                            <div className={Styles.CustomFieldHeader}><span><FontAwesomeIcon icon={faSquareCaretDown} /></span>Dropdown</div>
-                            <ChakraProvider>
-                              <Select size={'lg'}>
-                                {customField?.getCustomFieldDropdownOptions && customField.getCustomFieldDropdownOptions.map((dropdownItem, dropdownItemIndex) => {
-                                  return (
-                                    <option style={{ backgroundColor: dropdownItem.color ? dropdownItem.color : '#22272B' }} value={dropdownItem.option}>{dropdownItem.option}</option>
+                  {cardInCustomFields?.data &&
+                    cardInCustomFields?.data?.map((customField, index) => {
+                      return (
+                        <div className={Styles.CustomFieldes}>
+                          {customField.type === 2 && (
+                            <div className={Styles.CustomFieldDropdown}>
+                              <div className={Styles.CustomFieldHeader}>
+                                <span>
+                                  <FontAwesomeIcon icon={faSquareCaretDown} />
+                                </span>
+                                Dropdown
+                              </div>
+                              <ChakraProvider>
+                                <Select size={"lg"}>
+                                  {customField?.getCustomFieldDropdownOptions &&
+                                    customField.getCustomFieldDropdownOptions.map(
+                                      (dropdownItem, dropdownItemIndex) => {
+                                        return (
+                                          <option
+                                            style={{
+                                              backgroundColor:
+                                                dropdownItem.color
+                                                  ? dropdownItem.color
+                                                  : "#22272B",
+                                            }}
+                                            value={dropdownItem.option}
+                                          >
+                                            {dropdownItem.option}
+                                          </option>
+                                        );
+                                      }
+                                    )}
+                                </Select>
+                              </ChakraProvider>
+                            </div>
+                          )}
+                          {customField.type === 4 && (
+                            <div className={Styles.CustomFieldText}>
+                              <div className={Styles.CustomFieldHeader}>
+                                <span>
+                                  <FontAwesomeIcon icon={faT} />
+                                </span>
+                                Text
+                              </div>
+                              <ChakraProvider>
+                                <Input
+                                  onClick={() =>
+                                    handlefieldText(
+                                      customField?.getCustomFieldTextDto?.text,
+                                      customField?.getCustomFieldTextDto?.id
+                                    )
+                                  }
+                                  value={
+                                    customTextHandle === false
+                                      ? customField?.getCustomFieldTextDto?.text
+                                      : customText
+                                  }
+                                  onChange={handleCustomFieldTextChange}
+                                  size={"lg"}
+                                  type="text"
+                                  placeholder="Text"
+                                />
+                              </ChakraProvider>
+                            </div>
+                          )}
+                          {customField.type === 3 && (
+                            <div className={Styles.CustomFieldNumber}>
+                              <div className={Styles.CustomFieldHeader}>
+                                <span>
+                                  <FontAwesomeIcon icon={faHashtag} />
+                                </span>
+                                Number
+                              </div>
+                              <ChakraProvider>
+                                <Input
+                                  onClick={() =>
+                                    handlefieldNumber(
+                                      customField?.getCustomFieldNumberDto
+                                        ?.number,
+                                      customField?.getCustomFieldNumberDto?.id
+                                    )
+                                  }
+                                  value={
+                                    customTextHandle === false
+                                      ? customField?.getCustomFieldNumberDto
+                                          ?.number
+                                      : number
+                                  }
+                                  onChange={handleCustomFieldNumberChange}
+                                  size={"lg"}
+                                  type="number"
+                                  placeholder="number"
+                                />
+                              </ChakraProvider>
+                            </div>
+                          )}
+                          {customField.type === 0 && (
+                            <div
+                              style={{
+                                display: customField.type === 0 ? "" : "none",
+                              }}
+                              className={Styles.CustomFieldCheckbox}
+                            >
+                              <div className={Styles.CustomFieldHeader}>
+                                <span>
+                                  <FontAwesomeIcon icon={faSquareCheck} />
+                                </span>
+                                Checkbox
+                              </div>
+                              <input
+                                type="checkbox"
+                                placeholder="Text"
+                                size="lg"
+                              />
+                            </div>
+                          )}
+                          {customField.type === 1 && (
+                            <div
+                              style={{
+                                display: customField.type === 1 ? "" : "none",
+                              }}
+                              className={Styles.CustomFieldDate}
+                            >
+                              <div className={Styles.CustomFieldHeader}>
+                                <span>
+                                  <FontAwesomeIcon icon={faCalendarDays} />
+                                </span>
+                                Date
+                              </div>
+                              <DatePicker
+                                // onClick={() => handlefieldDate(customField?.getCustomFieldDateDto?.dateTime, customField?.getCustomFieldDateDto?.id)}
+                                selected={
+                                  customDateHandle === false
+                                    ? customField?.getCustomFieldDateDto
+                                        ?.dateTime
+                                    : customFieldDate
+                                }
+                                onChange={(date) =>
+                                  handlefieldDate(
+                                    date,
+                                    customField?.getCustomFieldDateDto?.id
                                   )
-                                })}
-                              </Select>
-                            </ChakraProvider>
-                          </div>
-                        }
-                        {customField.type === 4 &&
-                          <div className={Styles.CustomFieldText}>
-                            <div className={Styles.CustomFieldHeader}><span><FontAwesomeIcon icon={faT} /></span>Text</div>
-                            <ChakraProvider>
-                              <Input onClick={() => handlefieldText(customField?.getCustomFieldTextDto?.text, customField?.getCustomFieldTextDto?.id)} value={customTextHandle === false ? customField?.getCustomFieldTextDto?.text : customText} onChange={handleCustomFieldTextChange} size={'lg'} type="text" placeholder='Text' />
-                            </ChakraProvider>
-                          </div>
-                        }
-                        {customField.type === 3 &&
-                          <div className={Styles.CustomFieldNumber}>
-                            <div className={Styles.CustomFieldHeader}><span><FontAwesomeIcon icon={faHashtag} /></span>Number</div>
-                            <ChakraProvider>
-                              <Input onClick={() => handlefieldNumber(customField?.getCustomFieldNumberDto?.number, customField?.getCustomFieldNumberDto?.id)} value={customTextHandle === false ? customField?.getCustomFieldNumberDto?.number : number} onChange={handleCustomFieldNumberChange} size={'lg'} type="number" placeholder='number' />
-                            </ChakraProvider>
-                          </div>
-                        }
-                        {customField.type === 0 &&
-                          <div style={{ display: customField.type === 0 ? '' : 'none' }} className={Styles.CustomFieldCheckbox}>
-                            <div className={Styles.CustomFieldHeader}><span><FontAwesomeIcon icon={faSquareCheck} /></span>Checkbox</div>
-                            <input type="checkbox" placeholder='Text' size='lg' />
-                          </div>
-                        }
-                        {customField.type === 1 &&
-                          <div style={{ display: customField.type === 1 ? '' : 'none' }} className={Styles.CustomFieldDate}>
-                            <div className={Styles.CustomFieldHeader}><span><FontAwesomeIcon icon={faCalendarDays} /></span>Date</div>
-                            <DatePicker
-                              // onClick={() => handlefieldDate(customField?.getCustomFieldDateDto?.dateTime, customField?.getCustomFieldDateDto?.id)}
-                              selected={customDateHandle===false ? customField?.getCustomFieldDateDto?.dateTime : customFieldDate}
-                              onChange={(date) => handlefieldDate(date, customField?.getCustomFieldDateDto?.id)}
-                              showTimeInput
-                              dateFormat="dd/MM/yyyy h:mm aa"
-                              placeholderText="+ Add date..."
-                            />
-                          </div>
-                        }
-                      </div>
-                    )
-                  })}
+                                }
+                                showTimeInput
+                                dateFormat="dd/MM/yyyy h:mm aa"
+                                placeholderText="+ Add date..."
+                              />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                 </div>
 
                 <div className="position-relative mt-2">
@@ -1447,13 +1946,12 @@ const CardList = () => {
                     <p className="mb-2 small fw-bold">Add to Card</p>
                     <div>
                       <ChakraProvider>
-
                         <Popover
                           isOpen={isOpen}
                           initialFocusRef={firstFieldRef}
                           onOpen={onOpen}
                           onClose={onClose}
-                          placement='right'
+                          placement="right"
                           closeOnBlur={false}
                         >
                           <PopoverTrigger>
@@ -1462,24 +1960,35 @@ const CardList = () => {
                               Members
                             </button>
                           </PopoverTrigger>
-                          <PopoverContent className={Styles.PopoverMember} p={5}>
+                          <PopoverContent
+                            className={Styles.PopoverMember}
+                            p={5}
+                          >
                             <FocusLock returnFocus persistentFocus={false}>
                               <PopoverCloseButton />
-                              <Form firstFieldRef={firstFieldRef} onCancel={onClose} />
+                              <Form
+                                firstFieldRef={firstFieldRef}
+                                onCancel={onClose}
+                              />
                             </FocusLock>
-                            <h6 className={Styles.BoardMembersHeader}>Board Members</h6>
+                            <h6 className={Styles.BoardMembersHeader}>
+                              Board Members
+                            </h6>
                             {BoardMembers?.data?.map((data, index) => {
                               return (
                                 <div key={index}>
-
                                   <div className={Styles.userSvgConatiner}>
-                                    <Flex marginTop={2} gap={2} alignItems={'center'}>
+                                    <Flex
+                                      marginTop={2}
+                                      gap={2}
+                                      alignItems={"center"}
+                                    >
                                       <img src={userSvg} alt="" srcset="" />
                                       {data.userName}
                                     </Flex>
                                   </div>
                                 </div>
-                              )
+                              );
                             })}
                           </PopoverContent>
                         </Popover>
@@ -1488,32 +1997,53 @@ const CardList = () => {
                         <FontAwesomeIcon className="me-2" icon={faTag} />
                         Labels
                       </button>
-                      <button onClick={HandeOpenModal} className="btn btn-primary default-submit mb-2 w-100 text-start">
+                      <button
+                        onClick={HandeOpenModal}
+                        className="btn btn-primary default-submit mb-2 w-100 text-start"
+                      >
                         <FontAwesomeIcon
                           className="me-2"
                           icon={faSquareCheck}
                         />
                         Checklist
                       </button>
-                      {openModal &&
+                      {openModal && (
                         <div className={Styles.ChecklistModal}>
-                          <div >
-                            <h1 className={Styles.CheckListHeader}>Add checklist<FontAwesomeIcon onClick={HandeOpenModal} className={Styles.XmarkIcon} icon={faXmark} /></h1>
+                          <div>
+                            <h1 className={Styles.CheckListHeader}>
+                              Add checklist
+                              <FontAwesomeIcon
+                                onClick={HandeOpenModal}
+                                className={Styles.XmarkIcon}
+                                icon={faXmark}
+                              />
+                            </h1>
                           </div>
                           <label htmlFor="Name">Title</label>
-                          <input onChange={CreateChecklistFormik.handleChange} className={Styles.InputCheck} name="Name" type="text" />
+                          <input
+                            onChange={CreateChecklistFormik.handleChange}
+                            className={Styles.InputCheck}
+                            name="Name"
+                            type="text"
+                          />
                           <button
                             type="submit"
                             onClick={() => {
                               CreateChecklistFormik.handleSubmit();
-                              CreateChecklistFormik.setFieldValue("CardId", thisCard?.data.id);
+                              CreateChecklistFormik.setFieldValue(
+                                "CardId",
+                                thisCard?.data.id
+                              );
                             }}
                           >
                             Add
                           </button>
                         </div>
-                      }
-                      <button onClick={() => setCardDateModalShow((prev) => !prev)} className="btn btn-primary default-submit mb-2 w-100 text-start">
+                      )}
+                      <button
+                        onClick={() => setCardDateModalShow((prev) => !prev)}
+                        className="btn btn-primary default-submit mb-2 w-100 text-start"
+                      >
                         <FontAwesomeIcon className="me-2" icon={faClock} />
                         Dates
                       </button>
@@ -1531,17 +2061,23 @@ const CardList = () => {
                             onClose={onPopoverClose}
                             closeOnBlur={false}
                           >
-                            <PopoverTrigger >
+                            <PopoverTrigger>
                               <button className="btn btn-primary default-submit mb-2 w-100 text-start">
-                                <FontAwesomeIcon className="me-2" icon={faPalette} />
+                                <FontAwesomeIcon
+                                  className="me-2"
+                                  icon={faPalette}
+                                />
                                 Cover
                               </button>
                             </PopoverTrigger>
-                            <PopoverContent className={Styles.CoverPopover} p={5}>
+                            <PopoverContent
+                              className={Styles.CoverPopover}
+                              p={5}
+                            >
                               <FocusLock returnFocus persistentFocus={false}>
                                 <PopoverCloseButton />
                                 <h5>Select a cover</h5>
-                                <Flex pb={3} gap={1} flexWrap={'wrap'}>
+                                <Flex pb={3} gap={1} flexWrap={"wrap"}>
                                   {ColorArr.map((color, index) => (
                                     <div
                                       key={index}
@@ -1549,29 +2085,62 @@ const CardList = () => {
                                       style={{
                                         backgroundColor: color,
                                         borderRadius: "2px",
-                                        border: selectedColor2 === color ? "2px solid rgb(87, 157, 255)" : "none"
+                                        border:
+                                          selectedColor2 === color
+                                            ? "2px solid rgb(87, 157, 255)"
+                                            : "none",
                                       }}
                                       className={Styles.ColorContaier}
                                     ></div>
                                   ))}
                                 </Flex>
                                 <Flex gap={2}>
-                                  <Button style={{ backgroundColor: "#6c757d", color: "white", border: "none" }} onClick={() => { HandleSaveCover(thisCard?.data?.id, true); onPopoverClose(); }}>Remove</Button>
-                                  <Button style={{ backgroundColor: "#579dff", color: "white", border: "none" }} onClick={() => { HandleSaveCover(thisCard?.data?.id); onPopoverClose(); }}>Save</Button>
+                                  <Button
+                                    style={{
+                                      backgroundColor: "#6c757d",
+                                      color: "white",
+                                      border: "none",
+                                    }}
+                                    onClick={() => {
+                                      HandleSaveCover(thisCard?.data?.id, true);
+                                      onPopoverClose();
+                                    }}
+                                  >
+                                    Remove
+                                  </Button>
+                                  <Button
+                                    style={{
+                                      backgroundColor: "#579dff",
+                                      color: "white",
+                                      border: "none",
+                                    }}
+                                    onClick={() => {
+                                      HandleSaveCover(thisCard?.data?.id);
+                                      onPopoverClose();
+                                    }}
+                                  >
+                                    Save
+                                  </Button>
                                 </Flex>
                               </FocusLock>
                             </PopoverContent>
                           </Popover>
                         </ChakraProvider>
                       </>
-                      <button onClick={() => setCardCustomField((prev) => !prev)} className="btn btn-primary default-submit mb-2 w-100 text-start">
+                      <button
+                        onClick={() => setCardCustomField((prev) => !prev)}
+                        className="btn btn-primary default-submit mb-2 w-100 text-start"
+                      >
                         <FontAwesomeIcon className="me-2" icon={faClipboard} />
                         Custom Fields
                       </button>
                     </div>
                     <p className="mt-5 mb-2 small fw-bold">Actions</p>
                     <div>
-                      <button onClick={(pres) => setMoveModalShow(true)} className="btn btn-primary default-submit mb-2 w-100 text-start">
+                      <button
+                        onClick={(pres) => setMoveModalShow(true)}
+                        className="btn btn-primary default-submit mb-2 w-100 text-start"
+                      >
                         <FontAwesomeIcon className="me-2" icon={faArrowRight} />
                         Move
                       </button>
@@ -1584,11 +2153,11 @@ const CardList = () => {
                 </div>
               </div>
             </div>
-          </Modal.Body >
+          </Modal.Body>
         ) : (
           ""
         )}
-      </Modal >
+      </Modal>
 
       <Modal
         show={moveModalShow}
@@ -1600,19 +2169,22 @@ const CardList = () => {
         centered
         id={Styles.MainMoveModelShow}
       >
-        <Modal.Body
-          id={Styles.MoveModelShow}
-        >
+        <Modal.Body id={Styles.MoveModelShow}>
           <div className={Styles.PositionMoveModelShow}>
             <div className={Styles.headerMoveModelShow}>
               <div></div>
               <div>Move Card</div>
-              <div><button>X</button></div>
+              <div>
+                <button>X</button>
+              </div>
             </div>
             <div className={Styles.centerMoveModelShow}>
               <div>
                 <Dropdown id={Styles.DropDownMove} data-bs-theme="dark">
-                  <Dropdown.Toggle id="dropdown-button-dark-example1" variant="secondary">
+                  <Dropdown.Toggle
+                    id="dropdown-button-dark-example1"
+                    variant="secondary"
+                  >
                     Dropdown Button
                   </Dropdown.Toggle>
 
@@ -1620,17 +2192,26 @@ const CardList = () => {
                     <Dropdown.Item href="#/action-1" active>
                       Action
                     </Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+                    <Dropdown.Item href="#/action-2">
+                      Another action
+                    </Dropdown.Item>
                     <Dropdown.Divider />
-                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">
+                      Something else
+                    </Dropdown.Item>
                     <Dropdown.Divider />
-                    <Dropdown.Item href="#/action-4">Separated link</Dropdown.Item>
+                    <Dropdown.Item href="#/action-4">
+                      Separated link
+                    </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
               <div>
                 <Dropdown data-bs-theme="dark">
-                  <Dropdown.Toggle id="dropdown-button-dark-example1" variant="secondary">
+                  <Dropdown.Toggle
+                    id="dropdown-button-dark-example1"
+                    variant="secondary"
+                  >
                     Dropdown Button
                   </Dropdown.Toggle>
 
@@ -1638,11 +2219,17 @@ const CardList = () => {
                     <Dropdown.Item href="#/action-1" active>
                       Action
                     </Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+                    <Dropdown.Item href="#/action-2">
+                      Another action
+                    </Dropdown.Item>
                     <Dropdown.Divider />
-                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">
+                      Something else
+                    </Dropdown.Item>
                     <Dropdown.Divider />
-                    <Dropdown.Item href="#/action-4">Separated link</Dropdown.Item>
+                    <Dropdown.Item href="#/action-4">
+                      Separated link
+                    </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
@@ -1663,31 +2250,64 @@ const CardList = () => {
         fullscreen="md-down"
         aria-labelledby="contained-modal-title-vcenter"
         centered
-        style={{ width: '370px' }}
+        style={{ width: "370px" }}
         id={Styles.MainMoveModelShow}
       >
         <Modal.Body
           style={{
-            backgroundColor: '#1d2125',
-            width: '370px'
+            backgroundColor: "#1d2125",
+            width: "370px",
           }}
           id={Styles.MoveModelShow}
         >
           <div className={`date-picker open`}>
-            <div style={{ width: '350px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '50px', backgroundColor: '#1d2125', position: 'fixed', zIndex: 10 }}>
+            <div
+              style={{
+                width: "350px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                height: "50px",
+                backgroundColor: "#1d2125",
+                position: "fixed",
+                zIndex: 10,
+              }}
+            >
               <div></div>
-              <h1 style={{ fontSize: '24px', fontFamily: 'initial', color: 'white', display: 'flex', justifyContent: 'center' }}>
+              <h1
+                style={{
+                  fontSize: "24px",
+                  fontFamily: "initial",
+                  color: "white",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
                 Dates
               </h1>
-              <button onClick={() => setCardDateModalShow((pres) => !pres)} style={{ color: 'white', fontSize: '20px', marginRight: '5px' }}><FontAwesomeIcon icon={faX} /></button>
+              <button
+                onClick={() => setCardDateModalShow((pres) => !pres)}
+                style={{ color: "white", fontSize: "20px", marginRight: "5px" }}
+              >
+                <FontAwesomeIcon icon={faX} />
+              </button>
             </div>
 
             <div id={Styles.CardAddDate}>
-              <div className="input" style={{ marginTop: '30px' }}>
-                <button><i className="zmdi zmdi-calendar"></i></button>
+              <div className="input" style={{ marginTop: "30px" }}>
+                <button>
+                  <i className="zmdi zmdi-calendar"></i>
+                </button>
               </div>
-              <div style={{ width: '100%', height: 'auto', display: 'flex', justifyContent: 'center' }}>
-                <div style={{ display: isStartChecked ? 'block' : 'none', }}>
+              <div
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <div style={{ display: isStartChecked ? "block" : "none" }}>
                   {true && (
                     <DatePicker
                       color={"red"}
@@ -1702,7 +2322,7 @@ const CardList = () => {
                     />
                   )}
                 </div>
-                <div style={{ display: isDueChecked ? 'block' : 'none' }}>
+                <div style={{ display: isDueChecked ? "block" : "none" }}>
                   {true && (
                     <DatePicker
                       backgroundColor="blue"
@@ -1723,53 +2343,195 @@ const CardList = () => {
                   )}
                 </div>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-around",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-around",
+                  }}
+                >
                   <label>Start Date</label>
-                  <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginTop: '5px' }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "start",
+                      alignItems: "center",
+                      marginTop: "5px",
+                    }}
+                  >
                     <input
-                      style={{ border: 'none', border: 'none', color: '#0c66e4', backgroundColor: '#0c66e4', width: '38px', height: '38px', }}
+                      style={{
+                        border: "none",
+                        border: "none",
+                        color: "#0c66e4",
+                        backgroundColor: "#0c66e4",
+                        width: "38px",
+                        height: "38px",
+                      }}
                       type="checkbox"
                       checked={isStartChecked}
                       onChange={handleStartCheckboxChange}
                     />
-                    <div className={Styles.result}><span style={{ display: startDate ? 'block' : 'none' }}>{startDate ? startDate.toLocaleDateString() : ''}</span></div>
+                    <div className={Styles.result}>
+                      <span style={{ display: startDate ? "block" : "none" }}>
+                        {startDate ? startDate.toLocaleDateString() : ""}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', }}>
+              <div
+                style={{
+                  marginTop: "20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-around",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-around",
+                  }}
+                >
                   <label>Due Date</label>
-                  <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginTop: '5px' }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "start",
+                      alignItems: "center",
+                      marginTop: "5px",
+                    }}
+                  >
                     <input
-                      style={{ border: 'none', border: 'none', color: '#0c66e4', backgroundColor: '#0c66e4', width: '38px', height: '38px', }}
+                      style={{
+                        border: "none",
+                        border: "none",
+                        color: "#0c66e4",
+                        backgroundColor: "#0c66e4",
+                        width: "38px",
+                        height: "38px",
+                      }}
                       type="checkbox"
                       checked={isDueChecked}
                       onChange={handleDueCheckboxChange}
                     />
-                    <div className={Styles.result}><span style={{ display: dueDate ? '' : 'none' }}>{dueDate ? dueDate.toLocaleDateString() : ''}</span> <span style={{ display: dueDate ? '' : 'none' }}>{dueDate && dueDate.toLocaleTimeString()}</span></div>
+                    <div className={Styles.result}>
+                      <span style={{ display: dueDate ? "" : "none" }}>
+                        {dueDate ? dueDate.toLocaleDateString() : ""}
+                      </span>{" "}
+                      <span style={{ display: dueDate ? "" : "none" }}>
+                        {dueDate && dueDate.toLocaleTimeString()}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div style={{ marginTop: '20px' }}>
+              <div style={{ marginTop: "20px" }}>
                 <ChakraProvider>
-                  <span style={{ color: 'white', fontWeight: '500' }}>Set due date reminder</span>
-                  <Select id={Styles.SelectbeforeInfo} borderColor={'#0c66e4'} height={'50px'} width={"98%"} color={'white'} backgroundColor={'#22272B'} value={selectedOption} onChange={handleChange}>
-                    <option style={{ backgroundColor: '#22272B' }} value={defaultOption}>{defaultOption}</option>
-                    <option style={{ backgroundColor: '#22272B' }} value="option1">At time of due date</option>
-                    <option style={{ backgroundColor: '#22272B' }} value="option2">5 Minutes before</option>
-                    <option style={{ backgroundColor: '#22272B' }} value="option3">10 Minutes before</option>
-                    <option style={{ backgroundColor: '#22272B' }} value="option4">15 Minutes before</option>
-                    <option style={{ backgroundColor: '#22272B' }} value="option5">1 Hour before</option>
-                    <option style={{ backgroundColor: '#22272B' }} value="option6">2 Hours before</option>
-                    <option style={{ backgroundColor: '#22272B' }} value="option7">1 Day before</option>
-                    <option style={{ backgroundColor: '#22272B' }} value="option8">2 Days before</option>
+                  <span style={{ color: "white", fontWeight: "500" }}>
+                    Set due date reminder
+                  </span>
+                  <Select
+                    id={Styles.SelectbeforeInfo}
+                    borderColor={"#0c66e4"}
+                    height={"50px"}
+                    width={"98%"}
+                    color={"white"}
+                    backgroundColor={"#22272B"}
+                    value={selectedOption}
+                    onChange={handleChange}
+                  >
+                    <option
+                      style={{ backgroundColor: "#22272B" }}
+                      value={defaultOption}
+                    >
+                      {defaultOption}
+                    </option>
+                    <option
+                      style={{ backgroundColor: "#22272B" }}
+                      value="option1"
+                    >
+                      At time of due date
+                    </option>
+                    <option
+                      style={{ backgroundColor: "#22272B" }}
+                      value="option2"
+                    >
+                      5 Minutes before
+                    </option>
+                    <option
+                      style={{ backgroundColor: "#22272B" }}
+                      value="option3"
+                    >
+                      10 Minutes before
+                    </option>
+                    <option
+                      style={{ backgroundColor: "#22272B" }}
+                      value="option4"
+                    >
+                      15 Minutes before
+                    </option>
+                    <option
+                      style={{ backgroundColor: "#22272B" }}
+                      value="option5"
+                    >
+                      1 Hour before
+                    </option>
+                    <option
+                      style={{ backgroundColor: "#22272B" }}
+                      value="option6"
+                    >
+                      2 Hours before
+                    </option>
+                    <option
+                      style={{ backgroundColor: "#22272B" }}
+                      value="option7"
+                    >
+                      1 Day before
+                    </option>
+                    <option
+                      style={{ backgroundColor: "#22272B" }}
+                      value="option8"
+                    >
+                      2 Days before
+                    </option>
                   </Select>
                 </ChakraProvider>
-                <Col style={{ color: 'white', marginTop: '10px', fontSize: '18px' }}>Reminders will be sent to all members and watchers of this card.</Col>
-                <Col style={{ marginTop: '15px' }}>
-                  <Button onClick={() => cardAddDateFormik.handleSubmit()} style={{ width: '98%' }}>Save</Button>
-                  <Button style={{ width: '98%', marginTop: '20px', backgroundColor: '#1d2125' }}>Remove</Button>
+                <Col
+                  style={{
+                    color: "white",
+                    marginTop: "10px",
+                    fontSize: "18px",
+                  }}
+                >
+                  Reminders will be sent to all members and watchers of this
+                  card.
+                </Col>
+                <Col style={{ marginTop: "15px" }}>
+                  <Button
+                    onClick={() => cardAddDateFormik.handleSubmit()}
+                    style={{ width: "98%" }}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    style={{
+                      width: "98%",
+                      marginTop: "20px",
+                      backgroundColor: "#1d2125",
+                    }}
+                  >
+                    Remove
+                  </Button>
                 </Col>
               </div>
             </div>
@@ -1788,14 +2550,30 @@ const CardList = () => {
       >
         <Modal.Body
           id={Styles.MoveModelShow}
-          style={{ backgroundColor: '#23282b' }}
+          style={{ backgroundColor: "#23282b" }}
         >
-          <div style={{ height: createViewShow ? 'auto' : '' }} className={Styles.cardCustomFeildmain}>
+          <div
+            style={{ height: createViewShow ? "auto" : "" }}
+            className={Styles.cardCustomFeildmain}
+          >
             <div>
               <div className={Styles.cardCustomFeildmainHeader}>
-                <div><span style={{ display: createViewShow ? '' : 'none' }}><FontAwesomeIcon style={{ cursor: 'pointer' }} onClick={() => setCreateViewShow((prev) => !prev)} icon={faChevronLeft} /></span></div>
+                <div>
+                  <span style={{ display: createViewShow ? "" : "none" }}>
+                    <FontAwesomeIcon
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setCreateViewShow((prev) => !prev)}
+                      icon={faChevronLeft}
+                    />
+                  </span>
+                </div>
                 <div>Custom Fields</div>
-                <button><FontAwesomeIcon icon={faX} onClick={() => setCardCustomField((prev) => !prev)} /></button>
+                <button>
+                  <FontAwesomeIcon
+                    icon={faX}
+                    onClick={() => setCardCustomField((prev) => !prev)}
+                  />
+                </button>
               </div>
 
               {/* ------------------------ */}
@@ -1814,66 +2592,158 @@ const CardList = () => {
               </div> */}
 
               {/* ------------------------ */}
-              <div style={{ display: createViewShow ? 'none' : '' }} className={Styles.cardCustomFeildmainCenter}>
+              <div
+                style={{ display: createViewShow ? "none" : "" }}
+                className={Styles.cardCustomFeildmainCenter}
+              >
                 <p>SUGGESTED FIELDS</p>
                 <div>
                   <div className={Styles.fieldGridItem}>
                     <div>
-                      <div><FontAwesomeIcon style={{ marginRight: '10px' }} icon={faAnglesUp} /> Priority</div>
-                      <button onClick={() => createStaticCustomField(1)}>Add</button>
+                      <div>
+                        <FontAwesomeIcon
+                          style={{ marginRight: "10px" }}
+                          icon={faAnglesUp}
+                        />{" "}
+                        Priority
+                      </div>
+                      <button onClick={() => createStaticCustomField(1)}>
+                        Add
+                      </button>
                     </div>
                   </div>
                   <div className={Styles.fieldGridItem}>
                     <div>
-                      <div><FontAwesomeIcon style={{ marginRight: '10px' }} icon={faSquarePollHorizontal} /> Status</div>
-                      <button onClick={() => createStaticCustomField(2)}>Add</button>
+                      <div>
+                        <FontAwesomeIcon
+                          style={{ marginRight: "10px" }}
+                          icon={faSquarePollHorizontal}
+                        />{" "}
+                        Status
+                      </div>
+                      <button onClick={() => createStaticCustomField(2)}>
+                        Add
+                      </button>
                     </div>
                   </div>
                   <div className={Styles.fieldGridItem}>
                     <div>
-                      <div><FontAwesomeIcon style={{ marginRight: '10px' }} icon={faTrowelBricks} /> Risk</div>
-                      <button onClick={() => createStaticCustomField(3)}>Add</button>
+                      <div>
+                        <FontAwesomeIcon
+                          style={{ marginRight: "10px" }}
+                          icon={faTrowelBricks}
+                        />{" "}
+                        Risk
+                      </div>
+                      <button onClick={() => createStaticCustomField(3)}>
+                        Add
+                      </button>
                     </div>
                   </div>
                   <div className={Styles.fieldGridItem}>
                     <div>
-                      <div><FontAwesomeIcon style={{ marginRight: '10px' }} icon={faGrip} /> Effort</div>
-                      <button onClick={() => createStaticCustomField(4)}>Add</button>
+                      <div>
+                        <FontAwesomeIcon
+                          style={{ marginRight: "10px" }}
+                          icon={faGrip}
+                        />{" "}
+                        Effort
+                      </div>
+                      <button onClick={() => createStaticCustomField(4)}>
+                        Add
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
-              <div style={{ display: createViewShow ? 'none' : '' }} className={Styles.cardCustomFeildmainNewField}>
-                <ButtonGroup onClick={() => setCreateViewShow((prev) => !prev)} style={{ width: '100%', height: '52px', backgroundColor: '#2f363b', cursor: 'pointer', fontSize: '28px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <div
+                style={{ display: createViewShow ? "none" : "" }}
+                className={Styles.cardCustomFeildmainNewField}
+              >
+                <ButtonGroup
+                  onClick={() => setCreateViewShow((prev) => !prev)}
+                  style={{
+                    width: "100%",
+                    height: "52px",
+                    backgroundColor: "#2f363b",
+                    cursor: "pointer",
+                    fontSize: "28px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
                   + New field
                 </ButtonGroup>
               </div>
 
-              <div style={{ display: createViewShow ? '' : 'none' }}>
+              <div style={{ display: createViewShow ? "" : "none" }}>
                 <ChakraProvider>
                   <span className={Styles.FieldCreateTitileLabel}>Title</span>
-                  <Input value={titleField} onChange={handleFieldTitleInputChange} placeholder='Add a title...' size='lg' />
-                  <div style={{ marginTop: '15px' }}>
+                  <Input
+                    value={titleField}
+                    onChange={handleFieldTitleInputChange}
+                    placeholder="Add a title..."
+                    size="lg"
+                  />
+                  <div style={{ marginTop: "15px" }}>
                     <span className={Styles.FieldCreateTitileLabel}>Type</span>
-                    <Select size={'lg'} value={selectedFieldTypeOption} onChange={handleFieldTypeChange}>
-                      <option style={{ backgroundColor: '#22272B' }} value="option1">Checkbox</option>
-                      <option style={{ backgroundColor: '#22272B' }} value="option2">Date</option>
-                      <option style={{ backgroundColor: '#22272B' }} value="option3">Dropdown</option>
-                      <option style={{ backgroundColor: '#22272B' }} value="option4">Number</option>
-                      <option style={{ backgroundColor: '#22272B' }} value="option5">Text</option>
+                    <Select
+                      size={"lg"}
+                      value={selectedFieldTypeOption}
+                      onChange={handleFieldTypeChange}
+                    >
+                      <option
+                        style={{ backgroundColor: "#22272B" }}
+                        value="option1"
+                      >
+                        Checkbox
+                      </option>
+                      <option
+                        style={{ backgroundColor: "#22272B" }}
+                        value="option2"
+                      >
+                        Date
+                      </option>
+                      <option
+                        style={{ backgroundColor: "#22272B" }}
+                        value="option3"
+                      >
+                        Dropdown
+                      </option>
+                      <option
+                        style={{ backgroundColor: "#22272B" }}
+                        value="option4"
+                      >
+                        Number
+                      </option>
+                      <option
+                        style={{ backgroundColor: "#22272B" }}
+                        value="option5"
+                      >
+                        Text
+                      </option>
                     </Select>
                   </div>
-                  <div style={{ marginTop: '10px' }}>
-
+                  <div style={{ marginTop: "10px" }}>
                     {viewAddDripdownItemShow && (
                       <div>
-                        <p style={{ marginTop: '20px' }}></p>
-                        <span style={{ marginBottom: '-20px' }} className={Styles.FieldCreateTitileLabel}>Options</span>
+                        <p style={{ marginTop: "20px" }}></p>
+                        <span
+                          style={{ marginBottom: "-20px" }}
+                          className={Styles.FieldCreateTitileLabel}
+                        >
+                          Options
+                        </span>
                         {options.map((item, index) => (
                           <div className={Styles.indropdownItems} key={index}>
                             <div>
-                              <button style={{ backgroundColor: item.Color }} onClick={toggleColorModal} className={Styles.colorBtn}></button>
-                              {showColorModal &&
+                              <button
+                                style={{ backgroundColor: item.Color }}
+                                onClick={toggleColorModal}
+                                className={Styles.colorBtn}
+                              ></button>
+                              {showColorModal && (
                                 <div
                                   style={{
                                     position: "fixed",
@@ -1896,45 +2766,92 @@ const CardList = () => {
                                     }}
                                     onClick={(e) => e.stopPropagation()}
                                   >
-                                    <CirclePicker color={selectedColor} onChange={(color) => handleColorChange(color, index)} />
+                                    <CirclePicker
+                                      color={selectedColor}
+                                      onChange={(color) =>
+                                        handleColorChange(color, index)
+                                      }
+                                    />
                                   </div>
                                 </div>
-                              }
+                              )}
                             </div>
                             <input value={item.Option} />
-                            <button onClick={() => handleRemoveDropwItemButtonClick(index)}>
-                              <FontAwesomeIcon fontSize={"25px"} icon={faTrash} />
+                            <button
+                              onClick={() =>
+                                handleRemoveDropwItemButtonClick(index)
+                              }
+                            >
+                              <FontAwesomeIcon
+                                fontSize={"25px"}
+                                icon={faTrash}
+                              />
                             </button>
                           </div>
                         ))}
-                        <div style={{ marginTop: '20px' }} className={Styles.fieldTypeDropDown}>
-                          <Input value={dropdownItem} onChange={handleDropdownItemChange} placeholder='Add a title...' size='lg' />
-                          <button onClick={handleAddDropdownItemButtonClick}>Add</button>
+                        <div
+                          style={{ marginTop: "20px" }}
+                          className={Styles.fieldTypeDropDown}
+                        >
+                          <Input
+                            value={dropdownItem}
+                            onChange={handleDropdownItemChange}
+                            placeholder="Add a title..."
+                            size="lg"
+                          />
+                          <button onClick={handleAddDropdownItemButtonClick}>
+                            Add
+                          </button>
                         </div>
                       </div>
                     )}
-
                   </div>
 
-
-                  <Col style={{ marginTop: '30px', display: 'flex', alignItems: 'center' }}>
+                  <Col
+                    style={{
+                      marginTop: "30px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
                     <input
-                      style={{ border: 'none', border: 'none', color: '#0c66e4', backgroundColor: '#0c66e4', width: '32px', height: '32px', }}
+                      style={{
+                        border: "none",
+                        border: "none",
+                        color: "#0c66e4",
+                        backgroundColor: "#0c66e4",
+                        width: "32px",
+                        height: "32px",
+                      }}
                       type="checkbox"
                       checked={isFieldChecked}
                       onChange={handleFieldCheckboxChange}
-                    /><span style={{ marginLeft: '20px' }} className={Styles.FieldCreateTitileLabel}>Show field on front of card</span>
+                    />
+                    <span
+                      style={{ marginLeft: "20px" }}
+                      className={Styles.FieldCreateTitileLabel}
+                    >
+                      Show field on front of card
+                    </span>
                   </Col>
-                  <button disabled={titleField === null && selectedFieldTypeOption === null ? true : false} onClick={createCustomField} className={Styles.createFieldBtn}>Create</button>
+                  <button
+                    disabled={
+                      titleField === null && selectedFieldTypeOption === null
+                        ? true
+                        : false
+                    }
+                    onClick={createCustomField}
+                    className={Styles.createFieldBtn}
+                  >
+                    Create
+                  </button>
                 </ChakraProvider>
-
-
               </div>
             </div>
           </div>
         </Modal.Body>
       </Modal>
-    </div >
+    </div>
   );
 };
 
