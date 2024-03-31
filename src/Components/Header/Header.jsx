@@ -20,7 +20,7 @@ import {
   faLink,
   faEllipsis,
   faChartLine,
-  faXmark
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import jwtDecode from "jwt-decode";
@@ -59,7 +59,6 @@ export default function Header() {
   const [createBoardSlide2, setCreateBoardSlide2] = useState(false);
   const [modalShow, setModalShow] = useState(false);
   const [notificationModalShow, setNotificationModalShow] = useState(false);
-  const [userActivityModalShow, setUserActivitModalShow] = useState(true);
   const [modalShow2, setWorkspaceModal1] = useState(true);
   const [modalShow3, setWorkspaceModal2] = useState(false);
   const [inputResult, setInputResult] = useState(false);
@@ -67,8 +66,8 @@ export default function Header() {
   const decodedToken = token ? jwtDecode(token) : null;
   const userId = decodedToken
     ? decodedToken[
-    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-    ]
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+      ]
     : null;
   const doNotClose = (e) => {
     e.stopPropagation();
@@ -84,24 +83,26 @@ export default function Header() {
   };
 
   //--------Notification---------//
-  const { data: AllNotification } = useQuery(["GetAllNotifications", userId], () =>
-    getUserAllNotifications(userId)
+  const { data: AllNotification } = useQuery(
+    ["GetAllNotifications", userId],
+    () => getUserAllNotifications(userId)
   );
-
 
   const handleNotification = () => {
     setNotificationModalShow(!notificationModalShow);
     if (AllNotification?.data?.length > 0) {
-      axios.put(`https://localhost:7101/api/Notifactions/SeenUserNotifaction?AppUserId=${userId}`)
-        .then(response => {
+      axios
+        .put(
+          `https://localhost:7101/api/Notifactions/SeenUserNotifaction?AppUserId=${userId}`
+        )
+        .then((response) => {
           setTimeout(() => {
             queryClient.invalidateQueries(["GetAllNotifications"]);
           }, 30000);
         })
-        .catch(error => {
-        });
+        .catch((error) => {});
     }
-  }
+  };
   // queryClient.invalidateQueries(["GetAllNotifications"]);
   //--------Notification---------//
 
@@ -154,15 +155,23 @@ export default function Header() {
       resetFormValues();
     }
   }, [modalShow]);
+
+  const [selectedValue, setSelectedValue] = useState(0);
+
+  const handleSelectChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
+
   const CreateBoardFomik = useFormik({
+    //Bunu duzelt anca public yaranir.
     initialValues: {
       title: "",
       workspaceId: "",
       appUserId: userId,
+      BoardAccessibility: selectedValue,
     },
     onSubmit: (values) => {
       if (values.workspaceId === "" || values.title === "") {
-        console.log(values);
       } else {
         CreateBoardMutation(values);
       }
@@ -383,10 +392,13 @@ export default function Header() {
                                   <Form.Label className="fw-bold">
                                     Visibility
                                   </Form.Label>
-                                  <Form.Select aria-label="Default select example">
-                                    <option value="1">Workspace</option>
-                                    <option value="2">Private</option>
-                                    <option value="3">Public</option>
+                                  <Form.Select
+                                    value={selectedValue}
+                                    onChange={handleSelectChange}
+                                    aria-label="Default select example"
+                                  >
+                                    <option value="0">Public</option>
+                                    <option value="1">Private</option>
                                   </Form.Select>
                                   <Button
                                     type="submit"
@@ -442,7 +454,7 @@ export default function Header() {
                     </Card>
                   </Dropdown.Item>
                   {Data?.data?.role === "GlobalAdmin" ||
-                    Data?.data?.role === "Admin" ? (
+                  Data?.data?.role === "Admin" ? (
                     <>
                       <Dropdown.Item className="p-0">
                         <Card
@@ -504,14 +516,36 @@ export default function Header() {
           </Form>
           <Row className="ms-1 d-flex align-items-center">
             <Col className="col-2">
-              <Button onClick={() => handleNotification()} className="custom-notification">
-                <span style={{ display: AllNotification?.data?.length > 0 ? 'flex' : 'none', position: 'absolute', marginTop: '0px', zIndex: 2, color: 'white', justifyContent: 'center', alignItems: 'center', width: '20px', height: '20px', borderRadius: '50%', backgroundColor: 'red' }}>
+              <Button
+                onClick={() => handleNotification()}
+                className="custom-notification"
+              >
+                <span
+                  style={{
+                    display:
+                      AllNotification?.data?.length > 0 ? "flex" : "none",
+                    position: "absolute",
+                    marginTop: "0px",
+                    zIndex: 2,
+                    color: "white",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "50%",
+                    backgroundColor: "red",
+                  }}
+                >
                   {AllNotification?.data && AllNotification.data.length}
                 </span>
                 <FontAwesomeIcon
                   icon={faBell}
                   fontSize={"30px"}
-                  style={{ color: "#cacaca", marginTop: '5px', transform: "rotate(45deg)" }}
+                  style={{
+                    color: "#cacaca",
+                    marginTop: "5px",
+                    transform: "rotate(45deg)",
+                  }}
                 />{" "}
               </Button>
             </Col>
@@ -812,77 +846,54 @@ export default function Header() {
         className="create-workspace-modal"
         id={Styles.NotificationModal}
       >
-        <Modal.Body
-        >
+        <Modal.Body>
           <div className={Styles.mainnotifaction}>
             <p>
               <h1>Notifications</h1>
-              <span style={{ display: AllNotification?.data?.length > 0 ? '' : 'none' }}>You have {AllNotification?.data && AllNotification.data.length}  unread messages</span>
+              <span
+                style={{
+                  display: AllNotification?.data?.length > 0 ? "" : "none",
+                }}
+              >
+                You have {AllNotification?.data && AllNotification.data.length}{" "}
+                unread messages
+              </span>
             </p>
             <div>
-              {AllNotification?.data && AllNotification.data.map((notification, index) => {
-                return (
-                  <div>
-                    <div className={Styles.workAndBoardImage}>B</div>
-                    <div className={Styles.notificationMessage}>{notification.text}</div>
-                    <div className={Styles.goToWorkspaceAndBoard}>
-                      <button className={Styles.ntcBtnGotoB}>
-                        <a href={notification.boardId !== null ? "/Boards/72cc096e-d9b4-4def-462e-08dc4e977386" : ''}>Go To {notification.boardId !== null ? "Board" : "Workspace"}</a>
-                        <div className={Styles.arrowWrapper}>
-                          <div className={Styles.arrow}></div>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal>
-
-      <Modal
-        show={userActivityModalShow}
-        onHide={() => {
-          setUserActivitModalShow(false);
-        }}
-        className="create-workspace-modal"
-        id={Styles.NotificationModal}
-      >
-        <Modal.Body
-        >
-          <div className={Styles.userActivityModalShow}>
-            <div>
-              <div className={Styles.userActivityModalShowHeader}>
-                <div className={Styles.userActivityModalShowHeaderLeft}>
-                  <FontAwesomeIcon icon={faChartLine} />
-                  <h2>Ulvi Kerimov{"("}ulvikerimof1{")"}</h2>
-                </div>
-                <div><FontAwesomeIcon fontSize={"30px"} icon={faXmark} /></div>
-              </div>
-              <div className={Styles.userActivityModalShowActivity}>
-                <div>
-                  <div className={Styles.userActivityModalShowActivityUserButton}>
-                    UK
-                  </div>
-                  <div className={Styles.userActivityModalShowActivityMessage}>
+              {AllNotification?.data &&
+                AllNotification.data.map((notification, index) => {
+                  return (
                     <div>
-                      <p>
-                        <strong style={{ marginRight: "10px", fontSize: '20px' }}>
-                          Ulvi Kerimov
-                        </strong>
-                        moved asdasd adsas to asdmoved asdasd from asddasadsas to asd
-                        <br></br>2024-01-01 01:01
-                      </p>
+                      <div className={Styles.workAndBoardImage}>B</div>
+                      <div className={Styles.notificationMessage}>
+                        {notification.text}
+                      </div>
+                      <div className={Styles.goToWorkspaceAndBoard}>
+                        <button className={Styles.ntcBtnGotoB}>
+                          <a
+                            href={
+                              notification.boardId !== null
+                                ? "/Boards/72cc096e-d9b4-4def-462e-08dc4e977386"
+                                : ""
+                            }
+                          >
+                            Go To{" "}
+                            {notification.boardId !== null
+                              ? "Board"
+                              : "Workspace"}
+                          </a>
+                          <div className={Styles.arrowWrapper}>
+                            <div className={Styles.arrow}></div>
+                          </div>
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </div>
+                  );
+                })}
             </div>
           </div>
         </Modal.Body>
       </Modal>
-
     </Navbar>
   );
 }

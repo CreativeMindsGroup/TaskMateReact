@@ -61,7 +61,7 @@ input {
   border-radius: 4px;
   padding: 10px;
   color: #a8aaac;
-  background-color: #22272B;
+  background-color: #22272b;
   box-shadow: inset 0 0 0 2px var(--ds-border-input, #091e4224);
   border: 1px solid #2b2e31;
 }
@@ -70,15 +70,13 @@ input:focus {
   outline: #616466 1px solid;
 }
 
-
 .createcardlistbtn {
   margin-left: 0px;
   margin-top: 15px;
   padding: 4px 10px;
   font-size: 14px;
   color: #1d2125;
-  background-color: #579DFF;
-
+  background-color: #579dff;
 }
 
 .ChecklistModal {
@@ -86,7 +84,8 @@ input:focus {
   padding: 12px;
   width: 304px;
   height: max-content;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Noto Sans', 'Ubuntu', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Noto Sans", "Ubuntu", "Droid Sans", "Helvetica Neue", sans-serif;
   font-size: 14px;
   line-height: 20px;
   font-weight: 400;
@@ -94,7 +93,11 @@ input:focus {
   background-color: var(--ds-surface-overlay, #282e33);
   border-radius: 8px;
   color: var(--ds-text, #b6c2cf);
-  box-shadow: var(--ds-shadow-overlay, 0px 8px 12px #29282826, 0px 0px 1px #afb2b64f);
+  box-shadow: var(
+    --ds-shadow-overlay,
+    0px 8px 12px #29282826,
+    0px 0px 1px #afb2b64f
+  );
   border: 1px solid #b6c2cf0c;
   box-sizing: border-box;
   outline: 0;
@@ -145,7 +148,7 @@ input:focus {
 .ChecklistMainConatiner {
   height: max-content;
   align-items: center;
-  gap: 25PX;
+  gap: 25px;
   width: 100%;
   display: flex;
 }
@@ -163,10 +166,11 @@ input:focus {
   height: max-content;
   width: max-content;
   padding: 6px 12px;
-  background-color: var(--ds-background-neutral, #A1BDD914);
+  background-color: var(--ds-background-neutral, #a1bdd914);
   color: var(--ds-text, #b6c2cf);
   border-radius: 3px;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Noto Sans, Ubuntu, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Noto Sans,
+    Ubuntu, Droid Sans, Helvetica Neue, sans-serif;
   font-size: 14px;
   font-weight: 400;
   user-select: none;
@@ -220,11 +224,11 @@ input:focus {
   text-align: center;
 }
 
-.result>span {
+.result > span {
   color: wheat;
   margin-left: 10px;
   border: 1px solid #0c66e4;
-  background-color: #22272B;
+  background-color: #22272b;
   padding: 8.4px;
 }
 
@@ -233,18 +237,18 @@ input:focus {
   height: 80px;
 }
 
-.DueDates>div {
+.DueDates > div {
   display: flex;
   justify-content: start;
   align-items: center;
 }
 
-.DueDates>span {
+.DueDates > span {
   font-weight: 600;
   font-size: 18px;
 }
 
-.DueDates>div>div>button {
+.DueDates > div > div > button {
   min-width: 130px;
   height: 45px;
   background-color: #4d4f50;
@@ -253,7 +257,7 @@ input:focus {
   margin-left: 10px;
 }
 
-.DueDates>div>div>button>span {
+.DueDates > div > div > button > span {
   min-width: 70px;
   height: 30px;
   margin-left: 7px;
@@ -264,7 +268,7 @@ input:focus {
   background-color: #ca3521;
 }
 
-.DueDates>div>div>input {
+.DueDates > div > div > input {
   width: 22px;
   height: 22px;
   border: none;
@@ -284,7 +288,7 @@ input:focus {
   height: 440px;
 }
 
-.cardCustomFeildmain>div {
+.cardCustomFeildmain > div {
   padding: 6px;
   height: 100%;
   color: #777a7c;
@@ -306,13 +310,13 @@ input:focus {
   font-weight: 700;
 }
 
-.cardCustomFeildmainCenter>p {
+.cardCustomFeildmainCenter > p {
   height: 10%;
   font-weight: 700;
   font-size: 18px;
 }
 
-.cardCustomFeildmainCenter>div {
+.cardCustomFeildmainCenter > div {
   width: 100%;
   height: 90%;
   display: flex;
@@ -327,14 +331,14 @@ input:focus {
   height: 100%;
 }
 
-.fieldGridItem>div {
+.fieldGridItem > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 100%;
 }
 
-.fieldGridItem>div>div {
+.fieldGridItem > div > div {
   width: 70%;
   font-size: 20px;
   background-color: #2c3235;
@@ -345,7 +349,7 @@ input:focus {
   align-items: center;
 }
 
-.fieldGridItem>div>button {
+.fieldGridItem > div > button {
   width: 20%;
   font-size: 22px;
   background-color: #2c3235;
@@ -375,7 +379,6 @@ input:focus {
   margin-top: 30px;
 }
 
-
 .fieldTypeDropDown {
   width: 100%;
   height: auto;
@@ -384,12 +387,12 @@ input:focus {
   align-items: center;
 }
 
-.fieldTypeDropDown>input {
+.fieldTypeDropDown > input {
   width: 72%;
   height: 40px;
 }
 
-.fieldTypeDropDown>button {
+.fieldTypeDropDown > button {
   width: 20%;
   height: 40px;
   border-radius: 6px;
@@ -405,18 +408,18 @@ input:focus {
   margin-top: 5px;
 }
 
-.indropdownItems>div {
+.indropdownItems > div {
   width: 14%;
   height: 40px;
 }
 
-.indropdownItems>input {
+.indropdownItems > input {
   width: 74%;
   height: 40px;
   border: 1px solid #0c66e4;
 }
 
-.indropdownItems>button {
+.indropdownItems > button {
   width: 10%;
   height: 40px;
 }
@@ -460,7 +463,7 @@ input:focus {
   margin-bottom: 5px;
 }
 
-.CustomFieldHeader>span {
+.CustomFieldHeader > span {
   margin-right: 10px;
 }
 
@@ -471,7 +474,7 @@ input:focus {
   border: none;
 }
 
-.CustomFieldCheckbox>input {
+.CustomFieldCheckbox > input {
   border: none;
   margin-right: auto;
 }
@@ -479,20 +482,20 @@ input:focus {
 .CustomFieldDate input {
   height: 40px;
 }
-.CoverPopover{
+.CoverPopover {
   inset: -93px 71px auto auto !important;
   background-color: #282e33 !important;
   border: none !important;
 }
-.ColorContaier{
+.ColorContaier {
   width: 50px;
   height: 32px;
   cursor: pointer;
 }
-.ColorContaier:hover{
-border: 2px solid rgb(87, 157, 255);
+.ColorContaier:hover {
+  border: 2px solid rgb(87, 157, 255);
 }
-.Cover{
+.Cover {
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
@@ -500,19 +503,129 @@ border: 2px solid rgb(87, 157, 255);
   width: 100%;
   height: 116px;
   border-top-left-radius: 0.5rem;
-  border-top-right-radius:0.5rem;
+  border-top-right-radius: 0.5rem;
 }
-.PopoverMember{
+.PopoverMember {
   inset: 0px 420px auto auto !important;
   background-color: #282e33 !important;
   border: none !important;
 }
-.BoardMembersHeader{
+.BoardMembersHeader {
   font-size: 16px;
 }
-.userSvgConatiner{
+.userSvgConatiner {
   width: 30px;
   border-radius: 50%;
   background-color: #d9e3da;
   user-select: none;
+}
+
+/* --------------- */
+.TextEditorButton {
+  width: 100px;
+  height: 40px;
+  border-radius: 12px;
+  background-color: #282e33;
+  color: white;
+
+  margin-top: 10px;
+  line-height: 10px;
+  word-spacing: 1px;
+}
+.TextEditorButton:hover {
+  background-color: #4d4f50;
+  color: whitesmoke;
+}
+
+.commentss {
+  width: 100%;
+  height: auto;
+  margin-bottom: 40px;
+}
+.commentss:not(:first-child) {
+  margin-top: -20px;
+}
+
+.HowComment {
+  width: auto;
+  height: 50px;
+  display: flex;
+  justify-content: start;
+  align-items: start;
+}
+.HowComment > p {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: orange;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #1d2125;
+  font-weight: 600;
+}
+.HowComment > div {
+  padding-left: 10px;
+}
+.HowComment > div > strong {
+  color: whitesmoke;
+  font-size: 19px;
+}
+.CommentDelete {
+  margin-top: -20px;
+}
+
+.CommentChange {
+  width: auto;
+  position: relative;
+  margin-top: -50px;
+}
+.CommentChange > button {
+  font-size: 16px;
+  padding: 0px 18px;
+  cursor: pointer !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.CommentEdit {
+  color: #0c66e4;
+  margin-left: 30px;
+}
+.CommentDelete {
+  color: #e40c0c;
+}
+
+.maincommentModalShow {
+  padding: 20px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+.commentModalShowFirst {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+.commentModalShowSecond {
+  width: 100%;
+  height: 20px;
+  font-size: 21px;
+  letter-spacing: 0.6px;
+  color: #1d2125;
+  font-weight: 600;
+}
+
+.commentModalShowLast {
+  width: 100%;
+  height: 40px;
+  border-radius: 6px;
+  background-color: rgb(120, 23, 23);
+  color: whitesmoke;
+  font-size: 16px;
+  margin-top: 50px;
+  font-weight: 600;
 }

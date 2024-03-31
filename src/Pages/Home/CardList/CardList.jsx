@@ -88,6 +88,13 @@ import { Col } from "react-bootstrap";
 import { CirclePicker, HuePicker } from "react-color";
 import { getCardInCustomFields } from "../../../Service/CustomFieldService";
 import { CreateCover } from "../../../Service/CoverService";
+import { GetAdminAccess } from "../../../Service/UserService";
+import TextEditorComment from "./TextEditor/TextEditorComment";
+import { GetCardInComments } from "../../../Service/CommentService";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import TextEditorEditComment from "./TextEditor/TextEditorEditComment";
+import { checkIsAdmin } from "../../../Service/AuthService";
 
 const data = require("./data.json");
 const ListStyle = {
@@ -117,6 +124,10 @@ const CardList = () => {
   const [modalShow, setModalShow] = useState(false);
   const [moveModalShow, setMoveModalShow] = useState(false);
   const [cardDateModalShow, setCardDateModalShow] = useState(false);
+  const [commentModalShow, setCommentModalShow] = useState(false);
+  const [editCommentShow, setEditCommentShow] = useState(false);
+  const [activeEditIndex, setActiveEditIndex] = useState(-1);
+
   const [cardCustomField, setCardCustomField] = useState(false);
 
   const [boardData, setBoardData] = useState({ lanes: [] });
@@ -125,6 +136,16 @@ const CardList = () => {
   const [BId, setBoardId] = useState(BoardId);
   const [card, SetCard] = useState({});
   const eventBusRef = useRef(null);
+
+  const { data: isAdmin } = useQuery(["IsAdmin", userId], () =>
+    checkIsAdmin(userId)
+  );
+
+  //Board in Users Access
+  const { data: userBoardAccess } = useQuery(
+    ["UserBoardAccess", userId, BoardId],
+    () => GetAdminAccess(userId, BoardId)
+  );
 
   const queryClient = useQueryClient();
   const { data: byBoard } = useQuery(["BoardInCardList", BoardId?.id], () =>
@@ -136,6 +157,7 @@ const CardList = () => {
       setDataApi(byBoard.data);
     }
   }, [byBoard]);
+
   useEffect(() => {
     const fetchData = async () => {
       const newBoardData = await getBoard();
@@ -182,26 +204,29 @@ const CardList = () => {
       CardListId: dragLineId,
     },
     onSubmit: async (values) => {
-      const formData = new FormData();
+      if (userBoardAccess?.data && userBoardAccess?.data === true) {
+        const formData = new FormData();
 
-      formData.append("AppUserId", userId ? userId : "");
-      formData.append("CardId", dragCardId);
-      formData.append("CardListId", dragLineId);
+        formData.append("AppUserId", userId ? userId : "");
+        formData.append("CardId", dragCardId);
+        formData.append("CardListId", dragLineId);
 
-      try {
-        const response = await axios.put(
-          "https://localhost:7101/api/Cards/UpdateCardDragAndDrop",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+        try {
+          const response = await axios.put(
+            "https://localhost:7101/api/Cards/UpdateCardDragAndDrop",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          if (response.status === 201) {
+            queryClient.invalidateQueries(["BoardInCardList"]);
+            queryClient.invalidateQueries(["BoardUserActivity"]);
           }
-        );
-        if (response.status === 201) {
-          queryClient.invalidateQueries(["BoardInCardList"]);
-        }
-      } catch (error) {}
+        } catch (error) {}
+      }
     },
     // validationSchema: reservationScheme,
   });
@@ -238,26 +263,29 @@ const CardList = () => {
         updateCard && updateCard.length > 0 ? updateCard[0].description : "",
     },
     onSubmit: async (values) => {
-      const formData = new FormData();
+      if (userBoardAccess?.data && userBoardAccess?.data === true) {
+        const formData = new FormData();
 
-      formData.append("CardId", values.CardId);
-      formData.append("Title", values.Title);
-      formData.append("Description", values.Description);
+        formData.append("CardId", values.CardId);
+        formData.append("Title", values.Title);
+        formData.append("Description", values.Description);
 
-      try {
-        const response = await axios.put(
-          "https://localhost:7101/api/Cards",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+        try {
+          const response = await axios.put(
+            "https://localhost:7101/api/Cards",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          if (response.status === 201) {
+            queryClient.invalidateQueries(["BoardInCardList"]);
+            queryClient.invalidateQueries(["BoardUserActivity"]);
           }
-        );
-        if (response.status === 201) {
-          queryClient.invalidateQueries(["BoardInCardList"]);
-        }
-      } catch (error) {}
+        } catch (error) {}
+      }
     },
     // validationSchema: reservationScheme,
   });
@@ -307,27 +335,30 @@ const CardList = () => {
       CardListId: cardListId,
     },
     onSubmit: async (values) => {
-      const formData = new FormData();
+      if (userBoardAccess?.data && userBoardAccess?.data === true) {
+        const formData = new FormData();
 
-      formData.append("AppUserId", userId ? userId : "");
-      formData.append("Title", card.title);
-      formData.append("Description", card.description);
-      formData.append("CardListId", cardListId);
+        formData.append("AppUserId", userId ? userId : "");
+        formData.append("Title", card.title);
+        formData.append("Description", card.description);
+        formData.append("CardListId", cardListId);
 
-      try {
-        const response = await axios.post(
-          "https://localhost:7101/api/Cards",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+        try {
+          const response = await axios.post(
+            "https://localhost:7101/api/Cards",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          if (response.status === 201) {
+            queryClient.invalidateQueries(["BoardInCardList"]);
+            queryClient.invalidateQueries(["BoardUserActivity"]);
           }
-        );
-        if (response.status === 201) {
-          queryClient.invalidateQueries(["BoardInCardList"]);
-        }
-      } catch (error) {}
+        } catch (error) {}
+      }
     },
     // validationSchema: reservationScheme,
   });
@@ -370,24 +401,27 @@ const CardList = () => {
       BoardId: BoardId,
     },
     onSubmit: async (values) => {
-      const formData = new FormData();
-      formData.append("AppUserId", userId);
-      formData.append("Title", values.Title);
-      formData.append("BoardsId", BoardId);
-      try {
-        const response = await axios.post(
-          "https://localhost:7101/api/CardLists",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+      if (userBoardAccess?.data && userBoardAccess?.data === true) {
+        const formData = new FormData();
+        formData.append("AppUserId", userId);
+        formData.append("Title", values.Title);
+        formData.append("BoardsId", BoardId);
+        try {
+          const response = await axios.post(
+            "https://localhost:7101/api/CardLists",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          if (response.status === 201) {
+            queryClient.invalidateQueries(["BoardInCardList"]);
+            queryClient.invalidateQueries(["BoardUserActivity"]);
           }
-        );
-        if (response.status === 201) {
-          queryClient.invalidateQueries(["BoardInCardList"]);
-        }
-      } catch (error) {}
+        } catch (error) {}
+      }
     },
     // validationSchema: reservationScheme,
   });
@@ -396,6 +430,7 @@ const CardList = () => {
     {
       onSuccess: (data) => {
         queryClient.invalidateQueries(["BoardInCardList"]);
+        queryClient.invalidateQueries(["BoardUserActivity"]);
       },
       onError: (error) => {},
     }
@@ -412,12 +447,14 @@ const CardList = () => {
       CardId: "",
     },
     onSubmit: async (values) => {
-      const formData2 = new FormData();
-      formData2.append("AppUserId", userId ? userId : "");
-      formData2.append("Name", values.Name);
-      formData2.append("CardId", values.CardId);
-      await AddChekclistMutation(formData2);
-      queryClient.cancelQueries(["getAllCheklist", cardId]);
+      if (userBoardAccess?.data && userBoardAccess?.data === true) {
+        const formData2 = new FormData();
+        formData2.append("AppUserId", userId ? userId : "");
+        formData2.append("Name", values.Name);
+        formData2.append("CardId", values.CardId);
+        await AddChekclistMutation(formData2);
+        queryClient.cancelQueries(["getAllCheklist", cardId]);
+      }
     },
   });
   const { mutate: AddChekclistMutation } = useMutation(
@@ -425,6 +462,7 @@ const CardList = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries("getAllCheklist");
+        queryClient.invalidateQueries("BoardUserActivity");
       },
       onError: (err) => {
         console.log(err);
@@ -468,12 +506,14 @@ const CardList = () => {
       Text: "",
     },
     onSubmit: async (values) => {
-      const formData = new FormData();
-      formData.append("AppUserId", userId ? userId : "");
-      formData.append("Text", values.Text);
-      formData.append("ChecklistId", values.ChecklistId);
-      await AddChekclistitemMutation(formData);
-      queryClient.cancelQueries(["getAllCheklist", cardId]);
+      if (userBoardAccess?.data && userBoardAccess?.data === true) {
+        const formData = new FormData();
+        formData.append("AppUserId", userId ? userId : "");
+        formData.append("Text", values.Text);
+        formData.append("ChecklistId", values.ChecklistId);
+        await AddChekclistitemMutation(formData);
+        queryClient.cancelQueries(["getAllCheklist", cardId]);
+      }
     },
   });
   const { mutate: AddChekclistitemMutation } = useMutation(
@@ -481,6 +521,7 @@ const CardList = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries("getAllCheklist");
+        queryClient.invalidateQueries("BoardUserActivity");
       },
       onError: (err) => {
         console.log(err);
@@ -542,14 +583,17 @@ const CardList = () => {
       Check: "",
     },
     onSubmit: async (values) => {
-      const formData = new FormData();
-      formData.append("AppUserId", userId ? userId : "");
-      formData.append("Id", values.Id);
-      formData.append("Text", values.Text);
-      formData.append("DueDate", values.DueDate);
-      formData.append("Check", values.Check);
-      await UpdateChecklistItem(formData);
-      queryClient.invalidateQueries(["getAllCheklist", cardId]);
+      if (userBoardAccess?.data && userBoardAccess?.data === true) {
+        const formData = new FormData();
+        formData.append("AppUserId", userId ? userId : "");
+        formData.append("Id", values.Id);
+        formData.append("Text", values.Text);
+        formData.append("DueDate", values.DueDate);
+        formData.append("Check", values.Check);
+        await UpdateChecklistItem(formData);
+        queryClient.invalidateQueries(["getAllCheklist", cardId]);
+      }
+      queryClient.invalidateQueries(["BoardUserActivity"]);
     },
   });
   const HandeDeleteCheklistItem = (Id) => {
@@ -560,6 +604,7 @@ const CardList = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries("getAllCheklist");
+        queryClient.invalidateQueries("BoardUserActivity");
       },
       onError: (err) => {
         console.log(err);
@@ -583,6 +628,7 @@ const CardList = () => {
   const { mutate: DeleteChekclist } = useMutation((Id) => DeleteChecklist(Id), {
     onSuccess: () => {
       queryClient.invalidateQueries("getAllCheklist");
+      queryClient.invalidateQueries("BoardUserActivity");
     },
     onError: (err) => {
       console.log(err);
@@ -705,30 +751,33 @@ const CardList = () => {
       Reminder: reminderDate ? reminderDate : "",
     },
     onSubmit: async (values) => {
-      setCardDateModalShow(false);
-      const formData = new FormData();
-      formData.append("AppUserId", userId ? userId : "");
-      formData.append("CardId", cardId ? cardId : "");
-      formData.append("StartDate", startDate ? startDate.toISOString() : "");
-      formData.append("EndDate", dueDate ? dueDate.toISOString() : "");
-      formData.append(
-        "Reminder",
-        reminderDate ? reminderDate.toISOString() : ""
-      );
-      try {
-        const response = await axios.put(
-          "https://localhost:7101/api/Cards/UpdateCard",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+      if (userBoardAccess?.data && userBoardAccess?.data === true) {
+        setCardDateModalShow(false);
+        const formData = new FormData();
+        formData.append("AppUserId", userId ? userId : "");
+        formData.append("CardId", cardId ? cardId : "");
+        formData.append("StartDate", startDate ? startDate.toISOString() : "");
+        formData.append("EndDate", dueDate ? dueDate.toISOString() : "");
+        formData.append(
+          "Reminder",
+          reminderDate ? reminderDate.toISOString() : ""
         );
-        if (response.status === 200 || response.status === 204) {
-          queryClient.invalidateQueries(["ModalCardDetails"]);
-        }
-      } catch (error) {}
+        try {
+          const response = await axios.put(
+            "https://localhost:7101/api/Cards/UpdateCard",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          if (response.status === 200 || response.status === 204) {
+            queryClient.invalidateQueries(["ModalCardDetails"]);
+            queryClient.invalidateQueries(["BoardUserActivity"]);
+          }
+        } catch (error) {}
+      }
     },
     // validationSchema: reservationScheme,
   });
@@ -858,6 +907,7 @@ const CardList = () => {
         data
       );
       queryClient.invalidateQueries("CardInCustomFields");
+      queryClient.invalidateQueries("BoardUserActivity");
       setCardCustomField(false);
       setTitleField("");
       setSelectedFieldTypeOption(null);
@@ -904,6 +954,7 @@ const CardList = () => {
     }
     await CreateCover(data);
     await queryClient.invalidateQueries(["ModalCardDetails"]);
+    await queryClient.invalidateQueries(["BoardUserActivity"]);
   };
   const { data: BoardMembers } = useQuery(
     ["GetAllBoardMembers", BoardId],
@@ -927,28 +978,31 @@ const CardList = () => {
       CardId: cardId ? cardId : "",
     },
     onSubmit: async (values) => {
-      const formData = new FormData();
+      if (userBoardAccess?.data && userBoardAccess?.data === true) {
+        const formData = new FormData();
 
-      formData.append(
-        "staticFieldId",
-        staticCustomFieldId ? staticCustomFieldId : ""
-      );
-      formData.append("CardId", cardId ? cardId : "");
-
-      try {
-        const response = await axios.post(
-          "https://localhost:7101/api/CustomFields/CreateStaticFields",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+        formData.append(
+          "staticFieldId",
+          staticCustomFieldId ? staticCustomFieldId : ""
         );
-        if (response.status === 201) {
-          queryClient.invalidateQueries(["CardInCustomFields"]);
-        }
-      } catch (error) {}
+        formData.append("CardId", cardId ? cardId : "");
+
+        try {
+          const response = await axios.post(
+            "https://localhost:7101/api/CustomFields/CreateStaticFields",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          if (response.status === 201) {
+            queryClient.invalidateQueries(["CardInCustomFields"]);
+            queryClient.invalidateQueries(["BoardUserActivity"]);
+          }
+        } catch (error) {}
+      }
     },
   });
 
@@ -984,26 +1038,29 @@ const CardList = () => {
       Number: number ? number : "",
     },
     onSubmit: async (values) => {
-      const formData = new FormData();
+      if (userBoardAccess?.data && userBoardAccess?.data === true) {
+        const formData = new FormData();
 
-      formData.append("Id", ctmFieldId ? ctmFieldId : "");
-      formData.append("Number", number ? number : "");
+        formData.append("Id", ctmFieldId ? ctmFieldId : "");
+        formData.append("Number", number ? number : "");
 
-      try {
-        const response = await axios.put(
-          "https://localhost:7101/api/CustomFieldsNumbers",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+        try {
+          const response = await axios.put(
+            "https://localhost:7101/api/CustomFieldsNumbers",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          if (response.status === 200 || response.status === 204) {
+            queryClient.invalidateQueries(["CardInCustomFields"]);
+            queryClient.invalidateQueries(["BoardUserActivity"]);
+            setCtmFieldId(null);
           }
-        );
-        if (response.status === 200 || response.status === 204) {
-          queryClient.invalidateQueries(["CardInCustomFields"]);
-          setCtmFieldId(null);
-        }
-      } catch (error) {}
+        } catch (error) {}
+      }
     },
   });
 
@@ -1038,26 +1095,29 @@ const CardList = () => {
       Number: customText ? customText : "",
     },
     onSubmit: async (values) => {
-      const formData = new FormData();
+      if (userBoardAccess?.data && userBoardAccess?.data === true) {
+        const formData = new FormData();
 
-      formData.append("Id", ctmFieldId ? ctmFieldId : "");
-      formData.append("Text", customText ? customText : "");
+        formData.append("Id", ctmFieldId ? ctmFieldId : "");
+        formData.append("Text", customText ? customText : "");
 
-      try {
-        const response = await axios.put(
-          "https://localhost:7101/api/CustomFieldTexts",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+        try {
+          const response = await axios.put(
+            "https://localhost:7101/api/CustomFieldTexts",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          if (response.status === 200 || response.status === 204) {
+            queryClient.invalidateQueries(["CardInCustomFields"]);
+            queryClient.invalidateQueries(["BoardUserActivity"]);
+            setCtmFieldId(null);
           }
-        );
-        if (response.status === 200 || response.status === 204) {
-          queryClient.invalidateQueries(["CardInCustomFields"]);
-          setCtmFieldId(null);
-        }
-      } catch (error) {}
+        } catch (error) {}
+      }
     },
   });
 
@@ -1112,13 +1172,68 @@ const CardList = () => {
         );
         if (response.status === 200 || response.status === 204) {
           queryClient.invalidateQueries(["CardInCustomFields"]);
+          queryClient.invalidateQueries(["BoardUserActivity"]);
           setCtmFieldId(null);
         }
       } catch (error) {}
     },
   });
 
-  console.log("cardInCustomFields", cardInCustomFields?.data);
+  // console.log("cardInCustomFields", cardInCustomFields?.data);
+
+  const [commentShow, setCommentShow] = useState(false);
+
+  const handleCommentSubmitted = () => {
+    setCommentShow(false);
+  };
+
+  // const handleEditCommentSubmitted = () => {
+  //   setEditCommentShow(false);
+  // };
+
+  const { data: CardInComments } = useQuery(["CardInAllComments", cardId], () =>
+    GetCardInComments(cardId)
+  );
+
+  //Delete Comment
+  const [deleteCommentId, setDeleteCommentId] = useState();
+  const deleteComment = (id) => {
+    setCommentModalShow(!commentModalShow);
+    setDeleteCommentId(id);
+  };
+
+  function handleDeleteClick() {
+    axios
+      .delete(
+        `https://localhost:7101/api/Comments?AppUserId=${userId}&CommentId=${deleteCommentId}`
+      )
+      .then((response) => {
+        queryClient.invalidateQueries(["CardInAllComments"]);
+        setCommentModalShow(false);
+      })
+      .catch((error) => {});
+  }
+
+  const [editCommentStates, setEditCommentStates] = useState({});
+
+  const handleEditCommentSubmitted = (index) => {
+    setEditCommentShow(false);
+    setEditCommentStates((prevStates) => ({
+      ...prevStates,
+      [index]: false,
+    }));
+  };
+
+  const handleEditButtonClick = (index) => {
+    setEditCommentShow(!editCommentShow);
+    setEditCommentStates((prevStates) => ({
+      ...prevStates,
+      [index]: true,
+    }));
+  };
+
+  console.log("CardInComments]]]]]", CardInComments?.data);
+
   return (
     <div className="h-100">
       <div style={{ display: "flex" }}>
@@ -1254,7 +1369,8 @@ const CardList = () => {
                           <span
                             style={{
                               display:
-                                thisCard?.data?.dateColor === "transparent" && isCardDateStatus===true
+                                thisCard?.data?.dateColor === "transparent" &&
+                                isCardDateStatus === true
                                   ? ""
                                   : "none",
                               backgroundColor:
@@ -1926,19 +2042,120 @@ const CardList = () => {
                     </div>
                   </Card.Body>
                   <div className="d-flex align-items-center">
-                    <Image
-                      className={Styles.workspacePic}
-                      src="https://placehold.co/512x512/CDD3FF/1d2125?text=T"
-                      roundedCircle
-                    />
-                    <Form.Group
-                      className="my-3 ms-2"
-                      controlId="create-workspace-desc"
-                    >
-                      <Form.Control as="textarea" rows={1} cols={80} />
-                    </Form.Group>
+                    {userBoardAccess?.data &&
+                      userBoardAccess?.data === true && (
+                        <Image
+                          className={Styles.workspacePic}
+                          src="https://placehold.co/512x512/CDD3FF/1d2125?text=T"
+                          roundedCircle
+                        />
+                      )}
+                    {userBoardAccess?.data &&
+                      userBoardAccess?.data === true &&
+                      (commentShow === false ? (
+                        <Form.Group
+                          className="my-3 ms-2"
+                          placeholder="Write a comment"
+                          controlId="create-workspace-desc"
+                          onClick={() => setCommentShow((prev) => !prev)}
+                        >
+                          <Form.Control as="textarea" rows={1} cols={80} />
+                        </Form.Group>
+                      ) : (
+                        <TextEditorComment
+                          CardId={cardId}
+                          AppUserId={userId}
+                          onCommentSubmitted={handleCommentSubmitted}
+                        />
+                      ))}
                   </div>
                 </div>
+                {CardInComments?.data?.map((comment, index) => (
+                  <div
+                    key={index}
+                    style={{ marginTop: index === 0 ? "20px" : "" }}
+                    className={Styles.commentss}
+                  >
+                    <div className={Styles.HowComment}>
+                      <p style={{ marginTop: "8px" }}>UK</p>
+                      <div>
+                        <strong>Ulvi Kerimov</strong>
+                        <p>2024 may 12 01:38</p>
+                      </div>
+                    </div>
+                    <div>
+                      {editCommentStates[index] ? (
+                        <div style={{ marginLeft: "50px", marginTop: "5px" }}>
+                          <TextEditorEditComment
+                            CardId={cardId}
+                            AppUserId={userId}
+                            Message={comment.message}
+                            CommentId={comment.id}
+                            onEditCommentSubmitted={() =>
+                              handleEditCommentSubmitted(index)
+                            }
+                          />
+                        </div>
+                      ) : (
+                        <ReactQuill
+                          style={{ height: "auto", paddingLeft: "35px" }}
+                          value={comment.message}
+                          readOnly={true}
+                          theme={"bubble"}
+                        />
+                      )}
+                      {editCommentStates[index] ? (
+                        <div
+                          style={{ display: "none" }}
+                          className={Styles.CommentChange}
+                        >
+                          <button
+                            onClick={() => handleEditButtonClick(index)}
+                            className={Styles.CommentEdit}
+                            disabled={editCommentStates[index]}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => deleteComment(comment.id)}
+                            className={Styles.CommentDelete}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      ) : (
+                        <div className={Styles.CommentChange}>
+                          <button
+                            style={{
+                              display:
+                                comment.appUserId === userId ? "" : "none",
+                            }}
+                            onClick={() => handleEditButtonClick(index)}
+                            className={Styles.CommentEdit}
+                            disabled={editCommentStates[index]}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            style={{
+                              marginLeft:
+                                comment.appUserId !== userId ? "32px" : "",
+                              display:
+                                isAdmin?.data === true ||
+                                comment.appUserId === userId
+                                  ? ""
+                                  : "none",
+                            }}
+                            onClick={() => deleteComment(comment.id)}
+                            className={Styles.CommentDelete}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
               <div className="ms-2 w-25 h-100">
                 <div className="container-fluid position-relative mt-2">
@@ -2849,6 +3066,36 @@ const CardList = () => {
               </div>
             </div>
           </div>
+        </Modal.Body>
+      </Modal>
+      <Modal
+        show={commentModalShow}
+        onHide={() => {
+          setCommentModalShow(false);
+        }}
+        id={Styles.commentModalShow}
+        centered
+      >
+        <Modal.Body className={Styles.maincommentModalShow}>
+          <div className={Styles.commentModalShowFirst}>
+            <div></div>
+            <p>Delete comment?</p>
+            <div>
+              <FontAwesomeIcon
+                icon={faX}
+                onClick={() => setCommentModalShow((prev) => !prev)}
+              />
+            </div>
+          </div>
+          <div className={Styles.commentModalShowSecond}>
+            Deleting a comment is forever. There is no undo.
+          </div>
+          <button
+            onClick={() => handleDeleteClick()}
+            className={Styles.commentModalShowLast}
+          >
+            Delete comment
+          </button>
         </Modal.Body>
       </Modal>
     </div>

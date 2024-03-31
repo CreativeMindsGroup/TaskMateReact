@@ -20,18 +20,23 @@ export const UpdateBoard = async (data) => {
 export const getByBoard = (id) => {
   return httpClient.get(`api/Boards/${id}`);
 };
+
+export const BoardInUsers = (id) => {
+  return httpClient.get(`/api/Boards/GetBoardInUsers?BoardId=${id}`);
+};
 export const getbyWokrspaceInBoard = (AppUserId, WorkspaceId) => {
-  return httpClient.get(`api/Boards?AppUserId=${AppUserId}&WorkspaceId=${WorkspaceId}`);
+  return httpClient.get(
+    `api/Boards?AppUserId=${AppUserId}&WorkspaceId=${WorkspaceId}`
+  );
 };
 export const getDeletebyId = async (data) => {
   try {
-    const result = await httpClient.delete(`/api/Boards`, { data }); 
-    return result.data; 
+    const result = await httpClient.delete(`/api/Boards`, { data });
+    return result.data;
   } catch (error) {
-    throw error; 
+    throw error;
   }
 };
-
 
 //https://localhost:7101/api/Boards/e94d0eb9-df9e-4222-58c7-08dc4536cb6c
 //get ele
