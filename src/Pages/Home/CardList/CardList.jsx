@@ -95,6 +95,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import TextEditorEditComment from "./TextEditor/TextEditorEditComment";
 import { checkIsAdmin } from "../../../Service/AuthService";
+import { GetCardInActivity } from "../../../Service/UserActivityService";
 
 const data = require("./data.json");
 const ListStyle = {
@@ -129,6 +130,7 @@ const CardList = () => {
   const [activeEditIndex, setActiveEditIndex] = useState(-1);
 
   const [cardCustomField, setCardCustomField] = useState(false);
+  const [cardActivityShow, setCardActivityShow] = useState(false);
 
   const [boardData, setBoardData] = useState({ lanes: [] });
   const [cardListId, SetCardListId] = useState("");
@@ -224,6 +226,7 @@ const CardList = () => {
           if (response.status === 201) {
             queryClient.invalidateQueries(["BoardInCardList"]);
             queryClient.invalidateQueries(["BoardUserActivity"]);
+            queryClient.invalidateQueries(["CardInActivity"]);
           }
         } catch (error) {}
       }
@@ -283,6 +286,7 @@ const CardList = () => {
           if (response.status === 201) {
             queryClient.invalidateQueries(["BoardInCardList"]);
             queryClient.invalidateQueries(["BoardUserActivity"]);
+            queryClient.invalidateQueries(["CardInActivity"]);
           }
         } catch (error) {}
       }
@@ -356,6 +360,7 @@ const CardList = () => {
           if (response.status === 201) {
             queryClient.invalidateQueries(["BoardInCardList"]);
             queryClient.invalidateQueries(["BoardUserActivity"]);
+            queryClient.invalidateQueries(["CardInActivity"]);
           }
         } catch (error) {}
       }
@@ -463,6 +468,7 @@ const CardList = () => {
       onSuccess: () => {
         queryClient.invalidateQueries("getAllCheklist");
         queryClient.invalidateQueries("BoardUserActivity");
+        queryClient.invalidateQueries(["CardInActivity"]);
       },
       onError: (err) => {
         console.log(err);
@@ -522,6 +528,7 @@ const CardList = () => {
       onSuccess: () => {
         queryClient.invalidateQueries("getAllCheklist");
         queryClient.invalidateQueries("BoardUserActivity");
+        queryClient.invalidateQueries(["CardInActivity"]);
       },
       onError: (err) => {
         console.log(err);
@@ -592,7 +599,9 @@ const CardList = () => {
         formData.append("Check", values.Check);
         await UpdateChecklistItem(formData);
         queryClient.invalidateQueries(["getAllCheklist", cardId]);
+        queryClient.invalidateQueries(["CardInActivity"]);
       }
+      queryClient.invalidateQueries(["CardInActivity"]);
       queryClient.invalidateQueries(["BoardUserActivity"]);
     },
   });
@@ -775,6 +784,7 @@ const CardList = () => {
           if (response.status === 200 || response.status === 204) {
             queryClient.invalidateQueries(["ModalCardDetails"]);
             queryClient.invalidateQueries(["BoardUserActivity"]);
+            queryClient.invalidateQueries(["CardInActivity"]);
           }
         } catch (error) {}
       }
@@ -1000,6 +1010,7 @@ const CardList = () => {
           if (response.status === 201) {
             queryClient.invalidateQueries(["CardInCustomFields"]);
             queryClient.invalidateQueries(["BoardUserActivity"]);
+            queryClient.invalidateQueries(["CardInActivity"]);
           }
         } catch (error) {}
       }
@@ -1057,6 +1068,8 @@ const CardList = () => {
           if (response.status === 200 || response.status === 204) {
             queryClient.invalidateQueries(["CardInCustomFields"]);
             queryClient.invalidateQueries(["BoardUserActivity"]);
+            queryClient.invalidateQueries(["CardInActivity"]);
+
             setCtmFieldId(null);
           }
         } catch (error) {}
@@ -1114,6 +1127,8 @@ const CardList = () => {
           if (response.status === 200 || response.status === 204) {
             queryClient.invalidateQueries(["CardInCustomFields"]);
             queryClient.invalidateQueries(["BoardUserActivity"]);
+            queryClient.invalidateQueries(["CardInActivity"]);
+
             setCtmFieldId(null);
           }
         } catch (error) {}
@@ -1173,6 +1188,7 @@ const CardList = () => {
         if (response.status === 200 || response.status === 204) {
           queryClient.invalidateQueries(["CardInCustomFields"]);
           queryClient.invalidateQueries(["BoardUserActivity"]);
+          queryClient.invalidateQueries(["CardInActivity"]);
           setCtmFieldId(null);
         }
       } catch (error) {}
@@ -1232,7 +1248,13 @@ const CardList = () => {
     }));
   };
 
-  console.log("CardInComments]]]]]", CardInComments?.data);
+  //Card in Activity
+
+  const { data: CardInActivity } = useQuery(["CardInActivity", cardId], () =>
+    GetCardInActivity(cardId)
+  );
+
+  console.log("------------->>>", CardInActivity?.data);
 
   return (
     <div className="h-100">
@@ -2035,7 +2057,10 @@ const CardList = () => {
                       <Card.Subtitle className="mb-2 fs-5 d-flex justify-content-between">
                         {" "}
                         Activity{" "}
-                        <button className="btn btn-primary default-submit">
+                        <button
+                          onClick={() => setCardActivityShow((prev) => !prev)}
+                          className="btn btn-primary default-submit"
+                        >
                           Show details
                         </button>
                       </Card.Subtitle>
@@ -2070,92 +2095,140 @@ const CardList = () => {
                       ))}
                   </div>
                 </div>
-                {CardInComments?.data?.map((comment, index) => (
-                  <div
-                    key={index}
-                    style={{ marginTop: index === 0 ? "20px" : "" }}
-                    className={Styles.commentss}
-                  >
-                    <div className={Styles.HowComment}>
-                      <p style={{ marginTop: "8px" }}>UK</p>
+                <div style={{ display: cardActivityShow ? "" : "none" }}>
+                  {CardInActivity?.data &&
+                    CardInActivity?.data.map((activity, index) => {
+                      const formattedDate = new Date(
+                        activity.createdDate
+                      ).toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      });
+                      return (
+                        <div
+                          key={index}
+                          style={{ marginTop: index !== 0 ? "-60px" : "20px" }}
+                          className={Styles.commentss}
+                        >
+                          <div className={Styles.HowComment}>
+                            <p style={{ marginTop: "8px" }}>
+                              {activity?.userName
+                                .split(" ")
+                                .map((name) => name[0].toUpperCase())
+                                .join("")}
+                            </p>
+                            <div>
+                              <strong>{activity.userName}</strong>
+                              <p>{formattedDate}</p>
+                              {/* <p>2024 may 12 01:38</p> */}
+                            </div>
+                          </div>
+                          <div>
+                            <div>
+                              <ReactQuill
+                                style={{ height: "auto", paddingLeft: "35px" }}
+                                value={activity.activityText}
+                                fontSize={"70px"}
+                                readOnly={true}
+                                theme={"bubble"}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+                <div style={{ display: cardActivityShow ? "none" : "" }}>
+                  {CardInComments?.data?.map((comment, index) => (
+                    <div
+                      key={index}
+                      style={{ marginTop: index === 0 ? "20px" : "" }}
+                      className={Styles.commentss}
+                    >
+                      <div className={Styles.HowComment}>
+                        <p style={{ marginTop: "8px" }}>UK</p>
+                        <div>
+                          <strong>Ulvi Kerimov</strong>
+                          <p>2024 may 12 01:38</p>
+                        </div>
+                      </div>
                       <div>
-                        <strong>Ulvi Kerimov</strong>
-                        <p>2024 may 12 01:38</p>
+                        {editCommentStates[index] ? (
+                          <div style={{ marginLeft: "50px", marginTop: "5px" }}>
+                            <TextEditorEditComment
+                              CardId={cardId}
+                              AppUserId={userId}
+                              Message={comment.message}
+                              CommentId={comment.id}
+                              onEditCommentSubmitted={() =>
+                                handleEditCommentSubmitted(index)
+                              }
+                            />
+                          </div>
+                        ) : (
+                          <ReactQuill
+                            style={{ height: "auto", paddingLeft: "35px" }}
+                            value={comment.message}
+                            readOnly={true}
+                            theme={"bubble"}
+                          />
+                        )}
+                        {editCommentStates[index] ? (
+                          <div
+                            style={{ display: "none" }}
+                            className={Styles.CommentChange}
+                          >
+                            <button
+                              onClick={() => handleEditButtonClick(index)}
+                              className={Styles.CommentEdit}
+                              disabled={editCommentStates[index]}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => deleteComment(comment.id)}
+                              className={Styles.CommentDelete}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        ) : (
+                          <div className={Styles.CommentChange}>
+                            <button
+                              style={{
+                                display:
+                                  comment.appUserId === userId ? "" : "none",
+                              }}
+                              onClick={() => handleEditButtonClick(index)}
+                              className={Styles.CommentEdit}
+                              disabled={editCommentStates[index]}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              style={{
+                                marginLeft:
+                                  comment.appUserId !== userId ? "32px" : "",
+                                display:
+                                  isAdmin?.data === true ||
+                                  comment.appUserId === userId
+                                    ? ""
+                                    : "none",
+                              }}
+                              onClick={() => deleteComment(comment.id)}
+                              className={Styles.CommentDelete}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <div>
-                      {editCommentStates[index] ? (
-                        <div style={{ marginLeft: "50px", marginTop: "5px" }}>
-                          <TextEditorEditComment
-                            CardId={cardId}
-                            AppUserId={userId}
-                            Message={comment.message}
-                            CommentId={comment.id}
-                            onEditCommentSubmitted={() =>
-                              handleEditCommentSubmitted(index)
-                            }
-                          />
-                        </div>
-                      ) : (
-                        <ReactQuill
-                          style={{ height: "auto", paddingLeft: "35px" }}
-                          value={comment.message}
-                          readOnly={true}
-                          theme={"bubble"}
-                        />
-                      )}
-                      {editCommentStates[index] ? (
-                        <div
-                          style={{ display: "none" }}
-                          className={Styles.CommentChange}
-                        >
-                          <button
-                            onClick={() => handleEditButtonClick(index)}
-                            className={Styles.CommentEdit}
-                            disabled={editCommentStates[index]}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => deleteComment(comment.id)}
-                            className={Styles.CommentDelete}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      ) : (
-                        <div className={Styles.CommentChange}>
-                          <button
-                            style={{
-                              display:
-                                comment.appUserId === userId ? "" : "none",
-                            }}
-                            onClick={() => handleEditButtonClick(index)}
-                            className={Styles.CommentEdit}
-                            disabled={editCommentStates[index]}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            style={{
-                              marginLeft:
-                                comment.appUserId !== userId ? "32px" : "",
-                              display:
-                                isAdmin?.data === true ||
-                                comment.appUserId === userId
-                                  ? ""
-                                  : "none",
-                            }}
-                            onClick={() => deleteComment(comment.id)}
-                            className={Styles.CommentDelete}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
               <div className="ms-2 w-25 h-100">
                 <div className="container-fluid position-relative mt-2">

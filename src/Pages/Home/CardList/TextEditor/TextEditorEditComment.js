@@ -64,6 +64,7 @@ function TextEditorEditComment(props) {
           queryClient.invalidateQueries(["CardInCustomFields"]);
           queryClient.invalidateQueries(["BoardUserActivity"]);
           queryClient.invalidateQueries(["CardInAllComments"]);
+          queryClient.invalidateQueries(["CardInActivity"]);
         }
       } catch (error) {
         props.onEditCommentSubmitted();
