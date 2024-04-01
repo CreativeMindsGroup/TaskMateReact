@@ -4,7 +4,7 @@ import Image from 'react-bootstrap/Image';
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Style from '../../../Components/HomePageSideBarMenu/HomePageSideBarMenu.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faUser, faBoxArchive } from '@fortawesome/free-solid-svg-icons';
 import CustomModal from '../../../Components/CustomModal/CustomModal';
 import { useQuery, useQueryClient } from 'react-query';
 import { GetWorkSpaceById, GetAllWorkspaces } from '../../../Service/WorkSpaceService';
@@ -14,14 +14,13 @@ import { useNavigate } from 'react-router';
 import { Container, Form } from 'react-bootstrap';
 import jwtDecode from "jwt-decode";
 import { Flex } from '@chakra-ui/react';
-
-
+import { checkIsAdmin } from "../../../Service/AuthService";
 
 export default function Content() {
     const [modalShow, setModalShow] = useState(false);
     const [Data, setData] = useState()
     const [Render, setRender] = useState();
-    const { workspaceId, refresh, BoardId } = useSelector((x) => x.Data)
+    const { workspaceId, userId, refresh, BoardId } = useSelector((x) => x.Data)
     const { token } = useSelector((x) => x.auth);
     const decodedToken = token ? jwtDecode(token) : null;
     const userId2 = decodedToken
@@ -74,6 +73,12 @@ export default function Content() {
         queryClient.invalidateQueries("Boards");
         queryClient.invalidateQueries("GetWorkspaceById");
     }, [Render, workspaceId]);
+
+    const { data: isAdmin } = useQuery(["IsAdmin", userId], () =>
+        checkIsAdmin(userId)
+    );
+
+
     return (
         <div className='w-100' style={{ overflowY: 'hidden', minHeight: '95vh' }}>
             {userWorkspace && userWorkspace.data.length > 0 ? (
@@ -91,7 +96,7 @@ export default function Content() {
                                         <p className="small m-0"><FontAwesomeIcon className='me-1' icon={faLock} /> Private</p>
                                     </span>
                                 </div>
-                                <p style={{padding:'0',margin:'0'}}>{GetWorkspaceById?.data?.description}</p>
+                                <p style={{ padding: '0', margin: '0' }}>{GetWorkspaceById?.data?.description}</p>
                             </Flex>
                         </div>
                         <div className={Style.contentMain}>

@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faChevronRight,
+  faBoxArchive,
   faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -42,6 +43,10 @@ import { Button, Stack } from "react-bootstrap";
 import { useFormik } from "formik";
 import jwtDecode from "jwt-decode";
 import { GetWorkSpaceById } from "../../Service/WorkSpaceService.js";
+import { checkIsAdmin } from "../../Service/AuthService";
+import axios from "axios";
+
+
 
 export default function SideBarMenu() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -157,6 +162,31 @@ export default function SideBarMenu() {
     queryClient.refetchQueries("BoardInCardList");
     queryClient.removeQueries("BoardInCardList")
   }
+
+  const { data: isAdmin } = useQuery(["IsAdmin", userId], () =>
+    checkIsAdmin(userId)
+  );
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleArchiveButtonClick = async () => {
+    try {
+      setIsLoading(true);
+      const response =
+        await axios.put(`https://localhost:7101/api/Boards/UpdateBoardIsArchive?AppUserId=${userId}&BoardId=${BoardId}`, {
+        });
+      queryClient.removeQueries("BoardInCardList")
+      queryClient.invalidateQueries("GetBoartsInWorkspace");
+      queryClient.invalidateQueries("worspacedata")
+      onClose();
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  const [isArchiveShowBoard, setIsArchiveShowBoard] = useState(false);
+
+
   return (
     <>
       <ChakraProvider>
@@ -203,45 +233,49 @@ export default function SideBarMenu() {
                   {" "}
                   Your Boards{" "}
                 </Card.Text>
+                <button onClick={() => setIsArchiveShowBoard((prev) => !prev)} style={{ width: '100%', height: '30px', border: '1px solid #384148',display: isAdmin?.data === true ? '' : 'none' }} className={Styles.ShowArchivedWorkspace}>{isArchiveShowBoard ? "Boards with Archive" : "Non-Archive boards"}</button>
                 {Array.isArray(byBoard?.data) && byBoard.data.length ? (
                   byBoard.data.map((board, index) => {
-                    // {var randomColor = generateLightColor()}
                     return (
-                      <NavDropdown.Item key={index}>
-                        <Container onClick={() =>
-                          HandeSellect(board.id)
-                        } className="p-0 m-0 navbar-workspace-link">
-                          <Row className="px-0 my-2 d-flex align-items-center rounded-0">
-                            {/* css de deyisiklik */}
-                            <ChakraProvider>
-                              <Flex align={'center'} justify={'space-between'} gap={2}>
-                                <Flex align={'center'} justify={'flex-start'} gap={2}>
-                                  <Col style={{ width: "20px" }} lg={3}>
-                                    <Image
-                                      className="workspace-pic"
-                                      src={`https://placehold.co/512x512/d9e3da/1d2125?text=${board?.title?.slice(0, 1)}`}
-                                    />
-                                  </Col>
-                                  <Col className="p-0">{board.title}
-                                  </Col>
-                                </Flex>
-                                <Menu>
-                                  <MenuButton bgColor={'transparent'}>
-                                    <FontAwesomeIcon icon={faEllipsis} />
-                                  </MenuButton>
-                                  <MenuList w={"200px"} border={"#616466 1px solid"} borderRadius={4} pb={2} pt={2} gap={10} bgColor={'#1d2125'}>
-                                    <MenuItem backgroundColor={"transparent"} onClick={() => onOpen()} p={"0px 12px"} _hover={{ backgroundColor: "#616466" }}>Delete Board</MenuItem>
-                                    <MenuItem backgroundColor={"transparent"} onClick={() => {
-                                      setUpdateModalOpen(true);
-                                      BoardUpdateFomik.setFieldValue("BoardId", board.id)
-                                    }} p={"0px 12px"} _hover={{ backgroundColor: "#616466" }}>Update Board</MenuItem>
-                                  </MenuList>
-                                </Menu>
-                              </Flex>
-                            </ChakraProvider>
-                          </Row>
-                        </Container>
-                      </NavDropdown.Item>
+                      <div>
+                        {board?.isArchive === isArchiveShowBoard &&
+                          <NavDropdown.Item key={index}>
+                            <Container onClick={() =>
+                              HandeSellect(board.id)
+                            } className="p-0 m-0 navbar-workspace-link">
+                              <Row className="px-0 my-2 d-flex align-items-center rounded-0">
+                                {/* css de deyisiklik */}
+                                <ChakraProvider>
+                                  <Flex align={'center'} justify={'space-between'} gap={2}>
+                                    <Flex align={'center'} justify={'flex-start'} gap={2}>
+                                      <Col style={{ width: "20px" }} lg={3}>
+                                        <Image
+                                          className="workspace-pic"
+                                          src={`https://placehold.co/512x512/d9e3da/1d2125?text=${board?.title?.slice(0, 1)}`}
+                                        />
+                                      </Col>
+                                      <Col className="p-0">{board.title}
+                                      </Col>
+                                    </Flex>
+                                    <Menu>
+                                      <MenuButton bgColor={'transparent'}>
+                                        <FontAwesomeIcon icon={faEllipsis} />
+                                      </MenuButton>
+                                      <MenuList w={"200px"} border={"#616466 1px solid"} borderRadius={4} pb={2} pt={2} gap={10} bgColor={'#1d2125'}>
+                                        <MenuItem backgroundColor={"transparent"} onClick={() => onOpen()} p={"0px 12px"} _hover={{ backgroundColor: "#616466" }}>Delete Board</MenuItem>
+                                        <MenuItem backgroundColor={"transparent"} onClick={() => {
+                                          setUpdateModalOpen(true);
+                                          BoardUpdateFomik.setFieldValue("BoardId", board.id)
+                                        }} p={"0px 12px"} _hover={{ backgroundColor: "#616466" }}>Update Board</MenuItem>
+                                      </MenuList>
+                                    </Menu>
+                                  </Flex>
+                                </ChakraProvider>
+                              </Row>
+                            </Container>
+                          </NavDropdown.Item>
+                        }
+                      </div>
                     );
                   })
                 ) : (
@@ -292,6 +326,12 @@ export default function SideBarMenu() {
               </FormControl>
             </ModalBody>
             <ModalFooter>
+              {isAdmin?.data && isAdmin?.data === true &&
+                <Button style={{ backgroundColor: isArchiveShowBoard ? 'red' : 'blue', marginRight: '10px' }} onClick={handleArchiveButtonClick}
+                  isLoading={isLoading} type='submit' colorScheme='blue' mr={3}>
+                  <FontAwesomeIcon icon={faBoxArchive} /> {isArchiveShowBoard ? 'Archived' : 'Archive'}
+                </Button>
+              }
               <Button colorScheme="blue" mr={3} onClick={HandleUpdate} >
                 Save Changes
               </Button>

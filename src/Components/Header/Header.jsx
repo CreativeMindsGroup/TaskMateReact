@@ -18,6 +18,8 @@ import {
   faBarsProgress,
   faUserGroup,
   faLink,
+  faUser,
+  faBackward,
   faEllipsis,
   faChartLine,
   faXmark,
@@ -66,8 +68,8 @@ export default function Header() {
   const decodedToken = token ? jwtDecode(token) : null;
   const userId = decodedToken
     ? decodedToken[
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-      ]
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+    ]
     : null;
   const doNotClose = (e) => {
     e.stopPropagation();
@@ -100,7 +102,7 @@ export default function Header() {
             queryClient.invalidateQueries(["GetAllNotifications"]);
           }, 30000);
         })
-        .catch((error) => {});
+        .catch((error) => { });
     }
   };
   // queryClient.invalidateQueries(["GetAllNotifications"]);
@@ -222,6 +224,66 @@ export default function Header() {
     () => checkIsAdmin(userId),
     { enabled: !!userId }
   );
+  const [globalSearchModalShow, setGlobalSearchModalShow] = useState(false);
+  const [inputResultGlobal, setInputResultGlobal] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchResult, setSearchResult] = useState(null);
+  const [seeSearchResult, setSeeSearchResult] = useState(null);
+
+  const handleInputChange = (event) => {
+    setInputResultGlobal(true);
+    setSearchValue(event.target.value);
+    const value = event.target.value;
+    if (!value.trim()) {
+      setInputResultGlobal(false);
+      setSeeSearchResult(null);
+    }
+  };
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `https://localhost:7101/api/Workspaces/GetGlobalSearch?searchTerm=${searchValue}`
+        );
+        setSearchResult(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    const timerId = setTimeout(() => {
+      if (searchValue.trim() !== "") {
+        // Eğer arama değeri boş değilse
+        fetchData();
+      } else {
+        setSearchResult(null);
+      }
+    }, 500);
+    return () => clearTimeout(timerId);
+  }, [searchValue]);
+
+  console.log("searchResult", searchResult);
+
+
+  const seeResultTableType = (number) => {
+    if (number === 0) {
+      setSeeSearchResult(searchResult?.getUserDtos);
+    }
+    else if (number === 1) {
+      setSeeSearchResult(searchResult?.getWorkspaceDtos);
+    }
+    else if (number === 2) {
+      setSeeSearchResult(searchResult?.getBoardsDtos);
+    }
+    else if (number === 3) {
+      setSeeSearchResult(searchResult?.getCardListDtos);
+    }
+    else if (number === 4) {
+      setSeeSearchResult(searchResult?.getCardDtos);
+    }
+  }
 
   return (
     <Navbar className="navbar-custom" bg="dark" expand="sm">
@@ -454,7 +516,7 @@ export default function Header() {
                     </Card>
                   </Dropdown.Item>
                   {Data?.data?.role === "GlobalAdmin" ||
-                  Data?.data?.role === "Admin" ? (
+                    Data?.data?.role === "Admin" ? (
                     <>
                       <Dropdown.Item className="p-0">
                         <Card
@@ -512,6 +574,7 @@ export default function Header() {
               type="search"
               placeholder="Search"
               aria-label="Search"
+              onClick={() => setGlobalSearchModalShow((prev) => !prev)}
             />
           </Form>
           <Row className="ms-1 d-flex align-items-center">
@@ -864,7 +927,7 @@ export default function Header() {
                 AllNotification.data.map((notification, index) => {
                   return (
                     <div>
-                      <div className={Styles.workAndBoardImage}>B</div>
+                      <div className={Styles.workAndBoardImage}>N</div>
                       <div className={Styles.notificationMessage}>
                         {notification.text}
                       </div>
@@ -894,6 +957,141 @@ export default function Header() {
           </div>
         </Modal.Body>
       </Modal>
-    </Navbar>
+      <Modal
+        show={globalSearchModalShow}
+        onHide={() => {
+          setGlobalSearchModalShow(false);
+        }}
+        size="sm"
+        className="create-workspace-modal"
+        id={Styles.NotificationModal}
+      >
+        <Modal.Body style={{ maxHeight: '600px' }}>
+          <span className={Styles.GlobalSearchtext}>Global Search</span>
+          <Form className="d-flex input-custom">
+            <Form.Control
+              type="search"
+              style={{ width: '100%' }} // Genişliği yüzde olarak ayarlayın
+              placeholder="Search"
+              aria-label="Search"
+              value={searchValue}
+              onChange={handleInputChange}
+            />
+          </Form>
+          {inputResultGlobal ?
+            <div className={Styles.TableType}>
+              <div className={Styles.TableTypeImg}>
+                <img src={require('./trello-logo.png')} />
+              </div>
+              <div className={Styles.TableTypeResult}>
+                {seeSearchResult === null && searchResult?.getWorkspaceDtos && searchResult?.getWorkspaceDtos.length > 0 &&
+                  < div >
+                    <button onClick={() => seeResultTableType(1)}>See all <span style={{ color: '#227cd5' }}>workspace</span> results: {searchResult?.getWorkspaceDtos.length}</button>
+                  </div>
+                }
+                {seeSearchResult === null && searchResult?.getBoardsDtos && searchResult?.getBoardsDtos.length > 0 &&
+                  <div>
+                    <button onClick={() => seeResultTableType(2)}>See all <span style={{ color: '#227cd5' }}>board</span> results: {searchResult?.getBoardsDtos.length}</button>
+                  </div>
+                }
+                {seeSearchResult === null && searchResult?.getCardListDtos && searchResult?.getCardListDtos.length > 0 &&
+                  <div>
+                    <button onClick={() => seeResultTableType(3)}>See all <span style={{ color: '#227cd5' }}>list</span> results: {searchResult?.getCardListDtos.length}</button>
+                  </div>
+                }
+                {seeSearchResult === null && searchResult?.getCardDtos && searchResult?.getCardDtos.length > 0 &&
+                  <div>
+                    <button onClick={() => seeResultTableType(4)}>See all <span style={{ color: '#227cd5' }}>card</span> results: {searchResult?.getCardDtos.length}</button>
+                  </div>
+                }
+                {seeSearchResult === null && searchResult?.getUserDtos && searchResult?.getUserDtos.length > 0 &&
+                  <div>
+                    <button onClick={() => seeResultTableType(0)} >See all <span style={{ color: '#227cd5' }}>user</span> results: {searchResult?.getUserDtos.length}</button>
+                  </div>
+                }
+                {seeSearchResult !== null &&
+                  <p className={Styles.selectTypeResult}>
+                    <Container>
+                      <div style={{ width: '100%', height: '20px', marginTop: '7px' }}><FontAwesomeIcon onClick={() => setSeeSearchResult(null)} fontSize={'20px'} color="#227cd5" icon={faBackward} /></div>
+                      <div className={Styles.selectTypeResultMain}>
+                        {seeSearchResult.map((dataType, index) => {
+                          const formattedDate = new Date(
+                            dataType.createdDate
+                          ).toLocaleString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          });
+                          return (
+                            <a key={index} href="https://youtube.com">
+                              {dataType?.username &&
+                                <div className={Styles.resultItemData}>
+                                  <div className={Styles.resultItemDataLeft}>
+                                    <FontAwesomeIcon icon={faUser} />
+                                  </div>
+                                  <div className={Styles.resultItemDataRight}>
+                                    {dataType?.fullname}
+                                    <p>{dataType?.email}</p>
+                                  </div>
+                                </div>
+                              }
+                              {dataType?.boardsId &&
+                                <div className={Styles.resultItemData}>
+                                  <div className={Styles.resultItemDataLeft}>
+                                    {dataType?.title && dataType?.title
+                                      .split(" ")
+                                      .map((name) => name[0].toUpperCase())
+                                      .join("")}
+                                  </div>
+                                  <div className={Styles.resultItemDataRight}>
+                                    {dataType?.title}
+                                    <p>{formattedDate}</p>
+                                  </div>
+                                </div>
+                              }
+                              {dataType?.cardListId &&
+                                <div className={Styles.resultItemData}>
+                                  <div className={Styles.resultItemDataLeft}>
+                                    {dataType?.title && dataType?.title
+                                      .split(" ")
+                                      .map((name) => name[0].toUpperCase())
+                                      .join("")}
+                                  </div>
+                                  <div className={Styles.resultItemDataRight}>
+                                    {dataType?.title}
+                                    <p>{formattedDate}</p>
+                                  </div>
+                                </div>
+                              }
+                              {dataType?.isWorkspace === true &&
+                                <div className={Styles.resultItemData}>
+                                  <div className={Styles.resultItemDataLeft}>
+                                    {dataType?.title && dataType?.title
+                                      .split(" ")
+                                      .map((name) => name[0].toUpperCase())
+                                      .join("")}
+                                  </div>
+                                  <div className={Styles.resultItemDataRight}>
+                                    {dataType?.title}
+                                    <p>{dataType?.description ? dataType?.descriptio : formattedDate}</p>
+                                  </div>
+                                </div>
+                              }
+                            </a>
+                          )
+                        })}
+                      </div>
+                    </Container>
+                  </p>
+                }
+              </div>
+            </div>
+            : ''
+          }
+        </Modal.Body>
+      </Modal>
+    </Navbar >
   );
 }

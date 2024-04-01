@@ -4,7 +4,7 @@ import Accordion from 'react-bootstrap/Accordion';
 import Col from 'react-bootstrap/Col';
 import Styles from './HomePageSideBarMenu.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserGroup, faBarsProgress, faTrashCan, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faUserGroup, faBoxArchive, faBarsProgress, faTrashCan, faEdit } from '@fortawesome/free-solid-svg-icons';
 import Button from 'react-bootstrap/Button';
 import CustomModal from '../CustomModal/CustomModal';
 import { DeleteWorkSpace, GetAllWorkspaces, UpdateWorkSpace } from '../../Service/WorkSpaceService';
@@ -14,7 +14,7 @@ import jwtDecode from 'jwt-decode';
 import { incrementRefresh, setData } from '../../Redux/Slices/WorkspaceAndBorderSlice';
 import { AlertIcon, FormLabel, Stack, useDisclosure, Alert } from '@chakra-ui/react';
 import { ChakraProvider } from '@chakra-ui/react';
-
+import axios from "axios";
 import {
   Modal,
   ModalOverlay,
@@ -29,6 +29,7 @@ import {
 import { Formik, useFormik } from 'formik';
 import { ChakraAlert } from '@chakra-ui/react';
 import { GetUserById } from '../../Service/UserService';
+import { checkIsAdmin } from "../../Service/AuthService";
 
 export default function SideBarMenu() {
   const initialRef = React.useRef(null)
@@ -155,7 +156,31 @@ export default function SideBarMenu() {
   useEffect(() => {
     SetInedex(currentWorkspaceIndex)
   }, [currentWorkspaceIndex])
-  
+
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleArchiveButtonClick = async () => {
+    try {
+      setIsLoading(true);
+      const response =
+        await axios.put(`https://localhost:7101/api/Workspaces/UpdateIsArchive?AppUserId=${userId}&WorkspaceId=${workspaceId}`, {
+        });
+      queryClient.invalidateQueries("GetAllworkspaces");
+      queryClient.invalidateQueries("GetWorkspaceById");
+      onClose();
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const { data: isAdmin } = useQuery(["IsAdmin", userId], () =>
+    checkIsAdmin(userId)
+  );
+
+  const [isArchiveShowWorkspace, setIsArchiveShowWorkspace] = useState(false);
+
   return (
     <>
       <ChakraProvider>
@@ -178,28 +203,33 @@ export default function SideBarMenu() {
         <Col className={Styles.sideBarMenu}>
           <Accordion className='m-auto col-11 mt-2' activeKey={`${index}`}>
             <h5 className='fw-bold my-3'>Workspace - {currentWorkspace}</h5>
+            <button onClick={() => setIsArchiveShowWorkspace((prev) => !prev)} style={{ display: isAdmin?.data === true ? '' : 'none' }} className={Styles.ShowArchivedWorkspace}>{isArchiveShowWorkspace ? "Workspaces with Archive" : "Non-Archive workspaces"}</button>
             {ALlworkspaces?.data?.map((data, index) => {
               return (
-                <Accordion.Item onClick={() => dispatch(setData({ workspaceId: data.id }))} key={index} className={Styles.accordionBtn} eventKey={index.toString()}>
-                  <Accordion.Header>
-                    {/* ${workspaceColors[data.id]} */}
-                    <Image className={[Styles.sideBarMenuWorkspacePic, 'me-2']} src={`https://placehold.co/512x512/d9e3da/1d2125?text=${data.title.slice(
-                      0,
-                      1
-                    )}`} rounded />
-                    {data.title}
-                  </Accordion.Header>
-                  <Accordion.Body className='d-flex flex-column p-0 mt-2'>
-                    <Button className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faBarsProgress} /></span>Boards</Button>
-                    <Button className='fw-bold mb-1 w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faUserGroup} /></span>Members</Button>
-                    {Data?.data?.role === "GlobalAdmin" || Data?.data?.role === "Admin" ? (
-                      <>
-                        <Button onClick={() => setModalShow(true)} className='fw-bold w-100 mb-1 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faTrashCan} /></span>Delete</Button>
-                        <Button onClick={() => HandeUpdateClick(data.id)} className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faEdit} /></span>Edit</Button>
-                      </>
-                    ) : null}
-                  </Accordion.Body>
-                </Accordion.Item>
+                <div>
+                  {data.isArchive === isArchiveShowWorkspace &&
+                    <Accordion.Item onClick={() => dispatch(setData({ workspaceId: data.id }))} key={index} className={Styles.accordionBtn} eventKey={index.toString()}>
+                      <Accordion.Header>
+                        {/* ${workspaceColors[data.id]} */}
+                        <Image className={[Styles.sideBarMenuWorkspacePic, 'me-2']} src={`https://placehold.co/512x512/d9e3da/1d2125?text=${data.title.slice(
+                          0,
+                          1
+                        )}`} rounded />
+                        {data.title}
+                      </Accordion.Header>
+                      <Accordion.Body className='d-flex flex-column p-0 mt-2'>
+                        <Button className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faBarsProgress} /></span>Boards</Button>
+                        <Button className='fw-bold mb-1 w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faUserGroup} /></span>Members</Button>
+                        {Data?.data?.role === "GlobalAdmin" || Data?.data?.role === "Admin" ? (
+                          <>
+                            <Button onClick={() => setModalShow(true)} className='fw-bold w-100 mb-1 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faTrashCan} /></span>Delete</Button>
+                            <Button onClick={() => HandeUpdateClick(data.id)} className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faEdit} /></span>Edit</Button>
+                          </>
+                        ) : null}
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  }
+                </div>
               );
             })}
           </Accordion>
@@ -238,7 +268,11 @@ export default function SideBarMenu() {
             </ModalBody>
 
             <ModalFooter>
-              <Button type='submit' onClick={UpdateWorksapceFomik.handleSubmit} colorScheme='blue' mr={3}>
+              <Button style={{backgroundColor: isArchiveShowWorkspace ? 'red' : 'blue',marginRight: '10px'}} onClick={handleArchiveButtonClick}
+                isLoading={isLoading} type='submit' colorScheme='blue' mr={3}>
+                <FontAwesomeIcon icon={faBoxArchive} /> {isArchiveShowWorkspace ? 'Archived' : 'Archive'}
+              </Button>
+              <Button style={{ marginRight: '10px' }} type='submit' onClick={UpdateWorksapceFomik.handleSubmit} colorScheme='blue' mr={3}>
                 Save
               </Button>
               <Button onClick={onClose}>Cancel</Button>
@@ -247,8 +281,6 @@ export default function SideBarMenu() {
         </Modal>
 
       </ChakraProvider>
-
-
     </>
   );
 }

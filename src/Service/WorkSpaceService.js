@@ -8,6 +8,14 @@ export const CreateWorkSpace = async (data) => {
         throw error;
     }
 };
+export const UpdateWorkSpaceIsArchive =  (AppUserId, WorkspaceId) => {
+    try {
+        const response =  httpClient.put(`/api/Workspaces/UpdateIsArchive?AppUserId=${AppUserId}&WorkspaceId=${WorkspaceId}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
 export const UpdateWorkSpace =  (data) => {
     try {
         const response =  httpClient.put('/api/Workspaces', data);
