@@ -8,6 +8,7 @@ import MainPage from "../Pages/MainPage/MainPage";
 import Members from "../Components/Members/Members";
 import Invite from "../Pages/Invite/Invite";
 import InviteBoard from "../Pages/InviteBoard/InviteBoard";
+import Footer from "../Art/Footer";
 
 export default function Routes() {
   const { token } = useSelector((x) => x.auth);
@@ -51,6 +52,10 @@ export default function Routes() {
         },
       ],
     },
+    {
+      path: "/Footer",
+      element: <Footer />,
+    }
   ];
   return useRoutes(routes);
 }
