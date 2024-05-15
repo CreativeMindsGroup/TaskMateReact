@@ -1,0 +1,24 @@
+.notFoundContainer {
+    text-align: center;
+    margin-top: 50px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .notFoundText {
+    font-size: 48px;
+    font-weight: bold;
+    color: #918e8e;
+  }
+  
+  .homeLink {
+    display: block;
+    margin-top: 20px;
+    font-size: 18px;
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .homeLink:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }

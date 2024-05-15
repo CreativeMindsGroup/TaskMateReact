@@ -9,6 +9,7 @@ import Members from "../Components/Members/Members";
 import Invite from "../Pages/Invite/Invite";
 import InviteBoard from "../Pages/InviteBoard/InviteBoard";
 import Footer from "../Art/Footer";
+import NotFountPage from "../Pages/NotFountPage";
 
 export default function Routes() {
   const { token } = useSelector((x) => x.auth);
@@ -40,7 +41,7 @@ export default function Routes() {
         },
         {
           path: "/CreateUser",
-          element: <RegisterPage />,
+          element: token ?  <RegisterPage></RegisterPage> : <Navigate to={"/SignIn"} />,
         },
         {
           path: "/Invite/:generateGuidId/:linkSelectedWorkspaceId/:userId",
@@ -55,7 +56,11 @@ export default function Routes() {
     {
       path: "/Footer",
       element: <Footer />,
-    }
+    },
+    {
+      path: "/*",
+      element: <NotFountPage />,
+    },
   ];
   return useRoutes(routes);
 }
