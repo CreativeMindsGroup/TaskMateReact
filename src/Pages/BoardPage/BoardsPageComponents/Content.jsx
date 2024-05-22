@@ -8,7 +8,7 @@ import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Modal from 'react-bootstrap/Modal';
+import Modal from 'react-bootstrap/Modal'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faUserGroup, faBriefcase, faCheck, faGlobe, faUserPlus, faLink, faChevronDown, faSignOut } from '@fortawesome/free-solid-svg-icons';
 import Styles from '../../../Components/SideBarMenu/SideBarMenu.module.css'
@@ -23,15 +23,12 @@ export default function Content() {
     const [modalShow, setModalShow] = useState(false);
     const [inputResult, setInputResult] = useState(false);
     const { userId, BoardId } = useSelector((x) => x.Data)
-
     const [searchQuery, setSearchQuery] = useState("");
-
     const { data: searchResults, isLoading, isError } = useQuery(
         ["searchUsers", searchQuery],
         () => SeachUsers(searchQuery),
         { enabled: !!searchQuery }
     );
-
     const handleInputChange = (e) => {
         setSearchQuery(e.target.value);
         setInputResult(true);

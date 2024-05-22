@@ -1,0 +1,31 @@
+.MainContainer::-webkit-scrollbar {
+    width: 8px;
+    /* Width of the scrollbar */
+    border-radius: 5px;
+}
+.MainContainer {
+    display: flex;
+    width: 100% ;
+    max-width: 1440px;
+    margin: auto
+}
+.MainContainer::-webkit-scrollbar-track {
+    background: #22272B;
+    /* Color of the scrollbar track */
+}
+
+.MainContainer::-webkit-scrollbar-thumb {
+    background-color: #a1abba;
+    /* Color of the scrollbar thumb */
+    border-radius: 4px;
+    /* Rounded corners of the scrollbar thumb */
+    border: 2px solid #22272B;
+    /* Creates padding around the scrollbar thumb */
+    border-radius: 5px;
+}
+.notFound{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100% !important;
+}

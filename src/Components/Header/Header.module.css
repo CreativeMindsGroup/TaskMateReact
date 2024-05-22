@@ -1,258 +1,379 @@
-.userAccount {
-    background-color: #1d2125 !important;
-    border-color: #1d2125;
-    padding: 0.75rem;
+.Main {
+    height: max-content;
+    width: 100%;
+    background-color: #1d2125;
+    outline: 1px solid #dfe1e61c;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    padding: 7px 20px;
+    gap: 20px;
 }
 
-.userAccount button {
-    background-color: #384148;
+.leftsideContainer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.rightsideContainer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.SelectTitle {
+    border: none;
+    border-radius: 4px;
+    height: max-content;
+    width: max-content;
     color: #9fadbc;
+    height: 31px;
+    user-select: none;
 }
 
-/* css de deyisiklik */
-.shareButton {
-    background-color: transparent;
-    border-color: transparent;
-}
-
-.shareButton:hover {
-    background-color: transparent;
-    border-color: transparent;
-}
-
-.shareButton:active {
-    background-color: transparent;
-    border-color: transparent;
-}
-
-input {
-    margin: 0 !important;
-    transition: 300ms;
-}
-
-
-#NotificationModal {
-    background-color: transparent;
-    margin-top: 44px;
-}
-
-.mainnotifaction {
-    width: 100%;
-    height: auto;
-}
-
-.mainnotifaction>p {
-    width: 100%;
-    height: auto;
-    display: flex;
-    justify-content: space-between;
-}
-
-/* 787 */
-.mainnotifaction>p>h1 {
-    font-size: 28px;
-    letter-spacing: 3px;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-}
-
-.mainnotifaction>p>span {
-    font-size: 18px;
-    letter-spacing: 0.3px;
-}
-
-.mainnotifaction>div {
-    width: 100%;
-    height: auto;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    padding: 14px;
-}
-
-.mainnotifaction>div>div {
-    width: 90%;
-    height: 120px;
-    border: 1px solid #9fadbc;
-    border-radius: 18px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0px 20px;
-    margin-top: 5px;
-}
-
-.workAndBoardImage {
-    width: 100px;
-    height: 80%;
-    background-color: rgb(196, 196, 196);
-    border-radius: 19px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 64px;
-    color: white;
-}
-
-.notificationMessage {
-    width: 70%;
-    min-width: auto;
-    padding-bottom: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    display: flex;
-    align-items: start;
-    font-size: 16px;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    letter-spacing: 0.8px;
-    padding-left: 14px;
-}
-
-.goToWorkspaceAndBoard {
-    width: 240px;
-    display: flex;
-    justify-content: end;
-}
-
-.ntcBtnGotoB {
-    --primary-color: transparent;
-    --secondary-color: #fff;
-    --hover-color: rgb(0, 0, 0);
-    --arrow-width: 10px;
-    --arrow-stroke: 2px;
-    box-sizing: border-box;
-    border: 0;
-    border-radius: 20px;
-    color: var(--secondary-color);
-    padding: 1em 1.8em;
-    background: var(--primary-color);
-    display: flex;
-    transition: 0.2s background;
-    align-items: center;
-    gap: 0.6em;
-    font-weight: bold;
-    width: auto;
-}
-
-
-.ntcBtnGotoB .arrowWrapper {
-    display: flex;
-    width: var(--arrow-width);
-    justify-content: center;
-    align-items: center;
-    margin-left: 10px;
-}
-
-.ntcBtnGotoB .arrow {
-    margin-top: 1px;
-    background: var(--primary-color);
-    height: var(--arrow-stroke);
-    position: relative;
-    transition: 0.2s;
-}
-
-.ntcBtnGotoB .arrow::before {
-    content: "";
-    box-sizing: border-box;
-    position: absolute;
-    border: solid var(--secondary-color);
-    border-width: 0 var(--arrow-stroke) var(--arrow-stroke) 0;
-    display: inline-block;
-    top: -3px;
-    right: 3px;
-    transition: 0.2s;
-    padding: 3px;
-    transform: rotate(-45deg);
-}
-
-.ntcBtnGotoB:hover {
-    border-bottom: 1px solid rgb(196, 196, 196);
-    color: white;
-}
-
-.ntcBtnGotoB:hover .arrow {
-    background: var(--secondary-color);
-}
-
-.ntcBtnGotoB:hover .arrow:before {
-    right: 0;
-}
-
-/* //-------------- */
-
-.userActivityModalShow {
-    width: 100%;
-    height: auto;
-}
-
-.userActivityModalShow>div {
-    padding: 20px;
-}
-
-.userActivityModalShowHeader {
-    width: 100%;
-    height: 40px;
-    color: #9fadbc;
-    font-size: 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.userActivityModalShowHeaderLeft {
-    width: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.userActivityModalShowHeaderLeft>h2 {
-    margin-left: 16px;
-    font-size: 28px;
-    margin-top: 10px;
-}
-
-.userActivityModalShowActivity {
-    width: 100%;
-    height: auto;
-    margin-top: 30px;
-    color: #9fadbc;
-}
-
-.userActivityModalShowActivity>div {
-    width: 100%;
-    height: auto;
+.SelectContainer {
     display: flex;
     align-items: center;
-
 }
 
-.userActivityModalShowActivityUserButton {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: orange;
-    color: #1d2125;
+.WorkSpaceTitle {
+    margin: 0;
+    color: #b6c2cf;
+    font-weight: 600 !important;
+    font-size: 12px;
+    padding-left: 6px;
+}
+
+.WorkSpaceContainer {
+    padding: 8px !important;
+}
+
+.ALlworkspaceContainer {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 25px;
+    flex-flow: column;
+}
+
+.MenuContainer {
+    border-radius: 5px;
+    height: max-content;
+    max-height: 300px;
+    overflow-y: auto;
+    /* Enables vertical scrolling */
+    overflow-x: hidden;
+    /* Ensures no horizontal scroll */
+    scrollbar-width: thin;
+    /* Firefox: set scrollbar width */
+    scrollbar-color: #a1abba #22272B;
+    /* Firefox: set scrollbar color (thumb and track) */
+    scroll-behavior: smooth;
+    /* Enables smooth scrolling */
+}
+
+/* For WebKit browsers */
+.MenuContainer::-webkit-scrollbar {
+    width: 8px;
+    /* Width of the scrollbar */
+    border-radius: 5px;
+}
+
+.MenuContainer::-webkit-scrollbar-track {
+    background: #22272B;
+    /* Color of the scrollbar track */
+}
+
+.MenuContainer::-webkit-scrollbar-thumb {
+    background-color: #a1abba;
+    /* Color of the scrollbar thumb */
+    border-radius: 4px;
+    /* Rounded corners of the scrollbar thumb */
+    border: 2px solid #22272B;
+    /* Creates padding around the scrollbar thumb */
+    border-radius: 5px;
+}
+
+.SelectTitle {
     font-weight: 600;
 }
 
-.userActivityModalShowActivityMessage{
-    width: 100%;
-    height: auto;
-    padding-left: 10px;
+.CreateButton {
+    color: #1d2125;
+    font-weight: 500;
+    background-color: #579dff;
+    border: none;
+    border-radius: 4px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    margin: 0;
+    width: 70px;
+    height: max-content;
+    padding: 4px 0;
 }
-.userActivityModalShowActivityMessage>div{
-    width: 100%;
+
+.MenuTitle h1 {
+    font-size: 15px;
+    margin: 0;
 }
-.userActivityModalShowActivityMessage>div>p{
-    font-size: 18px;
-    padding-top: 5px;
-    margin-top: 8px;
+
+.MenuTitle {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 3px;
+    margin-bottom: 7px;
+}
+
+.CreateContainer {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    padding: 10px 0;
+    user-select: none;
+}
+
+.SellectOptionContainer {
+    margin: 0;
+    font-size: 13px;
+    line-height: 17px;
+}
+
+.MenuOption:hover {
+    background-color: #6d757e49;
+}
+
+.MenuOption {
+    padding: 10px 10px;
+    cursor: pointer;
+    user-select: none;
+    color: #9fadbc;
+}
+
+
+.userImage {
+    width: 32px !important;
+    border-radius: 50% !important;
+}
+
+.userImageContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+}
+
+.userImageContainer:hover {
+    background-color: #6d757e49;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.SearchContainer {
+    display: flex;
+    align-items: center;
+    position: relative;
+    border: 1px solid #9fadbc6d;
+    background-color: #22272B;
+    ;
+    border-radius: 4px;
+
+}
+
+.SearchContainer:hover {
+    background-color: var(--ds-background-input-hovered, #25282d);
+}
+
+.SearchContainerOpened {
+    display: flex;
+    align-items: center;
+    position: relative;
+    border: var(--ds-border-width, 2px) solid var(--ds-border-focused, #a1abba82);
+    background-color: #22272B;
+    border-radius: 4px;
+}
+
+.SearchInput {
+    margin: 0;
+    color: #9fadbcd1;
+    font-weight: 400 !important;
+    font-size: 14px;
+    height: 32px;
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.SearchInput:hover {
+    background-color: var(--ds-background-input-hovered, #25282d);
+}
+
+.SearchInput::placeholder {
+    color: #9fadbcd1;
+}
+
+.material-symbols-outlined {
+    position: absolute;
+    color: #333;
+    /* Style the icon color */
+}
+
+.rightsideContainer {
+    position: relative;
+    /* Needed to position children absolutely within the container */
+}
+
+.menuList {
+    transition: all 0 !important;
+    position: absolute;
+    width: 100%;
+    top: 44px;
+    left: 0;
+    z-index: 10;
+    border-radius: 3px;
+    color: #9fadbc;
+    border-radius: 4px !important;
+}
+
+.userProfile {
+    border-radius: 3px;
+    width: 400px;
+    padding: 0px 0px 5px 0;
+}
+
+.ProfileDetails {
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 400;
+    color: #9fadbc;
+    margin: 16px 0 8px;
+    padding: 0px 18px;
+}
+
+.ProfileDetailsImage {
+    width: 40px !important;
+    border-radius: 50% !important;
+}
+
+.UserDetails {
+    margin: 0;
+}
+
+.UserDetails p {
+    margin: 0;
+    color: #9fadbc;
+    font-size: 14px;
+}
+
+.UserDetailsContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0px 18px;
+
+}
+
+.logout {
+    margin: 0;
+    padding: 9px 18px;
+    color: #9fadbc;
+}
+
+.logout:hover {
+    background-color: #6d757e49;
+    cursor: pointer;
+}
+
+.placeholder::placeholder {
+    color: #b6c2cf !important;
+    /* Same color as your input text color */
+}
+
+.placeholder {
+    color: #b6c2cf !important;
+}
+
+.WorkspaceCreateTitle {
+    color: var(--ds-text-subtle, #b6c2cf);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.ExitButton:hover {
+    background-color: none !important;
+    background-color: transparent;
+}
+
+.BackgoundImage {
+    background-image: url(https://trello.com/assets/df0d81969c6394b61c0d.svg);
+}
+.CreateboardHeader{
+    color: #96A3B2;
+    display: flex;
+    align-items: center;
+    color: var(--ds-text-subtle, #96A3B2);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.003em;
+    justify-content: space-between;
+    padding-bottom: 10px;
+}
+.CreateboardHeader p{
+    margin: 0;
+}
+.CreateBoardContainer{
+    width: 303px;
+    background-color: #282E33;
+    border-radius: 4px;
+    height: max-content;
+    padding: 12px;
+}
+
+@media screen and (max-width: 998px) {
+    .BackgoundImage {
+        display: none !important;
+    }
+}
+.BoardTitle{
+    color: #b6c2cf !important;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 700;
+    margin: 0;
+}
+.BoardTitle::placeholder {
+    color: #b6c2cf !important;
+    /* Same color as your input text color */
+}
+.BoardInput{
+    margin: 0;
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: #22272B;
+    height: 32px;
+    font-size: 14px;
+
+}
+.SelectInput{
+    color: #b6c2cf !important;
+    border: none;
+    height: 32px;
+    background-color: #22272B;
+    font-size: 14px;
+}
+.SelectInput::placeholder{
+    color: #b6c2cf !important;
+}
+.CreateBoardBody{
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+}
+.CreateBoard{
+    background-color: #2D343A;
+    border: none;
+    height: 32px;
+    font-size: 14px;
+    color: #b6c2cf !important;
 }

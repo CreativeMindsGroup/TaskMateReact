@@ -120,7 +120,6 @@ export default function Members() {
 
   const [inputResult, setInputResult] = useState(true);
   const [Workspaces, setWorkspaces] = useState();
-  console.log("Workspaces",Workspaces);
   const { mutate: GetUsersAllWorkSpaces } = useMutation(
     (userId) => GetAllWorkspaces(userId),
     {
@@ -406,7 +405,7 @@ export default function Members() {
                                 />
                                 {inputResult
                                   ? searchResult &&
-                                    searchResult.length > 0 && (
+                                    searchResult?.length > 0 && (
                                       <div>
                                         {searchResult.map((result) => (
                                           <Card
@@ -522,7 +521,7 @@ export default function Members() {
                       />
                       {inputResult
                         ? searchResult &&
-                          searchResult.length > 0 && (
+                          searchResult?.length > 0 && (
                             <div>
                               {searchResult.map((result) => (
                                 <Card

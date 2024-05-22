@@ -8,9 +8,9 @@ export const CreateWorkSpace = async (data) => {
         throw error;
     }
 };
-export const UpdateWorkSpace =  (data) => {
+export const UpdateWorkSpace = async  (data) => {
     try {
-        const response =  httpClient.put('/api/Workspaces', data);
+        const response =await  httpClient.put('/api/Workspaces', data);
         return response.data;
     } catch (error) {
         throw error;

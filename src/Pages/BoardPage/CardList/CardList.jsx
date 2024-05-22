@@ -232,8 +232,8 @@ const CardList = () => {
 
   const updateCardFormik = useFormik({
     initialValues: {
-      CardId: updateCard && updateCard.length > 0 ? updateCard[0].id : "",
-      Title: updateCard && updateCard.length > 0 ? updateCard[0].title : "",
+      CardId: updateCard && updateCard?.length > 0 ? updateCard[0].id : "",
+      Title: updateCard && updateCard?.length > 0 ? updateCard[0].title : "",
       Description:
         updateCard && updateCard.length > 0 ? updateCard[0].description : "",
     },
@@ -263,7 +263,7 @@ const CardList = () => {
   });
 
   useEffect(() => {
-    if (updateCard && updateCard.length > 0 && updateCardFormik) {
+    if (updateCard && updateCard?.length > 0 && updateCardFormik) {
       updateCardFormik.setValues({
         CardId: updateCard[0].id,
         Title: updateCard[0].title,
@@ -427,7 +427,6 @@ const CardList = () => {
         queryClient.invalidateQueries("getAllCheklist");
       },
       onError: (err) => {
-        console.log(err);
       },
     }
   );
@@ -446,7 +445,6 @@ const CardList = () => {
     }
   };
   const handleCheckboxChange = async (data, isChecked) => {
-    console.log(data);
     UpdateChecklistItemsFormik.setFieldValue("Check", isChecked);
     UpdateChecklistItemsFormik.setFieldValue("Text", data.text);
     UpdateChecklistItemsFormik.setFieldValue("DueDate", data.dueDate);
@@ -483,7 +481,6 @@ const CardList = () => {
         queryClient.invalidateQueries("getAllCheklist");
       },
       onError: (err) => {
-        console.log(err);
       },
     }
   );
@@ -526,7 +523,6 @@ const CardList = () => {
       UpdateChecklistItemsFormik.setFieldValue("Text", titleInput);
     } else {
       UpdateChecklistItemsFormik.setFieldValue("Text", data.text);
-      console.log(data.text);
     }
     UpdateChecklistItemsFormik.setFieldValue("DueDate", data.dueDate);
     UpdateChecklistItemsFormik.setFieldValue("Id", data.id);
@@ -562,7 +558,6 @@ const CardList = () => {
         queryClient.invalidateQueries("getAllCheklist");
       },
       onError: (err) => {
-        console.log(err);
       },
     }
   );
@@ -585,7 +580,6 @@ const CardList = () => {
       queryClient.invalidateQueries("getAllCheklist");
     },
     onError: (err) => {
-      console.log(err);
     },
   });
   const [addItemIndex, setAddItemIndex] = useState(-1);
@@ -593,8 +587,6 @@ const CardList = () => {
   const [isCardDateStatus, setIsCardDateStatus] = useState(
     thisCard?.data?.isDateStatus
   );
-  console.log("isCardDateStatus>>>>", isCardDateStatus);
-  console.log("data>>>>", thisCard?.data);
   const handleCardDateStatusCheckboxChange = (event) => {
     setIsCardDateStatus((prev) => !prev);
     sendRequest();
@@ -614,10 +606,8 @@ const CardList = () => {
         }`
       )
       .then((response) => {
-        // console.log('PUT request successful:', response);
       })
       .catch((error) => {
-        // console.error('Error making PUT request:', error);
       });
   };
 
@@ -799,7 +789,6 @@ const CardList = () => {
   const handleColorChange = (color, index) => {
     setSelectedColor(color.hex);
     addDropdownItemColor(index);
-    console.log("index", index);
   };
 
   const [options, setOptions] = useState([]);
@@ -832,7 +821,6 @@ const CardList = () => {
     setOptions(newOptions);
   };
 
-  // console.log("Bu", options);
 
   const { data: cardInCustomFields } = useQuery(
     ["CardInCustomFields", thisCard?.data?.id],
@@ -1118,7 +1106,6 @@ const CardList = () => {
     },
   });
 
-  console.log("cardInCustomFields", cardInCustomFields?.data);
   return (
     <div className="h-100">
       <div style={{ display: "flex" }}>

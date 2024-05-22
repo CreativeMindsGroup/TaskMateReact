@@ -1,0 +1,26 @@
+.WorkSpaceContainer{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0 7px 7px;
+    cursor: pointer;
+    user-select: none;
+}
+.main{
+    border-radius: 5px !important;
+}
+.WorkSpaceContainer > p{
+margin: 0;
+}
+.WorkspaceText{
+    color: #9fadbc;
+    font-weight: 600;
+    font-size: 15px;
+}
+.WorkspaceImage{
+    width: 36px;
+    border-radius: 2px;
+}
+.main:hover{
+    background-color: #6d757e49;
+}

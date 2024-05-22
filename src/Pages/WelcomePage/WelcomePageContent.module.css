@@ -1,0 +1,147 @@
+.Main {
+    display: 100% !important;
+}
+
+.notFound {
+    display: 100% !important;
+    color: #9FADBC;
+    margin-top: 50px;
+}
+
+.contentWrapper {
+    padding: 30px 20px;
+}
+
+.InviteButton {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background-color: #579dff;
+    max-width: max-content;
+    color: #fff;
+    border-radius: 4px;
+    padding: 6px 12px;
+    height: max-content;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.BoardCard {
+    width: 220px;
+    height: 110px;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: transparent;
+    border: 1px solid rgb(159 173 188 / 24%) ;
+}
+
+.BoardCardTitle {
+    color: white;
+    padding: 7px;
+    font-size: 18px;
+    font-weight: 600;
+
+}
+
+.BoardCardCreate {
+    min-width: 220px;
+    height: 100px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #a1bdd914;
+    cursor: pointer;
+}
+
+.BoardTitleCreate {
+    color: #b6c2cf;
+    margin: 0;
+    padding: 7px;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.BoardCardCreate:hover {
+    background-color: #a1bdd928;
+}
+
+.CreateboardHeader {
+    color: #96A3B2;
+    display: flex;
+    align-items: center;
+    color: var(--ds-text-subtle, #96A3B2);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.003em;
+    justify-content: space-between;
+    padding-bottom: 10px;
+}
+
+.CreateboardHeader p {
+    margin: 0;
+}
+
+.CreateBoardContainer {
+    width: 303px;
+    background-color: #282E33;
+    border-radius: 4px;
+    height: max-content;
+    padding: 12px;
+}
+
+@media screen and (max-width: 998px) {
+    .BackgoundImage {
+        display: none !important;
+    }
+}
+
+.BoardTitle {
+    color: #b6c2cf !important;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.BoardTitle::placeholder {
+    color: #b6c2cf !important;
+    /* Same color as your input text color */
+}
+
+.BoardInput {
+    margin: 0;
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: #22272B;
+    height: 32px;
+    font-size: 14px;
+
+}
+
+.SelectInput {
+    color: #b6c2cf !important;
+    border: none;
+    height: 32px;
+    background-color: #22272B;
+    font-size: 14px;
+}
+
+.SelectInput::placeholder {
+    color: #b6c2cf !important;
+}
+
+.CreateBoardBody {
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 7px;
+}
+
+.CreateBoard {
+    background-color: #2D343A;
+    border: none;
+    height: 32px;
+    font-size: 14px;
+    color: #b6c2cf !important;
+}

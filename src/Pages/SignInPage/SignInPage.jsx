@@ -12,27 +12,26 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { CircularProgress } from "@chakra-ui/react";
 
 export default function SignInPage() {
   const [loginError, setLoginError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const validationSchema = Yup.object({
-    email: Yup.string().email("Invalid email address").required("Required"),
-    password: Yup.string().required("Required"),
+    usernameOrEmail: Yup.string().required("Required").max(255),
+    password: Yup.string().required("Required").max(100),
   });
 
   const LoginFormik = useFormik({
     initialValues: {
-      email: "",
+      usernameOrEmail: "",
       password: "",
     },
     validationSchema,
     onSubmit: (values) => {
-      setIsLoading(true);
       LoginMutate(values);
     },
   });
@@ -41,12 +40,10 @@ export default function SignInPage() {
     (values) => login(values),
     {
       onSuccess: (resp) => {
-        setIsLoading(false);
         dispatch(loginAction(resp));
         navigate("/");
       },
       onError: (error) => {
-        setIsLoading(false);
         setLoginError("Invalid Login.");
       },
     }
@@ -95,19 +92,19 @@ export default function SignInPage() {
           </Modal.Title>
           <p className="text-center my-4 fw-bold">Log in to continue</p>
           <Form className="mt-2" onSubmit={LoginFormik.handleSubmit}>
-            <Form.Group className="mb-2 position-relative" controlId="login-email">
+            <Form.Group className="mb-2 position-relative" controlId="login-usernameOrEmail">
               <Form.Control
                 type="text"
-                placeholder="Email"
-                name="email"
+                placeholder="username or email"
+                name="usernameOrEmail"
                 onChange={handleInputChange}
                 onBlur={LoginFormik.handleBlur}
-                value={LoginFormik.values.email}
-                isInvalid={!!LoginFormik.errors.email && LoginFormik.touched.email}
+                value={LoginFormik.values.usernameOrEmail}
+                isInvalid={!!LoginFormik.errors.usernameOrEmail && LoginFormik.touched.usernameOrEmail}
                 className="p-4 px-3"
               />
               <Form.Control.Feedback type="invalid">
-                {LoginFormik.errors.email}
+                {LoginFormik.errors.usernameOrEmail}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-2 position-relative" controlId="login-password">
@@ -143,9 +140,9 @@ export default function SignInPage() {
               className="container create-workspace-submit w-100 m-0"
               variant="primary"
               size="lg"
-              disabled={isLoading}
+              disabled={Loginloading}
             >
-              Sign In
+               {Loginloading ? <CircularProgress isIndeterminate size="24px" color="#579dff" /> : "Log in"}
             </Button>
           </Form>
           {loginError && <p style={{ color: "red" }}>{loginError}</p>}

@@ -6,7 +6,7 @@
 .sideBarMenu {
     height: 100%;
     width: 100%;
-    background: rgba(30, 32, 37, 0.9);
+    background: rgb(30 32 37 / 78%);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);

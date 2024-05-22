@@ -1,10 +1,12 @@
 .sideBarMenuWrapper {
-    /* height: calc(95vh - 1.75rem); */
-    height: 95vh;
+    height: calc(95vh - 0.2rem);
     display: flex;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    max-width: 100%;
+    border-right: rgb(159 173 188 / 24%) 1px solid;
 }
-
+.notFound{
+    width: 100%;
+}
 .sideBarMenu {
     height: 100%;
     width: 100%;
@@ -15,7 +17,7 @@
 
 /* .sideBarMenu:first-child{
     margin-top: 1.75rem;
-} */
+} */ 
 
 .workspacePic {
     width: clamp(16px, 4.5vw, 32px);
@@ -28,7 +30,7 @@
 
 .accordionBtn,
 .accordionBtn Button {
-    border-radius: 0.5rem !important;
+    border-radius: 0.07rem !important;
 }
 
 .accordionBtn h2 Button {
@@ -36,6 +38,10 @@
     font-weight: 600;
     background-color: transparent !important;
     box-shadow: none;
+}
+.accordionBtn Button{
+    padding: 8px 13px;
+    border-radius: 4px;
 }
 
 .accordionBtn h2 Button:not(.collapsed) {
@@ -80,6 +86,7 @@
 .sideBarMenuWorkspacePic {
     width: 32px;
     height: 32px;
+    border-radius: 4px !important;
 }
 
 .contentWrapper {
@@ -96,4 +103,20 @@
 
 .contentMain{
     margin-top: 3rem;
+}
+.Modal{
+    background-color: #1e2225 !important;
+    color: #b6c2cf !important;
+}
+.Button{
+    border-radius: 4px;
+    padding: 3px 12px;
+    border: none;
+    background-color: #579dff;
+}
+.ButtonCancel{
+    border-radius: 4px;
+    padding: 3px 12px;
+    background-color:#333c43 ;
+    border: none;
 }

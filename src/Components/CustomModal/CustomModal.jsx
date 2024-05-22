@@ -3,17 +3,18 @@ import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import Styles from './CostomModal.module.css'
+import { Flex } from '@chakra-ui/react';
 
 
 
-export default function CustomModal({ show, title, object, message, type, updateParentState }) {
+export default function CustomModal({ show, title, object, updateParentState }) {
   const [showModal, setModalShow] = useState(show);
 
   const handleClick = () => {
-    updateParentState(!show,false);
+    updateParentState(!show, false);
   };
   const handleClick2 = () => {
-    updateParentState(!show,true);
+    updateParentState(!show, true);
   };
 
   useEffect(() => {
@@ -23,31 +24,26 @@ export default function CustomModal({ show, title, object, message, type, update
   return (
     <>
       <Modal
+
         show={showModal}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
-        className='create-share-link-modal'
         centered
         onHide={handleClick}
+        className={Styles.Main} 
       >
-        <Modal.Body className='p-0 position-relative' id="contained-modal-title-vcenter">
+        
+        <Modal.Body  className={Styles.Modal} id="contained-modal-title-vcenter">
           <Row className='p-0 d-flex flex-nowrap'>
-            <div className='py-4 px-5'>
-              <Modal.Header className='mb-3'>
-                <Modal.Title className='fw-bold d-flex justify-content-between align-items-center' id="contained-modal-title-vcenter">
-                  {title}
-                </Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <h4 className='mb-4'>Do you want to {type} this {object}?</h4>
-                <p>
-                  {message}
-                </p>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button className='btn btn-danger' onClick={handleClick2}>Yes</Button>
-                <Button className='btn btn-dark' onClick={handleClick}>No</Button>
-              </Modal.Footer>
+            <div className='py-2 px-3'>
+              <Modal.Title id="contained-modal-title-vcenter">
+                {title}
+              </Modal.Title>
+              <h6 className='pt-2'>Do you want to this {object}?</h6>
+              <Flex justifyContent={'flex-end'} align={'center'} gap={15}>
+                <Button className={`${Button}btn btn-danger`} onClick={handleClick2}>Yes</Button>
+                <Button className={`${Button}btn btn-dark`} onClick={handleClick}>No</Button>
+              </Flex>
             </div>
           </Row>
         </Modal.Body>

@@ -43,12 +43,11 @@ import { useFormik } from "formik";
 import jwtDecode from "jwt-decode";
 import { GetWorkSpaceById } from "../../Service/WorkSpaceService.js";
 
-export default function SideBarMenu() {
+export default function SideBarMenu({ setImage ,id}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { refresh, workspaceId, BoardId, userId } = useSelector((x) => x.Data);
   const { token } = useSelector((x) => x.auth);
   const [Bid, setBoardid] = useState(BoardId)
-  const GetId = useParams();
   const dispatch = useDispatch();
   const decodedToken = token ? jwtDecode(token) : null;
   const userId2 = decodedToken
@@ -56,9 +55,7 @@ export default function SideBarMenu() {
     "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
     ]
     : null;
-  useEffect(() => {
-    dispatch(setData({ BoardId: GetId }));
-  }, []);
+
   useEffect(() => {
     setBoardid(BoardId)
   }, [BoardId]);
@@ -66,7 +63,6 @@ export default function SideBarMenu() {
   const [isMenuOpen, setMenuOpen] = useState(true);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
 
-  // console.log("workspaceId", workspaceId);
 
   const queryClient = useQueryClient();
   const { data: byBoard } = useQuery(
@@ -100,7 +96,6 @@ export default function SideBarMenu() {
   };
   const HandleUpdate = () => {
     if (BoardUpdateFomik.values.title === "") {
-      console.log("Title cannot be empty");
     } else {
       updateBoradMutation();
       onCloseUpdateModal();
@@ -122,7 +117,6 @@ export default function SideBarMenu() {
     },
     onSubmit: (values) => {
       if (values.title === "") {
-        console.log("values null");
       } else {
         values.boardId = BoardId
         values.appUserId = userId2
@@ -152,11 +146,21 @@ export default function SideBarMenu() {
   //   return  ((1 << 24) + (red << 16) + (green << 8) + blue).toString(16).slice(1);
   // }
 
+
   const HandeSellect = (data) => {
     dispatch(setData({ BoardId: data }));
+    setImage(byBoard.data.find(board => board.id === data)?.theme);
     queryClient.refetchQueries("BoardInCardList");
     queryClient.removeQueries("BoardInCardList")
   }
+  useEffect(() => {
+    dispatch(setData({ BoardId: id }));
+    const selectedBoard = byBoard?.data.find(board => board.id === id);
+    if (selectedBoard) {
+      setImage(selectedBoard.theme)
+    }
+  }, [id, byBoard?.data]);
+  
   return (
     <>
       <ChakraProvider>
@@ -203,27 +207,22 @@ export default function SideBarMenu() {
                   {" "}
                   Your Boards{" "}
                 </Card.Text>
-                {Array.isArray(byBoard?.data) && byBoard.data.length ? (
+                {Array.isArray(byBoard?.data) && byBoard?.data?.length ? (
                   byBoard.data.map((board, index) => {
-                    // {var randomColor = generateLightColor()}
                     return (
                       <NavDropdown.Item key={index}>
-                        <Container onClick={() =>
-                          HandeSellect(board.id)
-                        } className="p-0 m-0 navbar-workspace-link">
+                        <Container onClick={() => {setImage(board.theme) ;HandeSellect(board.id)}} className="p-0 m-0 navbar-workspace-link">
                           <Row className="px-0 my-2 d-flex align-items-center rounded-0">
-                            {/* css de deyisiklik */}
                             <ChakraProvider>
                               <Flex align={'center'} justify={'space-between'} gap={2}>
                                 <Flex align={'center'} justify={'flex-start'} gap={2}>
                                   <Col style={{ width: "20px" }} lg={3}>
                                     <Image
                                       className="workspace-pic"
-                                      src={`https://placehold.co/512x512/d9e3da/1d2125?text=${board?.title?.slice(0, 1)}`}
+                                      src={`https://placehold.co/512x512/d9e3da/1d2125?text=${board?.title?.toUpperCase().slice(0, 1)}`}
                                     />
                                   </Col>
-                                  <Col className="p-0">{board.title}
-                                  </Col>
+                                  <Col className="p-0">{board.title}</Col>
                                 </Flex>
                                 <Menu>
                                   <MenuButton bgColor={'transparent'}>
@@ -247,6 +246,7 @@ export default function SideBarMenu() {
                 ) : (
                   <NavDropdown.Item>No boards available</NavDropdown.Item>
                 )}
+
               </Container>
             </div>
           </Col>

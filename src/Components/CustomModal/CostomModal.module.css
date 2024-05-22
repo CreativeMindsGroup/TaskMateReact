@@ -1,0 +1,13 @@
+.Modal{
+    background-color: #1e2225 !important;
+    color: #b6c2cf !important;
+}
+.Main{
+    border-radius: 3px;
+}
+.Button{
+    border-radius: 4px;
+    padding: 3px 12px;
+    border: none;
+    background-color: #579dff;
+}
