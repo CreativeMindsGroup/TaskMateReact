@@ -8,7 +8,7 @@ import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { useParams } from "react-router-dom";
 import Column from "./Column";
-import { moveCard } from "../../../Service/BoardService";
+import { moveCard, moveCardList } from "../../../Service/BoardService";
 import { ToastContainer, toast } from "react-toastify";
 
 const CardList = ({ boardData }) => {
@@ -29,22 +29,76 @@ const CardList = ({ boardData }) => {
   });
 
   const handleOnDragEnd = (result) => {
-    console.log(result);
-    const { source, destination, draggableId } = result;
-    if (!destination || (source.droppableId === destination.droppableId && source.index === destination.index)) {
-      return;
+    const { source, destination, draggableId, type } = result;
+    if (!destination) {
+      return; // dropped outside the list
     }
-    const dataToSend = {
-      cardId: draggableId,
-      sourceColumnId: source.droppableId,
-      destinationColumnId: destination.droppableId,
-      newIndex: destination.index
-    };
-    reorderCardsMutation(dataToSend);
+    if (source.droppableId === destination.droppableId && source.index === destination.index) {
+      return; // dropped in the same place
+    }
+
+    if (type === "column") {
+      // Reorder columns
+      const newColumnOrder = Array.from(boardData.cardLists);
+      const movedColumn = newColumnOrder.splice(source.index, 1)[0];
+      newColumnOrder.splice(destination.index, 0, movedColumn);
+
+      // Log column IDs and their order
+      console.log("New column order:", newColumnOrder.map(col => col.id));
+
+      // Update the order of columns in the backend
+      moveListMutation(
+        newColumnOrder.map(list => list.id)
+      );
+    } else if (type === "task") {
+      // Find the columns (or lists)
+      const start = boardData.cardLists.find(list => list.id === source.droppableId);
+      const finish = boardData.cardLists.find(list => list.id === destination.droppableId);
+
+      if (start === finish) {
+        // Moving tasks within the same column
+        const newTaskIds = Array.from(start.tasks);
+        const movedTask = newTaskIds.splice(source.index, 1)[0];
+        newTaskIds.splice(destination.index, 0, movedTask);
+
+        // Log task IDs and their order within the column
+        console.log("New task order in column:", newTaskIds.map(task => task.id));
+
+        reorderCardsMutation({
+          sourceColumnId: start.id,
+          destinationColumnId: start.id,
+          cardId: draggableId,
+          newIndex: destination.index
+        });
+      } else {
+        // Moving tasks between different columns
+        const startTaskIds = Array.from(start.tasks);
+        startTaskIds.splice(source.index, 1);
+        const finishTaskIds = Array.from(finish.tasks);
+        finishTaskIds.splice(destination.index, 0, draggableId);
+
+        reorderCardsMutation({
+          sourceColumnId: start.id,
+          destinationColumnId: finish.id,
+          cardId: draggableId,
+          newIndex: destination.index
+        });
+      }
+    }
   };
 
 
 
+  const { mutate: moveListMutation } = useMutation(data => moveCardList(boardId, data), {
+    onSuccess: () => {
+      toast.success("List moved successfully!");
+      queryClient.invalidateQueries("boardData");
+    },
+    onError: (error) => {
+      toast.error("Failed to move list!");
+      console.error("Error while moving list:", error);
+    }
+  });
 
   //create card Section
 
