@@ -8,7 +8,7 @@ import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { useParams } from "react-router-dom";
 import Column from "./Column";
-import { moveCard, moveCardList } from "../../../Service/BoardService";
+import { moveCard } from "../../../Service/BoardService";
 import { ToastContainer, toast } from "react-toastify";
 
 const CardList = ({ boardData }) => {
@@ -17,33 +17,32 @@ const CardList = ({ boardData }) => {
   const { userId } = useSelector(state => state.userCredentials);
   const { workspaceId } = useSelector((x) => x.workspaceAndBoard);
   const [openCreateMenu, setOpenCreateMenu] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const { mutate: reorderCardsMutation } = useMutation(data => moveCard(data), {
+  const { mutate: reorderCardsMutation } = useMutation(data=>moveCard(data), {
     onSuccess: () => {
-      toast.success("Card moved successfully!");
+      toast.success("Done!")
       queryClient.invalidateQueries(["boardData"]);
-      setIsDragging(false); 
     },
     onError: (error) => {
       console.error("Error while reordering cards: ", error);
-      toast.error("Failed to move card!");
-      setIsDragging(false); 
+      toast.success("Error!")
     }
   });
   
-  //reorder Card lists 
-  const reorderListsMutation = useMutation(moveCardList, {
-    onSuccess: () => {
-      toast.success("List order updated successfully!");
-      queryClient.invalidateQueries(["boardData"]);
-      setIsDragging(false); 
-    },
-    onError: (error) => {
-      console.error("Error while moving list: ", error);
-      toast.error("Failed to move list!");
-      setIsDragging(false); 
+  const handleOnDragEnd = (result) => {
+    console.log(result);
+    const { source, destination, draggableId } = result;
+    if (!destination || (source.droppableId === destination.droppableId && source.index === destination.index)) {
+      return; 
     }
-  });
+    const dataToSend = {
+      cardId: draggableId,
+      sourceColumnId: source.droppableId,
+      destinationColumnId: destination.droppableId,
+      newIndex: destination.index
+    };
+    reorderCardsMutation(dataToSend);
+  };
+
 
 
 
@@ -87,36 +86,12 @@ const CardList = ({ boardData }) => {
       },
     }
   );
-//hande Move
-const handleOnDragEnd = (result) => {
-  setIsDragging(true);
-  const { source, destination, draggableId, type } = result;
 
-  if (!destination || (source.droppableId === destination.droppableId && source.index === destination.index)) {
-    setIsDragging(false);
-    return;
-  }
-
-  if (type === "card") {
-    reorderCardsMutation.mutate({
-      cardId: draggableId,
-      sourceColumnId: source.droppableId,
-      destinationColumnId: destination.droppableId,
-      newIndex: destination.index
-    });
-  } else if (type === "list") {
-    reorderListsMutation.mutate({
-      boardId: boardId,
-      sourceIndex: source.index,
-      destinationIndex: destination.index
-    });
-  }
-};
 
   return (
     <div className={styles.BoardListContainer}>
-<ToastContainer />
       <div>
+<ToastContainer />
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="all-columns" direction="horizontal" type="column">
           {(provided) => (
