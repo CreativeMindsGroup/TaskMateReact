@@ -13,26 +13,26 @@ import { ToastContainer, toast } from "react-toastify";
 
 const CardList = ({ boardData }) => {
   const queryClient = useQueryClient();
-  const { BoardId:boardId } = useParams();
+  const { BoardId: boardId } = useParams();
   const { userId } = useSelector(state => state.userCredentials);
   const { workspaceId } = useSelector((x) => x.workspaceAndBoard);
   const [openCreateMenu, setOpenCreateMenu] = useState(false);
-  const { mutate: reorderCardsMutation } = useMutation(data=>moveCard(data), {
+  const { mutate: reorderCardsMutation } = useMutation(data => moveCard(data), {
     onSuccess: () => {
       toast.success("Done!")
       queryClient.invalidateQueries(["boardData"]);
     },
     onError: (error) => {
       console.error("Error while reordering cards: ", error);
-      toast.success("Error!")
+      toast.error("No Access!")
     }
   });
-  
+
   const handleOnDragEnd = (result) => {
     console.log(result);
     const { source, destination, draggableId } = result;
     if (!destination || (source.droppableId === destination.droppableId && source.index === destination.index)) {
-      return; 
+      return;
     }
     const dataToSend = {
       cardId: draggableId,
@@ -61,14 +61,14 @@ const CardList = ({ boardData }) => {
       title: '',
       boardsId: boardId,
       appUserId: userId,
-      workspaceId:workspaceId
+      workspaceId: workspaceId
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
       values.boardsId = boardId
       CreateCardListMutation(values);
     },
-  });   
+  });
 
   const { mutate: CreateCardListMutation, isLoading: createListLoading } = useMutation(
     (values) => createCardList(values),
@@ -89,21 +89,21 @@ const CardList = ({ boardData }) => {
 
 
   return (
-    <div className={styles.BoardListContainer}>
-      <div>
-<ToastContainer />
-      <DragDropContext onDragEnd={handleOnDragEnd}>
-        <Droppable droppableId="all-columns" direction="horizontal" type="column">
-          {(provided) => (
-            <div className={styles.main} {...provided.droppableProps} ref={provided.innerRef}>
-              {boardData?.cardLists?.map((column, index) => (
-                <Column key={column.id} column={column} index={index} />
-                ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+    <div>
+      <div className={styles.BoardListContainer}>
+        <div>
+          <DragDropContext onDragEnd={handleOnDragEnd}>
+            <Droppable droppableId="all-columns" direction="horizontal" type="column">
+              {(provided) => (
+                <div className={styles.main} {...provided?.droppableProps} ref={provided.innerRef}>
+                  {boardData?.cardLists?.map((column, index) => (
+                    <Column key={column.id} column={column} index={index} />
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         </div>
 
         {!openCreateMenu ? (
@@ -131,7 +131,7 @@ const CardList = ({ boardData }) => {
           </div>
         )}
       </div>
-
+    </div>
   );
 };
 

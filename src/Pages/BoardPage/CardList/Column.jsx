@@ -126,20 +126,18 @@ const Column = ({ column, index, filterData }) => {
   };
 
   return (
-    <Draggable draggableId={column.id} index={index}>
+    <Draggable draggableId={column?.id} index={index}>
       {(provided) => (
         <div
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          ref={provided.innerRef}
+          {...provided?.draggableProps}
+          {...provided?.dragHandleProps}
+          ref={provided?.innerRef}
           className={styles.main}
         >
           <h2>{column.title}</h2>
-
-
           <Droppable droppableId={column.id} type='task'>
         {(provided) => (
-          <div className={styles.taskList} {...provided.droppableProps} ref={provided.innerRef}>
+          <div   style={{ minHeight: "20px" }}  className={styles.taskList} {...provided?.droppableProps} ref={provided.innerRef}>
             {column?.tasks?.map((task, taskIndex) => (
               <Task key={task.id} task={task} index={taskIndex} />
             ))}
@@ -147,11 +145,6 @@ const Column = ({ column, index, filterData }) => {
           </div>
         )}
       </Droppable>
-
-
-
-
-
           <div className={styles.CreateCardContainer}>
             {openCreateTaskMenu ? (
               <div className={styles.createTaskContainer}>

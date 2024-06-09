@@ -8,8 +8,8 @@ const Task = ({ task, index }) => {
       {(provided) => (
         <div
           className={styles.main}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
+          {...provided?.draggableProps}
+          {...provided?.dragHandleProps}
           ref={provided.innerRef}
         >
           <p>{task.title}</p>
