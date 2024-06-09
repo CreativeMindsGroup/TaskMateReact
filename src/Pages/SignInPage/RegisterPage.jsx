@@ -12,34 +12,49 @@ import {
 } from "@chakra-ui/react";
 import AppImage from "../../Images/user-add-icon---shine-set-add-new-user-add-user-30 (1).png";
 import { useFormik } from "formik";
+import * as Yup from 'yup'; // Import Yup for validation
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import Button from "react-bootstrap/Button";
+import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router";
 
 export default function RegisterPage() {
   const [selectedRole, setSelectedRole] = useState("Member");
   const [modalShow, setModalShow] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
-
+  const navigate = useNavigate()
+  const validationSchema = Yup.object({
+    Email: Yup.string()
+      .email('Invalid email address')
+      .required('Email is required'),
+    Password: Yup.string()
+      .required('Password is required')
+      .min(8, 'Password must be at least 8 characters'),
+      Password: Yup.string()
+      .oneOf([Yup.ref('Password')], 'Passwords must match')
+      .required('Confirm Password is required'),
+  });
+  const [data, setData] = useState({ Email: "", Password: "" });
   const formik = useFormik({
     initialValues: {
-      Fullname: "",
-      Username: "",
       Email: "",
       Password: "",
-      UserRole: selectedRole ? selectedRole : selectedRole,
-      AdminId: "c1d6b79f-809f-4359-b4d2-0e3d6572f334",
+      ConfirmPassword: "",
     },
+    validationSchema: validationSchema, // Include validation schema here
     onSubmit: async (values) => {
-      values.UserRole = selectedRole;
+        const { Email, Password } = values; // Extract email and password from form values
+        setData({ Email, Password }); // Update the data state with email and password
+
       try {
         const response = await axios.post(
-          "https://localhost:7101/api/AppUser/CreateUser",
-          values,
+          "https://localhost:7101/api/Auth/register",
+          data,
           {
             headers: {
               Accept: "application/json",
@@ -49,17 +64,56 @@ export default function RegisterPage() {
         );
 
         if (response.status === 200) {
-          setIsSuccess(true);
+          formik.resetForm()
+          toast.success("Registered!")
+          setTimeout(() => {
+            navigate('/signin')
+          }, 500);
         }
       } catch (error) {
+        toast.error("Invalid register!")
         setIsError(true);
       }
     },
-  });
+  }); 
+  const RemoveUserFromWorkspaceformik = useFormik({
+    initialValues: {
+      Email: "",
+      Password: "",
+      ConfirmPassword: "",
+    },
+    validationSchema: validationSchema, // Include validation schema here
+    onSubmit: async (values) => {
+        const { Email, Password } = values; // Extract email and password from form values
+        setData({ Email, Password }); // Update the data state with email and password
 
-  const handleCheckboxChange = (event) => {
-    setSelectedRole(event.target.value);
-  };
+      try {
+        const response = await axios.post(
+          "https://localhost:7101/api/Auth/register",
+          data,
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          formik.resetForm()
+          toast.success("Registered!")
+          setTimeout(() => {
+            navigate('/signin')
+          }, 500);
+        }
+      } catch (error) {
+        toast.error("Invalid register!")
+        setIsError(true);
+      }
+    },
+  }); 
+
+
 
   return (
     <Modal
@@ -71,6 +125,7 @@ export default function RegisterPage() {
       backdrop="static"
       backdropClassName={Styles.signInModalBackdrop}
     >
+      <ToastContainer/>
       <Modal.Body
         className="p-0 d-flex flex-column align-items-center justify-content-center"
         id="contained-modal-title-vcenter"
@@ -83,35 +138,21 @@ export default function RegisterPage() {
               Task Mate
             </h1>
           </Modal.Title>
-          <p className="text-center my-4 fw-bold">Sign up to continue</p>
+          <p className="text-center my-1 fw-bold">Sign up to continue</p>
           <Form className="mt-3">
             <Form.Group className="mb-1" controlId="create-workspace-name">
               <Form.Control
                 className="mb-2 p-3"
-                type="text"
-                placeholder="Fullname"
-                name="Fullname"
                 onChange={formik.handleChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-1" controlId="create-workspace-name">
-              <Form.Control
-                className="mb-2 p-3"
-                type="text"
-                placeholder="Username"
-                name="Username"
-                value={formik.values.Username}
-                onChange={formik.handleChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-1" controlId="create-workspace-name">
-              <Form.Control
-                className="mb-2 p-3"
-                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 type="text"
                 placeholder="Email"
                 name="Email"
+                value={formik.values.Email}
               />
+              {formik.touched.Email && formik.errors.Email ? (
+                <div className="error-message">{formik.errors.Email}</div>
+              ) : null}
             </Form.Group>
             <Form.Group className="mb-1" controlId="create-workspace-name">
               <Form.Control
@@ -119,22 +160,29 @@ export default function RegisterPage() {
                 type="password"
                 placeholder="Password"
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 name="Password"
+                value={formik.values.Password}
               />
+              {formik.touched.Password && formik.errors.Password ? (
+                <div className="error-message">{formik.errors.Password}</div>
+              ) : null}
+            </Form.Group>
+            <Form.Group className="mb-1" controlId="create-workspace-name">
+              <Form.Control
+                className="mb-2 p-3"
+                type="password"
+                placeholder="Confirm Password"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name="ConfirmPassword"
+                value={formik.values.ConfirmPassword}
+              />
+              {formik.touched.ConfirmPassword && formik.errors.ConfirmPassword ? (
+                <div className="error-message">{formik.errors.ConfirmPassword}</div>
+              ) : null}
             </Form.Group>
           </Form>
-          <Form.Group className="mb-1" controlId="create-workspace-type">
-            <Form.Select
-              className="mb-2 p-1.2"
-              value="GlobalAdmin"
-              onChange={formik.UserRole}
-              aria-label="Default select example"
-            >
-              <option value="Member">Member</option>
-              <option value="Admin">Admin</option>
-              <option value="GlobalAdmin">Super Admin</option>
-            </Form.Select>
-          </Form.Group>
           <span className="w-100">
             <Button
               onClick={formik.handleSubmit}
@@ -146,8 +194,8 @@ export default function RegisterPage() {
               Sign Up
             </Button>
           </span>
-          <div className="mt-3 text-center">
-            <a className="btn-anchor" href="/SignIn">
+          <div style={{cursor:"pointer",userSelect:"none"}}  className="mt-3 text-center">
+            <a onClick={()=>navigate("/SignIn")} className="btn-anchor">
               Already have an account ?
             </a>
           </div>
@@ -155,12 +203,6 @@ export default function RegisterPage() {
             style={{ fontSize: "13px", paddingTop: "5px" }}
             className={Styles.userCreateRules}
           >
-            1{")"} It is not possible to create a second username with the same
-            name and it can only contain letters and numbers, symbols are not
-            included.<br></br>2{")"} There must be a domain after the @ at the
-            end of the email.<br></br>3{")"} The password must be at least 1
-            letter sized, with no numbers or special symbols, and must be at
-            least 8 chars.<br></br>
           </div>
         </div>
       </Modal.Body>

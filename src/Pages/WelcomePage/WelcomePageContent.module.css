@@ -96,27 +96,27 @@
     }
 }
 
-.BoardTitle {
+.BoardTitle{
     color: #b6c2cf !important;
     font-size: 12px;
     line-height: 16px;
     font-weight: 700;
     margin: 0;
 }
-
 .BoardTitle::placeholder {
     color: #b6c2cf !important;
     /* Same color as your input text color */
 }
-
-.BoardInput {
+.BoardInput{
     margin: 0;
+    color: #b6c2cf !important;
+    padding: 0 12px ;
     outline: none !important;
     box-shadow: none !important;
     background-color: #22272B;
     height: 32px;
     font-size: 14px;
-
+    border-radius: 4px !important;
 }
 
 .SelectInput {

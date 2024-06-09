@@ -8,6 +8,46 @@ body {
     background-color: none !important;
 }
 
+/* For WebKit-based browsers (Chrome, Safari) */
+*::-webkit-scrollbar {
+    width: 12px;
+    /* Width of the scrollbar */
+}
+
+*::-webkit-scrollbar-track {
+    background: #22272B;
+    /* Color of the scrollbar track */
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #a1abba;
+    /* Color of the scrollbar thumb */
+    border-radius: 4px;
+    /* Rounded corners of the scrollbar thumb */
+    border: 2px solid #22272B;
+    /* Creates padding around the scrollbar thumb */
+}
+
+.dropdown-menu {
+    padding: 0;
+    border-radius: 5px;
+}
+
+
+/* For Firefox */
+html,
+body {
+    scrollbar-color: #818791 #1c1f22b4;
+    /* Color of the thumb and track */
+    scrollbar-width: thin;
+    /* Width of the scrollbar */
+}
+
+.nav-link.active {
+    color: #3169ca !important;
+    background-color: #1c2b41 !important;
+}
+
 .create-workspace-close {
     --bs-btn-close-bg: url(data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2344546f'><path%20d='M.293.293a1%201%200%200%201%201.414%200L8%206.586%2014.293.293a1%201%200%201%201%201.414%201.414L9.414%208l6.293%206.293a1%201%200%200%201-1.414%201.414L8%209.414l-6.293%206.293a1%201%200%200%201-1.414-1.414L6.586%208%20.293%201.707a1%201%200%200%201%200-1.414z'/></svg>);
     --bs-btn-hover-color: unset;
@@ -24,4 +64,10 @@ body {
     --bs-btn-close-focus-opacity: 1;
     --bs-btn-close-disabled-opacity: 0.25;
     --bs-btn-close-white-filter: invert(1) grayscale(100%) brightness(200%);
+}
+.css-g1hrzp {
+    background-color: #22272B !important;
+    --select-bg: #22272B !important;
+    --input-border-radius:: 2px !important;
+    border-radius:2px !important
 }

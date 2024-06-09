@@ -1,49 +1,42 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
 import NavDropdown from "react-bootstrap/NavDropdown";
-import Styles from './WelcomePageContent.module.css'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
+import Styles from './WelcomePageContent.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 import CustomModal from '../../Components/CustomModal/CustomModal';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { GetWorkSpaceById, GetAllWorkspaces } from '../../Service/WorkSpaceService';
 import { useSelector } from 'react-redux';
 import { CreateBoard, getbyWokrspaceInBoard } from '../../Service/BoardService';
-import { useNavigate } from 'react-router';
 import { Form } from 'react-bootstrap';
 import jwtDecode from "jwt-decode";
-import { ChakraProvider, Divider, Flex, Menu, MenuButton, MenuList, useDisclosure } from '@chakra-ui/react';
+import { Flex, Menu, MenuButton, MenuList, useDisclosure } from '@chakra-ui/react';
 import Dvider from '../../Components/Dvider';
-import { Container } from '@chakra-ui/react'
-import * as Yup from 'yup'
+import { Container } from '@chakra-ui/react';
+import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import Button from "react-bootstrap/Button";
-import image1 from '../../Images/1.jpg'
-import image2 from '../../Images/2.jpg'
-import image3 from '../../Images/3.jpg'
-import image4 from '../../Images/4.jpg'
-import image5 from '../../Images/5.jpg'
-import image6 from '../../Images/6.jpg'
-
+import image1 from '../../Images/1.jpg';
+import image2 from '../../Images/2.jpg';
+import image3 from '../../Images/3.jpg';
+import image4 from '../../Images/4.jpg';
+import image5 from '../../Images/5.jpg';
+import image6 from '../../Images/6.jpg';
+import { useNavigate } from 'react-router';
 export default function WelcomePageContent() {
     const [modalShow, setModalShow] = useState(false);
     const [Data, setData] = useState()
     const [Render, setRender] = useState();
-    const { workspaceId, BoardId } = useSelector((x) => x.Data)
-    const { userId } = useSelector((x) => x.auth)
+    const { workspaceId } = useSelector((x) => x.workspaceAndBoard)
     const [showAlert, setShowAlert] = useState(false);
     const [showAlert2, setShowAlert2] = useState(false);
+    const { userId } = useSelector((x) => x.userCredentials)
+
     const images = [image1, image2, image3, image4, image5, image6]
-    const { token } = useSelector((x) => x.auth);
-    const decodedToken = token ? jwtDecode(token) : null;
-    const userId2 = decodedToken
-        ? decodedToken[
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-        ]
-        : null;
+
     const queryClient = useQueryClient();
-    const Navigate = useNavigate()
     const cleanURL = () => {
         const cleanURL = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, cleanURL);
@@ -61,10 +54,10 @@ export default function WelcomePageContent() {
         onClose: onBoardClose,
     } = useDisclosure();
 
-    const { data: BoardData, isSuccess, refetch } = useQuery(
-        ["GetBoartsInWorkspace", workspaceId ? workspaceId : undefined, userId2 ? userId2 : undefined],
-        () => getbyWokrspaceInBoard(userId2, workspaceId),
-        { enabled: !!workspaceId && !!userId2 }
+    const { data: BoardData } = useQuery(
+        ["GetBoartsInWorkspace", workspaceId ? workspaceId : undefined, userId ? userId : undefined],
+        () => getbyWokrspaceInBoard(userId, workspaceId),
+        { enabled: !!workspaceId && !!userId }
     );
     const { data: GetWorkspaceById } = useQuery(
         ["GetWorkspaceById", workspaceId],
@@ -72,9 +65,9 @@ export default function WelcomePageContent() {
     );
 
     const { data: userWorkspace } = useQuery(
-        ["GetAllworkspaces", userId2 ? userId2 : undefined],
-        () => GetAllWorkspaces(userId2),
-        { enabled: !!userId2 }
+        ["GetAllworkspaces", userId ? userId : undefined],
+        () => GetAllWorkspaces(userId),
+        { enabled: !!userId }
     );
 
     useEffect(() => {
@@ -86,7 +79,7 @@ export default function WelcomePageContent() {
         initialValues: {
             title: "",
             workspaceId: "",
-            appUserId: userId2,
+            appUserId: userId,
             theme: ""
         },
         validationSchema: Yup.object({
@@ -120,19 +113,20 @@ export default function WelcomePageContent() {
     const { mutate: CreateBoardMutation } = useMutation(
         (values) => CreateBoard(values),
         {
-            onSuccess: (values) => {
+            onSuccess: () => {
                 queryClient.invalidateQueries("Boards");
                 queryClient.invalidateQueries("GetBoartsInWorkspace");
                 setShowAlert2(true);
-                const timer = setTimeout(() => {
-                    setShowAlert2(false);
-                }, 2000);
             },
-            onError: (err) => {
+            onError: () => {
             },
         }
     );
-
+    const navigate = useNavigate();
+    const HandleNavigate = (data) => {
+        console.log('Testing navigation to homepage');
+        navigate(data);
+    };
     return (
         // <div className={Styles.Main} >
         //     {BoardData ? "" :
@@ -142,7 +136,8 @@ export default function WelcomePageContent() {
         //     }
         // </div>
         <div style={{ overflowY: 'hidden', minHeight: '95vh', width: "100%", padding: "20px", }}>
-            {userWorkspace && userWorkspace?.data?.length > 0 ? (
+            {
+            userWorkspace && userWorkspace?.data?.length > 0 ? (
                 GetWorkspaceById?.data && (
                     <div style={{ color: '#b6c2cf' }} className={Styles.contentWrapper}>
                         <div className={Styles.contentTopNavBar}>
@@ -159,7 +154,7 @@ export default function WelcomePageContent() {
                                     </div>
                                     <p style={{ padding: '7px 0', margin: '0' }}>{GetWorkspaceById?.data?.description}</p>
                                 </Flex>
-                                <button className={Styles.InviteButton} >
+                                <button onClick={()=>HandleNavigate(`/members/${GetWorkspaceById?.data.id}`)}className={Styles.InviteButton} >
                                     <svg xmlns="http://www.w3.org/2000/svg" height="19px" viewBox="0 -960 960 960" width="24px" fill="#ffff"><path d="M720-400v-120H600v-80h120v-120h80v120h120v80H800v120h-80Zm-360-80q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM40-160v-112q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v112H40Zm80-80h480v-32q0-11-5.5-20T580-306q-54-27-109-40.5T360-360q-56 0-111 13.5T140-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T440-640q0-33-23.5-56.5T360-720q-33 0-56.5 23.5T280-640q0 33 23.5 56.5T360-560Zm0-80Zm0 400Z" /></svg>
                                     Invite Workspace members</button>
                             </Flex>
@@ -202,7 +197,7 @@ export default function WelcomePageContent() {
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <div>
+                                                <div style={{display:"flex" , flexDirection:"column"}}>
                                                     <label className={Styles.BoardTitle} htmlFor="title">Board title*</label>
                                                     <input
                                                         className={Styles.BoardInput}
@@ -254,7 +249,7 @@ export default function WelcomePageContent() {
                                     BoardData.data.map((board, index) => {
                                         return (
                                             <Card
-                                                onClick={() => Navigate(`/Boards/${board.id}`)}
+                                            onClick={() => HandleNavigate(`/Boards/${board.id}`)}
                                                 key={index}
                                                 style={{
                                                     backgroundImage: `url(/Images/${board.theme}.jpg)`,

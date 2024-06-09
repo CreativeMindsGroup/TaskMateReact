@@ -13,6 +13,8 @@ import Form from "react-bootstrap/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { CircularProgress } from "@chakra-ui/react";
+import jwtDecode from "jwt-decode";
+import { setUserCreditinals } from "../../Redux/Slices/UserCreditionals";
 
 export default function SignInPage() {
   const [loginError, setLoginError] = useState(null);
@@ -41,6 +43,19 @@ export default function SignInPage() {
     {
       onSuccess: (resp) => {
         dispatch(loginAction(resp));
+
+        const decodedToken = jwtDecode(resp.data.token);
+        const userId = decodedToken.UserId;
+        const email =  decodedToken.Email;
+        const emailConfirmed = decodedToken.EmailConfirmed;
+        const role = decodedToken.Role;
+        dispatch(setUserCreditinals({
+          userId,
+          email,
+          emailConfirmed: emailConfirmed === "True", // Convert to boolean
+          role,
+        }));
+
         navigate("/");
       },
       onError: (error) => {
@@ -101,7 +116,7 @@ export default function SignInPage() {
                 onBlur={LoginFormik.handleBlur}
                 value={LoginFormik.values.usernameOrEmail}
                 isInvalid={!!LoginFormik.errors.usernameOrEmail && LoginFormik.touched.usernameOrEmail}
-                className="p-4 px-3"
+                className={Styles.Input}
               />
               <Form.Control.Feedback type="invalid">
                 {LoginFormik.errors.usernameOrEmail}
@@ -117,7 +132,7 @@ export default function SignInPage() {
                   onBlur={LoginFormik.handleBlur}
                   value={LoginFormik.values.password}
                   isInvalid={!!LoginFormik.errors.password && LoginFormik.touched.password}
-                  className="p-4 px-3"
+                  className={Styles.Input}
                 />
                 <FontAwesomeIcon
                   icon={showPassword ? faEyeSlash : faEye}
@@ -142,14 +157,14 @@ export default function SignInPage() {
               size="lg"
               disabled={Loginloading}
             >
-               {Loginloading ? <CircularProgress isIndeterminate size="24px" color="#579dff" /> : "Log in"}
+              {Loginloading ? <CircularProgress isIndeterminate size="24px" color="#579dff" /> : "Log in"}
             </Button>
           </Form>
           {loginError && <p style={{ color: "red" }}>{loginError}</p>}
-          <div className="mt-1 text-center">
-            {/* <a className="btn-anchor" href="/CreateUser">
+          <div tyle={{cursor:"pointer",userSelect:"none"}}  onClick={()=>navigate("/Register")}  className="mt-1 text-center">
+            <a  className="btn-anchor" >
               Create an account
-            </a> */}
+            </a>
           </div>
         </div>
       </Modal.Body>

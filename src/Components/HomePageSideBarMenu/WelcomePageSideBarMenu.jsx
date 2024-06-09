@@ -11,7 +11,7 @@ import { DeleteWorkSpace, GetAllWorkspaces, UpdateWorkSpace } from '../../Servic
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import jwtDecode from 'jwt-decode';
-import { incrementRefresh, setData } from '../../Redux/Slices/WorkspaceAndBorderSlice';
+import {  setData } from '../../Redux/Slices/WorkspaceAndBorderSlice';
 import { AlertIcon, FormLabel, Stack, useDisclosure, Alert, Flex } from '@chakra-ui/react';
 import { ChakraProvider } from '@chakra-ui/react';
 
@@ -21,13 +21,14 @@ import {
   ModalContent,
   ModalHeader,
   ModalFooter,
-  ModalBody,
+  ModalBody,  
   ModalCloseButton,
   Input,
   FormControl
 } from '@chakra-ui/react'
 import { useFormik } from 'formik';
 import { GetUserById } from '../../Service/UserService';
+import { useNavigate } from 'react-router';
 
 export default function WelcomePageSideBarMenu() {
   const initialRef = React.useRef(null)
@@ -36,15 +37,9 @@ export default function WelcomePageSideBarMenu() {
   const [modalShow, setModalShow] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { token } = useSelector((x) => x.auth);
-  const { workspaceId } = useSelector((x) => x.Data)
+  const { userId } = useSelector((x) => x.userCredentials)
+  const { workspaceId } = useSelector((state) => state.workspaceAndBoard);
   const queryClient = useQueryClient();
-  const decodedToken = token ? jwtDecode(token) : null;
-  const userId = decodedToken
-    ? decodedToken[
-    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-    ]
-    : null;
-
 
   const { data: ALlworkspaces } = useQuery(["GetAllworkspaces", userId], () =>
     GetAllWorkspaces(userId)
@@ -123,6 +118,11 @@ export default function WelcomePageSideBarMenu() {
   useEffect(() => {
     SetInedex(currentWorkspaceIndex)
   }, [currentWorkspaceIndex])
+  const navigate = useNavigate();
+  const HandleNavigate = (data) => {
+      console.log('Testing navigation to homepage');
+      navigate(data);
+  };
   return (
     <>
       <div style={{ width: "100%", maxWidth: "300px" }}>
@@ -158,8 +158,7 @@ export default function WelcomePageSideBarMenu() {
                       {data.title}
                     </Accordion.Header>
                     <Accordion.Body className='d-flex flex-column p-0 mt-2'>
-                      <Button className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faBarsProgress} /></span>Boards</Button>
-                      <Button className='fw-bold mb-1 w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faUserGroup} /></span>Members</Button>
+                      <Button  onClick={()=>HandleNavigate(`/members/${ALlworkspaces?.data[index]?.id}`)} className='fw-bold mb-1 w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faUserGroup} /></span>Members</Button>
                       {Data?.data?.role === "GlobalAdmin" || Data?.data?.role === "Admin" ? (
                         <>
                           <Button onClick={() => setModalShow(true)} className='fw-bold w-100 mb-1 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faTrashCan} /></span>Delete</Button>

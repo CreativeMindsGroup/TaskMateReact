@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import AuthReducer from './Slices/AuthSlice';
-import DataReducer from './Slices/WorkspaceAndBorderSlice';
+import WorkspaceAndBorderSlice from './Slices/WorkspaceAndBorderSlice';
+import UserCreditionals from './Slices/UserCreditionals';
 
 const loadState = () => {
   try {
@@ -28,7 +29,8 @@ const preloadedState = loadState();
 const store = configureStore({
   reducer: {
     auth: AuthReducer,
-    Data: DataReducer,
+    userCredentials: UserCreditionals,
+    workspaceAndBoard: WorkspaceAndBorderSlice,
   },
   preloadedState: preloadedState,
 });

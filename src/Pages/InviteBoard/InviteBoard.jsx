@@ -2,151 +2,88 @@ import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Style from "./InviteBoard.module.css";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { getByToken } from "../../Service/TokenService";
-import { useQuery } from "react-query";
-import { useFormik } from "formik";
-import { useQueryClient } from "react-query";
-
+import { useMutation, useQueryClient } from "react-query";
+import { useSelector } from "react-redux";
+import { AcceptInvite, GetWorkSpaceById } from "../../Service/WorkSpaceService";
+import { toast, ToastContainer } from "react-toastify";
+import jwtDecode from "jwt-decode";
 
 export default function InviteBoard() {
-  const [loginAccess, setLoginAccess] = useState(false);
   const navigate = useNavigate();
-  const { generateGuidId, linkSelectedWorkspaceId, linkBoardId, userId } =
-    useParams();
-  const [tokenIsActive, setTokenIsActive] = useState(false);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get('token');
 
-  const { data: ByToken } = useQuery(["ByToken", generateGuidId], () =>
-    getByToken(generateGuidId)
-  );
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      window.location.reload();
-    }, 240000);
-    return () => clearTimeout(timer);
-  }, []);
+  const { userId, email } = useSelector((x) => x.userCredentials);
+  const [decodedToken, setDecodedToken] = useState(jwtDecode(token));
+  const [domainTitle, setDomainTitle] = useState("");
 
   useEffect(() => {
-    if (ByToken && ByToken.data) {
-      setTokenIsActive(ByToken.data);
+    // Update the decoded token with the email from the Redux store
+    setDecodedToken((prevToken) => ({
+      ...prevToken,
+      Email: email
+    }));
+    console.log(decodedToken);
+
+    if (!userId) {
+      console.log('id not exists!');
+      navigate('/');
+    } else {
+      console.log('id exists');
+      GetWorkSpaceById(decodedToken.WorkspaceId).then(workspace => {
+        setDomainTitle(workspace?.data?.title);
+      }).catch(error => {
+        console.error('Error fetching workspace:', error);
+      });
     }
-  }, [ByToken]);
+  }, [userId, email]);
+
   const queryClient = useQueryClient();
-
-
-  const [error, setError] = useState(null);
-  const Formik = useFormik({
-    initialValues: {
-      AdminId: userId ? userId : "",
-      BoardId: linkBoardId ? linkBoardId : "",
-      WorkspaceId: linkSelectedWorkspaceId ? linkSelectedWorkspaceId : "",
-      UsernameOrEmail: "",
-      Password: "",
+  const { mutate, isLoading } = useMutation(() => AcceptInvite(token,email), {
+    onSuccess: () => {
+      toast.success("Joined!");
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
+      queryClient.invalidateQueries("getAllusersOfWorkspce");
     },
-    onSubmit: async (values) => {
-      const formData = new FormData();
-
-      formData.append("AdminId", values.AdminId);
-      formData.append("WorkspaceId", values.WorkspaceId);
-      formData.append("BoardId", values.BoardId);
-      formData.append("UsernameOrEmail", values.UsernameOrEmail);
-      formData.append("Password", values.Password);
-
-      try {
-        const response = await axios.post(
-          "https://localhost:7101/api/Boards/ShareLinkBoardUser",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        if (response.status === 201 || response.status === 200 || response.status === 204) {
-          queryClient.invalidateQueries("GetAllNotifications");
-          navigate("/SignIn");
-        }
-      } catch (error) {
-        setError("Invalid Login!");
-      }
-    },
+    onError: () => {
+      toast.error("Couldn't join!");
+    }
   });
+
+  const handleJoin = () => {
+    console.log('hello', decodedToken);
+    mutate();
+  };
 
   return (
     <div className={Style.mainWrapper}>
-      {tokenIsActive ? (
-        <Col
-          sm={6}
-          className="d-flex align-items-center justify-content-center flex-column"
-        >
+      <ToastContainer />
+      {decodedToken.exp > Math.floor(Date.now() / 1000) ? (
+        <Col sm={6} className="d-flex align-items-center justify-content-center flex-column">
           <div className="d-flex justify-content-center">
-            <h5 className="fw-bold">Nurlan Nuruzade</h5>
+            <h5 className="fw-bold">{decodedToken.Inviter}</h5>
             <h5 className="fw-normal mx-2">invited you to</h5>
-            <h5 className="fw-bold">qweezSwe!</h5>
+            <h5 className="fw-bold">{domainTitle} workspace</h5>
           </div>
           <p className="mt-1">
-            Looks like you need to be logged into your TaskMate account to join
-            this workspace.
+            Looks like you need to be logged into your TaskMate account to join this workspace.
           </p>
           <div className="col-6 d-flex justify-content-center mt-0">
-            <Button
-              onClick={() => setLoginAccess((prev) => !prev)}
-              className="default-submit w-75 ms-2 fw-bold mt-1"
-            >
-              {loginAccess ? "To Reject" : "Log in"}
+            <Button onClick={userId ? handleJoin : () => navigate('/')} className="default-submit w-75 ms-2 fw-bold mt-1">
+              {userId ? "Accept" : "Log in"}
             </Button>
           </div>
           <a className="mt-1 btn-anchor" href="/">
             Learn more about TaskMate
           </a>
-          {loginAccess && (
-            <Col
-              sm={6}
-              className="d-flex align-items-center justify-content-center flex-column"
-            >
-              <form onSubmit={Formik.handleSubmit} className={Style.formLogin}>
-                <h3>Login Here</h3>
-
-                <label htmlFor="username">Username</label>
-
-                <input
-                  type="text"
-                  name="UsernameOrEmail"
-                  value={Formik.values.UsernameOrEmail}
-                  onChange={Formik.handleChange}
-                  placeholder="Email or Username"
-                  id="username"
-                />
-
-                <label htmlFor="password">Password</label>
-                <input
-                  name="Password"
-                  value={Formik.values.Password}
-                  onChange={Formik.handleChange}
-                  type="password"
-                  placeholder="Password"
-                  id="password"
-                />
-                <p
-                  style={{
-                    display: error !== null ? "block" : "none",
-                    fontSize: "16px",
-                    color: "red",
-                  }}
-                >
-                  {error}
-                </p>
-                <button>Log In</button>
-              </form>
-            </Col>
-          )}
         </Col>
       ) : (
-        <div
-          style={{ color: "red", fontSize: "34px", fontFamily: "monospace" }}
-        >
+        <div style={{ color: "red", fontSize: "34px", fontFamily: "monospace" }}>
           Token has expired
         </div>
       )}

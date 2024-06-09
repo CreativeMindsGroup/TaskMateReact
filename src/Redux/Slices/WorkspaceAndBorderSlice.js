@@ -4,7 +4,7 @@ const initialState = {
   workspaceId: null,
   BoardId: null,
   userId: null,
-  refresh: 0 
+  refresh: 0,
 };
 
 export const WorkspaceAndBoardSlice = createSlice({
@@ -14,11 +14,13 @@ export const WorkspaceAndBoardSlice = createSlice({
     setData: (state, action) => {
       return { ...state, ...action.payload };
     },
-    incrementRefresh: (state) => {
-      state.refresh += 1;
+    clearData: () => {
+      return initialState;
     },
   },
 });
 
-export const { setData, incrementRefresh } = WorkspaceAndBoardSlice.actions;
+// Export actions and reducer
+export const { setData, clearData } = WorkspaceAndBoardSlice.actions;
 export default WorkspaceAndBoardSlice.reducer;
+

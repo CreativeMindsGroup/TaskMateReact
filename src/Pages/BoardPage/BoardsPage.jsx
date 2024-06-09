@@ -6,7 +6,7 @@ import { useLocation, useParams } from 'react-router'
 
 export default function BoardsPage() {
   const location = useLocation();
-  const { id } = useParams();
+  const { BoardId } = useParams();
   const [image, setImage] = useState()
   const hangeChangeImage = (image) => {
     setImage(image)
@@ -20,11 +20,12 @@ export default function BoardsPage() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          height: "100hv"
+          height: "94vh",
+          overflow: "hidden",
         }}
         className={Styles.MainContainer}>
-        <SideBarMenu setImage={hangeChangeImage} id={id} />
-        <Content  />
+        <SideBarMenu setImage={hangeChangeImage} id={BoardId} />
+        <Content />
       </div>
     </>
   )

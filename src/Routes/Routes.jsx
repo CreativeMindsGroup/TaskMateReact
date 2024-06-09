@@ -13,22 +13,23 @@ import BoardsPage from "../Pages/BoardPage/BoardsPage";
 
 export default function Routes() {
   const { token } = useSelector((x) => x.auth);
+  const { userId } = useSelector((x) => x.userCredentials)
   let routes = [
     {
       path: "/",
       element: <MainLayout />,
       children: [
         {
-          path: "/Boards/:id",
-          element: token ? <BoardsPage /> : <Navigate to={"/SignIn"} />,
+          path: "/Boards/:BoardId",
+          element: userId ? <BoardsPage /> : <Navigate to={"/SignIn"} />,
         },
         {
           path: "/",
-          element: token ? <WelcomePage /> : <Navigate to={"/SignIn"} />,
+          element: userId ? <WelcomePage /> : <Navigate to={"/SignIn"} />,
         },
         {
-          path: "/Members",
-          element: token ? <Members /> : <Navigate to={"/SignIn"} />,
+          path: "/Members/:id",
+          element: userId ? <Members /> : <Navigate to={"/SignIn"} />,
         },
       ],
     },
@@ -40,15 +41,16 @@ export default function Routes() {
           element: <SignInPage />,
         },
         {
-          path: "/CreateUser",
-          element: token ?  <RegisterPage></RegisterPage> : <Navigate to={"/SignIn"} />,
+          path: "/Register",
+          element:  <RegisterPage/>,
         },
         {
           path: "/Invite/:generateGuidId/:linkSelectedWorkspaceId/:userId",
           element: <Invite />,
         },
         {
-          path: "/InviteBoard/:generateGuidId/:linkSelectedWorkspaceId/:linkBoardId/:userId",
+          path: "/workspace/invite",
+          search: "?token=value",
           element: <InviteBoard />,
         },
       ],

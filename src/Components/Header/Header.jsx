@@ -5,7 +5,6 @@ import { Card, Image, Navbar } from "react-bootstrap";
 import { Menu, MenuButton, MenuDivider, MenuList, Stack, AlertIcon, useDisclosure, Img } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import WorkSpace from "../WorkSpace/WorkSpace";
-import UserImage from '../../Images/126083012.jpg'
 import Modal from "react-bootstrap/Modal";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -19,7 +18,6 @@ import { useDispatch, useSelector } from "react-redux";
 import jwtDecode from "jwt-decode";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { CreateBoard } from "../../Service/BoardService";
-import { GetUserById } from "../../Service/UserService";
 import image1 from '../../Images/1.jpg'
 import image2 from '../../Images/2.jpg'
 import image3 from '../../Images/3.jpg'
@@ -28,9 +26,12 @@ import image5 from '../../Images/5.jpg'
 import image6 from '../../Images/6.jpg'
 import { logoutAction } from "../../Redux/Slices/AuthSlice";
 import {
+  clearData,
   setData,
 } from "../../Redux/Slices/WorkspaceAndBorderSlice";
 import * as Yup from "yup";
+import { clearUserCreditinals } from "../../Redux/Slices/UserCreditionals";
+import { useNavigate } from "react-router";
 
 export default function Header() {
   const images = [image1, image2, image3, image4, image5, image6]
@@ -89,21 +90,17 @@ export default function Header() {
 
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
-  const { token, email, username } = useSelector((x) => x.auth);
+  const { email, username } = useSelector((x) => x.userCredentials);
   const [showAlert, setShowAlert] = useState(false);
   const [showAlert2, setShowAlert2] = useState(false);
   const [inputResult, setInputResult] = useState(false);
   const [createBoardSlide2, setCreateBoardSlide2] = useState(false);
-  const { workspaceId } = useSelector((x) => x.Data)
+  const { workspaceId } = useSelector((x) => x.workspaceAndBoard)
+  const { userId } = useSelector((x) => x.userCredentials)
+
   useEffect(() => {
     setSelectedWorkspaceId(workspaceId)
   }, [workspaceId])
-  const decodedToken = token ? jwtDecode(token) : null;
-  const userId = decodedToken
-    ? decodedToken[
-    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-    ]
-    : null;
 
   const doNotClose = (e) => {
     e.stopPropagation();
@@ -211,6 +208,7 @@ export default function Header() {
     }
     onWorkspacesClose();
   };
+  const navigate = useNavigate()
   return (
     <div className={Styles.Main}>
       {/* <ChakraProvider>
@@ -235,8 +233,8 @@ export default function Header() {
         {/* BrandLogo */}
         <Navbar.Brand
           className="d-flex align-items-center "
-          style={{ color: "#b6c2cf", fontSize: "22px", margin: "0", fontWeight: "500", marginBottom: "2px" }}
-          href="/"
+          style={{ color: "#b6c2cf", fontSize: "22px", margin: "0", fontWeight: "500", marginBottom: "2px",cursor:"pointer" }}
+          onClick={()=>navigate("/")}
         >
           <svg
             className="me-2"
@@ -273,7 +271,7 @@ export default function Header() {
           >
             Workspaces <ChevronDownIcon />
           </MenuButton>
-          <MenuList zIndex={"3"} className={Styles.MenuContainer} border={"1px solid #dfe1e61c"} padding={"14px 10px"} borderRadius={"10px"} minW={"300px"} backgroundColor={"#282e33"}>
+          <MenuList zIndex={"6"} className={Styles.MenuContainer} border={"1px solid #dfe1e61c"} padding={"14px 10px"} borderRadius={"10px"} minW={"300px"} backgroundColor={"#282e33"}>
             <div className={Styles.AllWorkspaceContainer}>
               {selectedWorkspaceId &&
                 <div>
@@ -309,7 +307,7 @@ export default function Header() {
             _expanded={{ backgroundColor: '#1c2b41', color: "#579dff" }}
           >Create
           </MenuButton>
-          <MenuList zIndex={2} border={"1px solid #dfe1e61c"} borderRadius={"10px"} minW={"300px"} backgroundColor={"#282e33"}>
+          <MenuList zIndex={6} border={"1px solid #dfe1e61c"} borderRadius={"10px"} minW={"300px"} backgroundColor={"#282e33"}>
             <div className={Styles.CreateContainer}>
               <Menu isOpen={isBoardOpen} onOpen={onBoardOpen} onClose={onBoardClose} >
                 <div className={Styles.MenuOption} onClick={() => { onBoardOpen(); }}>
@@ -358,7 +356,7 @@ export default function Header() {
                           ))}
                         </div>
                       </div>
-                      <div>
+                      <div style={{ display: "flex", flexDirection: "column" }}>
                         <label className={Styles.BoardTitle} htmlFor="title">Board title*</label>
                         <input
                           className={Styles.BoardInput}
@@ -425,7 +423,7 @@ export default function Header() {
       <div style={{ position: 'relative', width: isClicked ? "100%" : "max-content" }} className={Styles.rightsideContainer}>
         <Menu isOpen={isSearchOpen} onClose={onSearchClose}>
           <div ref={searchContainerRef} style={{ width: "100%" }} onClick={toggleSearch} className={!isClicked ? Styles.SearchContainer : Styles.SearchContainerOpened}>
-            <span style={{ fontSize: "18px", color: "#9fadbcd1", padding: "0 0 0 10px" }} className="material-symbols-outlined">
+            <span style={{ userSelect: "none", fontSize: "18px", color: "#9fadbcd1", padding: "0 0 0 10px" }} className="material-symbols-outlined">
               search
             </span>
             <input className={Styles.SearchInput} placeholder="Search " type="text" />
@@ -434,7 +432,7 @@ export default function Header() {
             hello
           </MenuList>
         </Menu>
-        <Menu isOpen={isProfileOpen} onOpen={onProfileOpen} onClose={onProfileClose}>
+        <Menu  isOpen={isProfileOpen} onOpen={onProfileOpen} onClose={onProfileClose}>
           <MenuButton
             className={Styles.userImageContainer}
             bg={"none"}
@@ -446,25 +444,29 @@ export default function Header() {
             _hover={{ bg: 'gray.400' }}
             _expanded={{ backgroundColor: '#A6C5E229', color: "#579dff" }}
           >
-            <Image style={{ width: "60px", borderRadius: "5px" }} className={Styles.userImage} src={`https://placehold.co/512x512/d9e3da/1d2125?text=${username?.toUpperCase().slice(
-                0,
-                1
-              )}`}  />
+            <Image style={{ width: "60px", borderRadius: "5px" }} className={Styles.userImage} src={`https://placehold.co/512x512/d9e3da/1d2125?text=${email?.toUpperCase().slice(
+              0,
+              1
+            )}`} />
           </MenuButton>
-          <MenuList style={{ display: isProfileOpen ? "block" : 'none' }} className={Styles.userProfile} border={"1px solid #dfe1e61c"} backgroundColor={"#282e33"}>
+          <MenuList zIndex={6} style={{ display: isProfileOpen ? "block" : 'none' }} className={Styles.userProfile} border={"1px solid #dfe1e61c"} backgroundColor={"#282e33"}>
             <p className={Styles.ProfileDetails}>Account</p>
             <div className={Styles.UserDetailsContainer}>
-              <Image style={{ width: "60px", borderRadius: "5px" }} className={Styles.ProfileDetailsImage} src={`https://placehold.co/512x512/d9e3da/1d2125?text=${username?.toUpperCase().slice(
+              <Image style={{ width: "60px", borderRadius: "5px" }} className={Styles.ProfileDetailsImage} src={`https://placehold.co/512x512/d9e3da/1d2125?text=${email?.toUpperCase().slice(
                 0,
                 1
-              )}`}  />
+              )}`} />
               <div className={Styles.UserDetails}>
-                <p>{username}</p>
                 <p>{email}</p>
               </div>
             </div>
             <MenuDivider margin={"10px 0"} color={"#9fadbc"} />
-            <p onClick={() => { onProfileClose(); dispatch(logoutAction()) }} className={Styles.logout}>log out</p>
+            <p onClick={() => {
+              onProfileClose();
+              dispatch(logoutAction());
+              dispatch(clearUserCreditinals());
+              dispatch(clearData());
+            }} className={Styles.logout}>log out</p>
           </MenuList>
         </Menu>
       </div>

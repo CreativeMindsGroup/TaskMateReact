@@ -1,0 +1,132 @@
+.main{
+    background-color: #101204;
+    width: 270px;
+    height: max-content;
+    padding: 10px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(159, 173, 188, 0.253) ;
+    color: #9fadbc;
+}
+.main h2{
+    font-size: 18px;
+    font-weight: 600;
+    color: #bec6cf;
+}
+.addTaskButton {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    color: #9fadbc;
+    font-size: 17px ;
+    cursor: pointer;
+  }
+  
+  .addTaskButton p {
+    margin: 0 !important;
+  }
+  
+  .createTaskButton {
+    background-color: #67a6ff;
+    border: none;
+    font-size: 14px;
+    color: #1d2125 !important;
+    border-radius: 4px;
+    font-weight: 600;
+    padding: 4px 10px;
+  }
+  
+  .inputTask {
+    border-radius: 6px;
+    background-color: #22272B;
+    border: 1px solid #74879C;
+    padding: 3px 8px;
+    color: #cee2fd;
+    width: 100%;
+  }
+ 
+  .closeButton {
+    display: flex;
+    align-items: center;
+    color: #cee2fd8c;
+    font-weight: 300;
+  }
+  .createTaskContainer {
+    display: flex;
+    height: max-content;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #1d2125;
+    border-radius: 6px;
+    padding: 9px;
+  }
+  .createTaskButtonsContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .CreateCardContainer{
+    padding: 10px 0 0px 0px;
+  }
+  .title{
+    color: #9fadbc;
+    font-weight: 600;
+  }
+  .headerTitle{
+    color: #9fadbc;
+    font-weight: 600;
+  }
+  .EditButton{
+    color: #9fadbc !important;
+    font-weight: 600 !important;
+    background-color: #5b5e6136 !important;
+    padding: 7px 10px !important;
+    border-radius: 3px !important;
+    height: max-content !important;
+  }
+  .OptionSellectButton{
+    background-color: #3B444C;
+    cursor: pointer;
+    padding: 5px 10px ;
+    width: 100%;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 5px;
+    color: #b6bfc9 !important;
+  }
+  .OptionSellectButton:hover{
+    background-color: #4f5a64;
+  }
+  .LeftContainer{
+    display: flex;
+    gap: 7px;
+    flex-direction: column;
+  }
+  .ModalBody{
+    background-color: #323940 !important;
+    max-width: 690px;
+    height: max-content;
+    padding-bottom: 20px;
+  }
+  .inputTaskArea{
+    border-radius: 6px;
+    background-color: #22272B;
+    border: 1px solid #74879C;
+    padding: 3px 8px;
+    color: #cee2fd;
+    width: 100%;
+    margin: 10px 0;
+    min-height: 160px;
+  }
+  .Text{
+    color: #9fadbc;
+    font-weight: 400;
+    font-size: 15px;
+    padding: 10px 0;
+  }
+  .MenuTitle{
+    color: #9fadbc;
+    font-weight: 700;
+    font-size: 12px;
+    margin: 0;
+  }
+  

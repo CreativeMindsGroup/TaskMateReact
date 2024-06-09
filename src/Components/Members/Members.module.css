@@ -8,7 +8,6 @@
 }
 
 .contentTopNavBar {
-  margin-bottom: 3rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -17,7 +16,26 @@
 .contentTopNavBar Button {
   align-self: flex-start;
 }
-
+.WokspaceImage{
+  width: 50px;
+}
+.SelectOption{
+  font-weight: 600;
+  color:#9fadbc;
+  width: 100%;
+}
+.SellectWrapper{
+  width: 100%;
+  padding-right: 10px;
+}
+.SellectContainer{
+  border-right: rgb(159 173 188 / 24%) 1px solid;;
+  height: 50vh;
+  margin-right: 20px;
+  padding-right: 10px;
+  max-width: 290px;
+  min-width: 230px; 
+}
 .modalShareButton {
   margin-left: 0.5rem;
   --bs-btn-color: #1d2125;
@@ -132,3 +150,79 @@
   border-radius: 5px;
   border-bottom-right-radius: 45px;
 }
+.UserImage{
+  width: 39px;
+  border-radius: 50% !important;
+}
+.MemberContainer{
+  display: flex;
+  align-items: center;
+}
+
+.UserDetails  {
+  margin: 0;
+  color: #9fadbc;
+  font-size: 14px;
+}
+.UserDetailsEmail{
+  margin: 0;
+  color: #d4d6d8;
+  font-size: 19px;
+}
+.searchInput::placeholder {
+  color: #b6c2cf; /* Placeholder text color */
+}
+.Inputinvite::placeholder {
+  color: #b6c2cf; /* Placeholder text color */
+}
+.Inputinvite{
+height: 40px;
+width: 100%;
+box-shadow: none;
+border:  1px solid #b6c2cf60;
+}
+.searchInput{
+  width: 200px;
+}
+.InviteLinkGenerateContainer{
+  height: max-content;
+  background-color: #1d2125 !important;
+  border-radius: 4px;
+}
+.HeaderGenerateLink{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.HeaderGenerateLink h1{
+margin: 0 !important; 
+font-size: 25px !important;
+color: #e5e9ee;
+}
+.InviteDesc {
+  margin: 0 !important; 
+  font-size: 15px !important;
+  color: #e5e9ee;
+  }
+  .Button{
+    min-width: max-content !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    color: #9fadbc !important;
+    background-color: #38414868 !important;
+    border: none !important;
+    padding: 5px 10px ;
+    border-radius: 2px !important;
+  }
+  .Select{
+    background-color: #384148;
+    color: #b6c2cf;
+  }
+  .searchResults{
+    background-color: #384148;
+    border-radius: 3px;
+  }
+  .searchResultItem{
+    padding: 5px;
+    cursor: pointer;
+  }
