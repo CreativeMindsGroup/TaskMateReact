@@ -40,7 +40,7 @@ export const UpdateChecklistItem = async (formData) => {
 
 export const GetAllChecklist = async (Id) => {
     try {
-        const response = await httpClient.get(`/api/Checklists/GetAll?CardId=${Id}`)
+        const response = await httpClient.get(`/api/Checklists?CardId=${Id}`)
         return response.data;
     } catch (error) {
     }
@@ -52,12 +52,20 @@ export const DeleteChecklistItem = async (Id) => {
     } catch (error) {
     }
 };
-export const DeleteChecklist = async (Id) => {
+export const DeleteChecklist = async (Id,UserId,WorkspaceId) => {
     try {
-        const response = await httpClient.delete(`/api/Checklists?CheckListId=${Id}`)
+        const response = await httpClient.delete(`/api/Checklists?CheckListId=${Id}&WorkspaceId=${WorkspaceId}&UserId=${UserId}`)
         return response.data;
     } catch (error) {
     }
 };
-
+export const CheckItemUpdate = async (Id, data) => {
+    try {
+        const response = await httpClient.put(`/api/Checkitems/${Id}`, data);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to update checklist item:', error);
+        throw error; 
+    }
+};
 

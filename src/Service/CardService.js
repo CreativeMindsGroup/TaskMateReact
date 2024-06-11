@@ -27,6 +27,9 @@ export const getByCard = (id) => {
 export const getBoardData = (id) => {
   return httpClient.get(`/api/Cards/board/${id}`);
 };
+export const RemoveCard = (cardId,userId,WorkspaceId) => {
+  return httpClient.delete(`/api/Cards/remove?appUserId=${userId}&cardId=${cardId}&WorkspaceId=${WorkspaceId}`);
+};
 
 export const getAllCardsByCardListId = (cardListId) => {
   return httpClient.get(`/api/Cards/GetAllCardsByCardListId?cardListId=${cardListId}`);
