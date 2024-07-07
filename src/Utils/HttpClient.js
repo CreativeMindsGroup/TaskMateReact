@@ -3,7 +3,7 @@ import Axios from "axios";
 const apiUrl = process.env.REACT_APP_API_HOST;
 
 const api = Axios.create({
-  baseURL: '${apiUrl}',
+  baseURL: `${apiUrl}`,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
