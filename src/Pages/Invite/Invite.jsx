@@ -33,6 +33,7 @@ export default function Invite() {
     }
   }, [ByToken]);
   const queryClient = useQueryClient();
+  const apiUrl = process.env.REACT_APP_API_HOST;
 
   const [error, setError] = useState(null);
   const Formik = useFormik({
@@ -52,7 +53,7 @@ export default function Invite() {
 
       try {
         const response = await axios.post(
-          "https://localhost:7101/api/Workspaces/ShareLinkWorkspaceUser",
+          `${apiUrl}/api/Workspaces/ShareLinkWorkspaceUser`,
           formData,
           {
             headers: {
