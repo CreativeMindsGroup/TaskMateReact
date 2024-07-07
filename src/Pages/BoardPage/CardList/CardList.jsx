@@ -180,7 +180,7 @@ const CardList = ({ boardData }) => {
               <button type="submit" onClick={cardListCreateFormik.handleSubmit} className={styles.CreateBoardButton}>Add list</button>
               <button onClick={() => setOpenCreateMenu(false)} className={styles.CloseButton}>
                 <span className="material-symbols-outlined">close</span>
-              </button>
+              </button> 
             </div>
           </div>
         )}

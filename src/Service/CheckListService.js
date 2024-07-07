@@ -25,17 +25,25 @@ export const CreateChecklistitem = async (formData) => {
     }
 };
 
-export const UpdateChecklistItem = async (formData) => {
-    try {
-        const response = await httpClient.put('/api/Checkitems', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
+// export const UpdateChecklistItem = async (formData) => {
+//     try {
+//         const response = await httpClient.put('/api/CardLists/update', formData, {
+//             headers: {
+//                 'Content-Type': 'multipart/form-data'
+//             }
+//         });
+//         return response.data;
+//     } catch (error) {
+//         throw error;
+//     }
+// };
+
+export const UpdateChecklistItem = (data) => {
+    return httpClient.put(`/api/CardLists/update`, data);
+};
+export const RemoveCardList = ({ CardlistId, userId, workspaceId }) => {
+    return httpClient.delete(`/api/CardLists/remove?CardlistId=${CardlistId}&WorkspaceId=${workspaceId}&UserId=${userId}`, {
+    });
 };
 
 export const GetAllChecklist = async (Id) => {
@@ -52,7 +60,7 @@ export const DeleteChecklistItem = async (Id) => {
     } catch (error) {
     }
 };
-export const DeleteChecklist = async (Id,UserId,WorkspaceId) => {
+export const DeleteChecklist = async (Id, UserId, WorkspaceId) => {
     try {
         const response = await httpClient.delete(`/api/Checklists?CheckListId=${Id}&WorkspaceId=${WorkspaceId}&UserId=${UserId}`)
         return response.data;
@@ -65,7 +73,7 @@ export const CheckItemUpdate = async (Id, data) => {
         return response.data;
     } catch (error) {
         console.error('Failed to update checklist item:', error);
-        throw error; 
+        throw error;
     }
 };
 

@@ -25,6 +25,7 @@ import image4 from '../../Images/4.jpg'
 import image5 from '../../Images/5.jpg'
 import image6 from '../../Images/6.jpg'
 import { ToastContainer, toast } from "react-toastify";
+import { Location } from "slate";
 
 export default function SideBarMenu({ setImage, id }) {
   const images = [image1, image2, image3, image4, image5, image6];
@@ -144,7 +145,7 @@ const navigate = useNavigate()
     navigate(`/Boards/${data}`)
     setImage(byBoard.data.find(board => board.id === data)?.theme);
     queryClient.refetchQueries("BoardInCardList");
-    queryClient.removeQueries("BoardInCardList");
+
   };
 
   useEffect(() => {

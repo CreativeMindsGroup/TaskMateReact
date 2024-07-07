@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -16,18 +16,22 @@ import { useNavigate, useParams } from 'react-router';
 
 export default function Content() {
     const [filterData, setFilterData] = useState();
-    const { BoardId } = useSelector((x) => x.workspaceAndBoard);
-const {BoardId:boardId} = useParams()
-    const { data: boardData, isLoading, error, isSuccess } = useQuery(
+    const { BoardId: boardId } = useParams()
+    const { data: Data, isLoading, error, isSuccess } = useQuery(
         ["boardData", boardId],
         () => getBoardById(boardId),
         {
             keepPreviousData: true,
-            enabled: !!boardId,
-            refetchOnWindowFocus: false 
+            refetchOnWindowFocus: false
         }
     );
-    console.log(boardData);
+    const [boardData, setBoardData] = useState()
+    useEffect(() => {
+        if (Data && isSuccess) {
+            setBoardData(Data);
+        }
+    }, [Data, isSuccess]);
+    console.log(boardData?.data?.id, boardId);
     const formik = useFormik({
         initialValues: {
             title: '',
@@ -87,6 +91,22 @@ const {BoardId:boardId} = useParams()
                                             <button type='submit' onChange={formik.handleSubmit} className={Styles.FilterButton}>
                                                 Filter
                                             </button>
+                                        </Flex>
+                                    </form>
+                                </div>
+                            </DropdownButton>
+                        </div>
+                        <div className={Styles.workspacePrivacyDropdownWrapper}>
+                            <DropdownButton className={Styles.workspacePrivacyDropdown} title="Menu">
+                                <div className={Styles.ContentDropdown}>
+                                    <form onSubmit={formik.handleSubmit}>
+                                        <Flex alignItems={'center'} justifyContent={"center"}>
+                                            <h1 className={Styles.FilterMenuHeader}>
+                                                Archived Cards
+                                            </h1>
+                                        </Flex>
+                                        <Flex>
+
                                         </Flex>
                                     </form>
                                 </div>

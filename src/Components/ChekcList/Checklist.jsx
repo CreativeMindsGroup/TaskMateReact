@@ -3,7 +3,8 @@ import Styles from './Checklist.module.css';
 import {
     Flex, Progress, Text, Button, useDisclosure, Modal,
     ModalOverlay, ModalContent, ModalHeader, ModalFooter,
-    ModalBody, ModalCloseButton, Input, ChakraProvider
+    ModalBody, ModalCloseButton, Input, ChakraProvider,
+    CircularProgress
 } from '@chakra-ui/react';
 import { useMutation, useQueryClient } from 'react-query';
 import { CheckItemUpdate, CreateChecklistitem, DeleteChecklist, DeleteChecklistItem } from '../../Service/CheckListService';
@@ -16,7 +17,7 @@ export default function Checklist({ data }) {
     const { workspaceId } = useSelector((x) => x.workspaceAndBoard);
     const { userId } = useSelector((x) => x.userCredentials);
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { isOpen:isOpenChecklist,onOpen: onOpenChecklist, onClose: onCloseChecklist } = useDisclosure();
+    const { isOpen: isOpenChecklist, onOpen: onOpenChecklist, onClose: onCloseChecklist } = useDisclosure();
 
     const [isDeleting, setIsDeleting] = useState(false);
     const [showAddItem, setShowAddItem] = useState(false);
@@ -27,8 +28,10 @@ export default function Checklist({ data }) {
         {
             onSuccess: () => {
                 queryClient.invalidateQueries("getAllCheklist");
+                queryClient.invalidateQueries("ChecklistCount");
                 toast.success("Checklist item deleted successfully!");
                 onCloseChecklist();  // Close the modal after deletion
+
             },
             onError: (error) => {
                 toast.error("Failed to delete checklist item.");
@@ -40,12 +43,13 @@ export default function Checklist({ data }) {
     const handleCheckboxChange = (id, isChecked) => {
         updateCheckItem({ id, newState: isChecked });
     };
-    const { mutate: updateCheckItem } = useMutation(
+    const { mutate: updateCheckItem, isLoading } = useMutation(
         ({ id, newState }) => CheckItemUpdate(id, newState),
         {
             onSuccess: () => {
                 toast.success("Checklist item updated successfully!");
                 queryClient.invalidateQueries("getAllCheklist");
+                queryClient.invalidateQueries("ChecklistCount");
             },
             onError: (error) => {
                 toast.error("Failed to update checklist item.");
@@ -84,9 +88,10 @@ export default function Checklist({ data }) {
             text: "",
             checklistId: data.id,
         },
-        onSubmit: async (values) => {
+        onSubmit: async (values, { resetForm }) => {
             await AddChecklistItemMutation(values);
             setShowAddItem(false);
+            resetForm();
         },
     });
 
@@ -149,7 +154,7 @@ export default function Checklist({ data }) {
                                             {item.text}
                                         </Text>
                                     </Flex>
-                                    <span onClick={()=>onOpenChecklist()} style={{ color: "#9fadbc", cursor: 'pointer' }} class="material-symbols-outlined">
+                                    <span onClick={() => onOpenChecklist()} style={{ color: "#9fadbc", cursor: 'pointer' }} class="material-symbols-outlined">
                                         more_horiz
                                     </span>
                                     < Modal isOpen={isOpenChecklist} onClose={onCloseChecklist}  >
@@ -161,7 +166,7 @@ export default function Checklist({ data }) {
                                                 Are you sure you want to delete this checklist item?
                                             </ModalBody>
                                             <ModalFooter>
-                                                <Button colorScheme='red' mr={3} onClick={()=>{deleteChecklistItem(item.id)}}>
+                                                <Button colorScheme='red' mr={3} onClick={() => { deleteChecklistItem(item.id) }}>
                                                     Delete
                                                 </Button>
                                                 <Button onClick={onCloseChecklist}>Cancel</Button>
@@ -212,10 +217,12 @@ export default function Checklist({ data }) {
                         Are you sure you want to delete this checklist item?
                     </ModalBody>
                     <ModalFooter>
-                        <Button colorScheme='red' mr={3} onClick={confirmDelete}>
-                            Delete
+                        <Button
+                            disabled={isLoading}
+                            isLoading={isLoading} onClick={onClose}>
+                            {isLoading ? <CircularProgress isIndeterminate size="24px" color="#579dff" /> : "Delete"}
                         </Button>
-                        <Button onClick={onClose}>Cancel</Button>
+                        <Button isLoading={isLoading} onClick={onClose}>Cancel</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal >

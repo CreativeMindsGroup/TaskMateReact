@@ -7,11 +7,13 @@
   border: 1px solid rgba(159, 173, 188, 0.253);
   color: #9fadbc;
 }
-.CoverContent{
+
+.CoverContent {
   height: 100px;
-   border-top-left-radius: 6px;
-   border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
 }
+
 .main h2 {
   font-size: 18px;
   font-weight: 600;
@@ -119,18 +121,23 @@
 .OptionSellectButton p {
   margin: 0;
 }
-.CoverPopover{
+
+.CoverPopover {
   border: none !important;
   background-color: #23282b !important;
+  padding: 10px 20px 20px 20px !important;
 }
-.ColorContaier{
+
+.ColorContaier {
   width: 50px;
   height: 32px;
   cursor: pointer;
 }
-.ColorContaier:hover{
-border: 2px solid rgb(87, 157, 255);
+
+.ColorContaier:hover {
+  border: 2px solid rgb(87, 157, 255);
 }
+
 .OptionSellectButton:hover {
   background-color: #4f5a64;
 }
@@ -172,14 +179,45 @@ border: 2px solid rgb(87, 157, 255);
   font-size: 12px;
   margin: 0;
 }
-.InputCheck{
+
+.InputCheck {
   height: 30px;
   padding: 5px;
+}
+.InputCheck2{
+  background-color: none !important;
 }
 .ChecklistModal {
   padding: 12px;
   width: 304px;
   height: max-content;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Noto Sans', 'Ubuntu', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  font-display: swap;
+  background-color: var(--ds-surface-overlay, #282e33) !important;
+  border-radius: 8px;
+  color: var(--ds-text, #b6c2cf) !important;
+  box-shadow: var(--ds-shadow-overlay, 0px 8px 12px #29282826, 0px 0px 1px #afb2b64f);
+  border: 1px solid #b6c2cf0c !important;
+  box-sizing: border-box;
+  outline: 0;
+  overflow: hidden;
+}
+
+.DateModal button {
+  background-color: var(--ds-link, #579dff);
+  color: var(--ds-text-inverse, #1d2125);
+  padding: 8px 20px;
+  margin-top: 14px;
+  border-radius: 4px;
+}
+
+.DateModal {
+  padding: 12px;
+  width: max-content !important;
+  height: max-content !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Noto Sans', 'Ubuntu', 'Droid Sans', 'Helvetica Neue', sans-serif;
   font-size: 14px;
   line-height: 20px;
@@ -224,6 +262,7 @@ border: 2px solid rgb(87, 157, 255);
   margin-top: 14px;
   border-radius: 4px;
 }
+
 .ChecklistMainConatiner {
   height: max-content;
   align-items: center;
@@ -231,6 +270,7 @@ border: 2px solid rgb(87, 157, 255);
   width: 100%;
   display: flex;
 }
+
 .ChecklistMain button {
   margin: 0;
   height: max-content;
@@ -244,6 +284,7 @@ border: 2px solid rgb(87, 157, 255);
   font-weight: 400;
   user-select: none;
 }
+
 .ChecHeader {
   display: flex;
   align-items: center;
@@ -251,6 +292,7 @@ border: 2px solid rgb(87, 157, 255);
   justify-content: space-between;
   width: 100%;
 }
+
 .ChecklistMainConatiner {
   height: max-content;
   align-items: center;
@@ -258,6 +300,7 @@ border: 2px solid rgb(87, 157, 255);
   width: 100%;
   display: flex;
 }
+
 .XmarkIcon {
   cursor: pointer;
 }
@@ -273,4 +316,64 @@ border: 2px solid rgb(87, 157, 255);
   font-size: 16px;
   line-height: 20px;
   font-weight: 600;
+}
+
+.DueDateContainer {
+  color: #9fadbc;
+}
+
+.DueDateTitle {
+  font-weight: 600;
+  font-size: 13px;
+  padding: 0;
+  margin: 0;
+}
+.DueDate{
+  font-weight: 600 !important;
+  font-size: 17px !important;
+  padding: 0;
+  margin: 0;
+}
+.attachment{
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-direction: column !important;
+}
+.attachmentItem{
+  padding: 5px 7px;
+  border-radius: 10px;
+  background-color: #4f5a645b;
+  color: #9fadbc;
+  font-size: 17px;
+  width: max-content;
+}
+.SellectOption{
+  background-color: #23282b !important;
+  border: none;
+ padding: 10px 10px;
+}
+.Input{
+  background-color: transparent;
+  border: 1px solid #4f5a64;
+  outline: none;
+  border-radius: 3px;
+  padding: 0px   10px;
+}
+.ColorOption{
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  border: 1px solid #b6c2cfd6 !important;
+
+}
+.InputCheckError {
+  border: 1px solid red;
+}
+.DropDownSellect{
+  height: 27px !important;
+  font-size: 18px;
+  font-weight: 500;
+  width: 100%;
+  border-radius: none !important;
 }
