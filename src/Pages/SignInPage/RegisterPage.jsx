@@ -27,6 +27,7 @@ export default function RegisterPage() {
   const [modalShow, setModalShow] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
+  const apiUrl = process.env.REACT_APP_API_HOST;
   const navigate = useNavigate()
   const validationSchema = Yup.object({
     Email: Yup.string()
@@ -89,7 +90,7 @@ export default function RegisterPage() {
 
       try {
         const response = await axios.post(
-          "https://localhost:7101/api/Auth/register",
+          `${apiUrl}/api/Auth/register`,
           data,
           {
             headers: {
