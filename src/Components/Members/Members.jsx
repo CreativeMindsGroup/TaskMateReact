@@ -62,6 +62,7 @@ export default function Members() {
   const [adminCount, setTotalAdminCount] = useState(0);
   const [MemberCount, setTotalMemberCount] = useState(0);
   const [GuestCount, setTotalGuestCount] = useState(0);
+  const apiUrl = process.env.REACT_APP_API_HOST;
 
 
   const [inviteUrl, setInviteUrl] = useState(null);
@@ -75,10 +76,10 @@ export default function Members() {
 
   const generateLink = () => {
     axios
-      .post("https://localhost:7101/api/Token")
+      .post(`${apiUrl}/api/Token`)
       .then((response) => {
         setInviteUrl(
-          `http://localhost:3000/Invite/${response?.data.token}/${linkSelectedWorkspaceId}/${userId}`
+          `${apiUrl}/Invite/${response?.data.token}/${linkSelectedWorkspaceId}/${userId}`
         );
       })
       .catch((error) => {
@@ -160,7 +161,7 @@ export default function Members() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://localhost:7101/api/AppUser/SearchUserByEmailorUsername?value=${searchValue}`
+          `${apiUrl}/api/AppUser/SearchUserByEmailorUsername?value=${searchValue}`
         );
         setSearchResult(response.data);
       } catch (error) {
