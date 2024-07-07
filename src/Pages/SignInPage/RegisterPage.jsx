@@ -54,7 +54,7 @@ export default function RegisterPage() {
 
       try {
         const response = await axios.post(
-          "https://localhost:7101/api/Auth/register",
+          `${apiUrl}/api/Auth/register`,
           data,
           {
             headers: {
