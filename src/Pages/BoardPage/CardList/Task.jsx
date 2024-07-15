@@ -11,14 +11,14 @@ const Task = ({ task, index }) => {
   const { workspaceId } = useSelector((x) => x.workspaceAndBoard);
   const { userId } = useSelector((x) => x.userCredentials);
   const queryClient = useQueryClient();
-  const { data: Task } = useQuery(
-    ['ChecklistCount', task.id],
-    () => getCardListItomCount(task.id),
-    {
-      staleTime: 1000 * 60 * 30,
-      cacheTime: 1000 * 60 * 30,
-    }
-  );
+  // const { data: Task } = useQuery(
+  //   ['ChecklistCount', task.id],
+  //   () => getCardListItomCount(task.id),
+  //   {
+  //     staleTime: 1000 * 60 * 30,
+  //     cacheTime: 1000 * 60 * 30,
+  //   }
+  // );
 
   // Function to check if due date is past
   const isDueDatePast = () => {
