@@ -105,7 +105,7 @@ export default function RegisterPage() {
           <Modal.Title className="fw-bold" id="contained-modal-title-vcenter">
             <h1 style={{ color: "#579dff" }} className="text-center">
               <FontAwesomeIcon className={"me-2"} icon={faCircleCheck} />
-              Task Mate
+              Task Aura
             </h1>
           </Modal.Title>
           <p className="text-center my-1 fw-bold">Sign up to continue</p>
