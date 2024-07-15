@@ -11,7 +11,7 @@ import { DeleteWorkSpace, GetAllWorkspaces, UpdateWorkSpace } from '../../Servic
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import jwtDecode from 'jwt-decode';
-import {  setData } from '../../Redux/Slices/WorkspaceAndBorderSlice';
+import { setData } from '../../Redux/Slices/WorkspaceAndBorderSlice';
 import { AlertIcon, FormLabel, Stack, useDisclosure, Alert, Flex } from '@chakra-ui/react';
 import { ChakraProvider } from '@chakra-ui/react';
 
@@ -21,7 +21,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalFooter,
-  ModalBody,  
+  ModalBody,
   ModalCloseButton,
   Input,
   FormControl
@@ -44,9 +44,7 @@ export default function WelcomePageSideBarMenu() {
   const { data: ALlworkspaces } = useQuery(["GetAllworkspaces", userId], () =>
     GetAllWorkspaces(userId)
   );
-  const { data: Data } = useQuery(["BoardInCardList", userId], () =>
-    GetUserById(userId)
-  );
+
   //delete workspace
   const [answer, setAnswer] = useState(false);
   const { mutate: DeleteWorks } = useMutation(
@@ -102,7 +100,7 @@ export default function WelcomePageSideBarMenu() {
   };
 
   //update State of the selected workspace
-  const updateParentState = (modalShow,Answer) => {
+  const updateParentState = (modalShow, Answer) => {
     setModalShow(modalShow);
     setAnswer(Answer);
   };
@@ -120,9 +118,26 @@ export default function WelcomePageSideBarMenu() {
   }, [currentWorkspaceIndex])
   const navigate = useNavigate();
   const HandleNavigate = (data) => {
-      console.log('Testing navigation to homepage');
-      navigate(data);
+    console.log('Testing navigation to homepage');
+    navigate(data);
   };
+  const [Data,SetData] = useState()
+  console.log(Data.data);
+  const handleGetRoles = (workspaceId) => {
+    getRolesMutation(workspaceId);
+  };
+  const { mutate: getRolesMutation } = useMutation(
+    (workspaceId) => GetUserById(userId, workspaceId),
+    {
+      onSuccess: (rolesData) => {
+        SetData(rolesData);
+      },
+      onError: (err) => {
+        console.error('Error fetching roles:', err);
+      },
+    }
+  );
+
   return (
     <>
       <div style={{ width: "100%", maxWidth: "300px" }}>
@@ -148,18 +163,18 @@ export default function WelcomePageSideBarMenu() {
               <h5 className='my-3' style={{ fontSize: "15px" }}>Your workspaces </h5>
               {ALlworkspaces?.data?.map((data, index) => {
                 return (
-                  <Accordion.Item onClick={() => { dispatch(setData({ workspaceId: data.id })) }} key={index} className={Styles.accordionBtn} eventKey={index.toString()}>
-                    <Accordion.Header >
+                  <Accordion.Item onClick={() => { dispatch(setData({ workspaceId: data.id }));   handleGetRoles(data.id); }} key={index} className={Styles.accordionBtn} eventKey={index.toString()}>
+                    <Accordion.Header >         
                       {/* ${workspaceColors[data.id]} */}
-                      <Image  className={[Styles.sideBarMenuWorkspacePic, 'me-2']} src={`https://placehold.co/512x512/d9e3da/1d2125?text=${data?.title?.toUpperCase().slice(
+                      <Image className={[Styles.sideBarMenuWorkspacePic, 'me-2']} src={`https://placehold.co/512x512/d9e3da/1d2125?text=${data?.title?.toUpperCase().slice(
                         0,
                         1
-                      )}`}  />
+                      )}`} />
                       {data.title}
                     </Accordion.Header>
                     <Accordion.Body className='d-flex flex-column p-0 mt-2'>
-                      <Button  onClick={()=>HandleNavigate(`/members/${ALlworkspaces?.data[index]?.id}`)} className='fw-bold mb-1 w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faUserGroup} /></span>Members</Button>
-                      {Data?.data?.role === "GlobalAdmin" || Data?.data?.role === "Admin" ? (
+                      <Button onClick={() => HandleNavigate(`/members/${ALlworkspaces?.data[index]?.id}`)} className='fw-bold mb-1 w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faUserGroup} /></span>Members</Button>
+                      {Data?.data === "GlobalAdmin" ? (
                         <>
                           <Button onClick={() => setModalShow(true)} className='fw-bold w-100 mb-1 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faTrashCan} /></span>Delete</Button>
                           <Button onClick={() => HandeUpdateClick(data.id)} className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faEdit} /></span>Edit</Button>
