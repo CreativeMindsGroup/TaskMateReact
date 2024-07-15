@@ -574,24 +574,24 @@ const Column = ({ column, index, filterData }) => {
 
   const { mutate: CustomFieldMutation } = useMutation(
     async (data) => {
-      if (data.fieldType === "number") {
+      if (data?.fieldType === "number") {
         const Data2 = {
           title: title,
           number: Number,
           boardId: BoardId,
-          cardId: data.cardId,
+          cardId: data?.cardId,
           workspaceId: workspaceId,
           userId: userId,
         };
         console.log(Data2);
         return CreateNumberCustomFiled(Data2);
       }
-      if (data.fieldType === "checkbox") {
+      if (data?.fieldType === "checkbox") {
         const Data = {
           title: title,
-          check: data.check,
+          check: data?.check,
           boardId: BoardId,
-          cardId: data.cardId,
+          cardId: data?.cardId,
           workspaceId: workspaceId,
           userId: userId,
         };
@@ -954,7 +954,7 @@ const Column = ({ column, index, filterData }) => {
                                 </Flex>
                               </Flex>
                               <Flex flexWrap={'wrap'} gap={4} width={'100%'} p={0}>
-                                {CustomFields?.data.checkboxDto?.map(checkbox => (
+                                {CustomFields?.data?.checkboxDto?.map(checkbox => (
                                   <Flex borderRadius={10} minW={'max-content'} width={'120px'} backgroundColor={"#4e575e9c"} p={'10px 10px'} gap={2} align={'start'} flexDirection={'column'} key={checkbox.id}>
                                     <Flex w={'100%'} alignItems={'center'} justifyContent={'space-between'}>
                                       <Flex gap={1} align={'center'}>
@@ -975,24 +975,24 @@ const Column = ({ column, index, filterData }) => {
                                     />
                                   </Flex>
                                 ))}
-                                {CustomFields?.data.dropDownDto?.map(data => (
-                                  <Flex flexDir={'column'} borderRadius={10} minW={'max-content'} width={'120px'} backgroundColor={"#4e575e9c"} p={'10px 10px'} gap={2} align={'start'} flexDirection={'column'} key={data.id}>
+                                {CustomFields?.data?.dropDownDto?.map(data => (
+                                  <Flex flexDir={'column'} borderRadius={10} minW={'max-content'} width={'120px'} backgroundColor={"#4e575e9c"} p={'10px 10px'} gap={2} align={'start'} flexDirection={'column'} key={data?.id}>
                                     <Flex w={'100%'} alignItems={'center'} gap={3}>
                                       <span style={{ color: '#9fadbc', fontSize: "18px" }} class="material-symbols-outlined">
                                         folder_copy
                                       </span>
-                                      <p style={{ margin: 0, color: '#9fadbc', }}> {data.title}</p>
+                                      <p style={{ margin: 0, color: '#9fadbc', }}> {data?.title}</p>
                                     </Flex>
-                                    {data.dropDownOptions.length > 0 ? (
+                                    {data?.dropDownOptions.length > 0 ? (
                                       <select
                                         className={Styles.DropDownSellect}
-                                        style={{ color: 'white', backgroundColor: data.color ? data.color : "#4e575e9c" }}
+                                        style={{ color: 'white', backgroundColor: data?.color ? data?.color : "#4e575e9c" }}
                                         name="dropdownOptions"
-                                        value={data.selectedId}
-                                        onChange={e => handleOptionChange(data.id, e.target.value)}
+                                        value={data?.selectedId}
+                                        onChange={e => handleOptionChange(data?.id, e.target.value)}
                                       >
                                         <option style={{ backgroundColor: "#4e575e9c" }} value="" disabled>Select an option...</option>
-                                        {data.dropDownOptions.map(option => (
+                                        {data?.dropDownOptions.map(option => (
                                           <option style={{ backgroundColor: option?.color }} key={option.order} value={option.id}>
                                             {option.optionName}
                                           </option>
@@ -1001,10 +1001,10 @@ const Column = ({ column, index, filterData }) => {
                                     ) : (
                                       <select
                                         className={Styles.DropDownSellect}
-                                        style={{ color: 'white', backgroundColor: data.color ? data.color : "#4e575e9c" }}
+                                        style={{ color: 'white', backgroundColor: data?.color ? data?.color : "#4e575e9c" }}
                                         name="dropdownOptions"
-                                        value={data.selectedId}
-                                        onChange={e => handleOptionChange(data.id, e.target.value)}
+                                        value={data?.selectedId}
+                                        onChange={e => handleOptionChange(data?.id, e.target.value)}
                                         disabled
                                         
                                       >
@@ -1014,7 +1014,7 @@ const Column = ({ column, index, filterData }) => {
 
                                   </Flex>
                                 ))}
-                                {CustomFields?.data.numberDto?.map(checkbox => (
+                                {CustomFields?.data?.numberDto?.map(checkbox => (
                                   <Flex borderRadius={10} minW={'max-content'} width={'120px'} backgroundColor={"#4e575e9c"} p={'10px 10px'} gap={1} align={'start'} flexDirection={'column'} key={checkbox.id}>
                                     <Flex w={'100%'} alignItems={'center'} justifyContent={'space-between'}>
                                       <Flex gap={2} align={'center'}>
@@ -1080,7 +1080,7 @@ const Column = ({ column, index, filterData }) => {
                                 </Flex>
                               </Flex>
                               <div className={Styles.attachment}>
-                                {attachments?.data.map((attachment, index) => (
+                                {attachments?.data?.map((attachment, index) => (
                                   < Flex onClick={() => setSellectedFileId(attachment.id)} gap={2} align={'center'} className={Styles.attachmentItem} >
                                     {attachment.fileName}
                                     <span onClick={() => { handleDownload(attachment.fileName, selectedTask.id) }} style={{ cursor: 'pointer', fontSize: "18px" }} class="material-symbols-outlined">

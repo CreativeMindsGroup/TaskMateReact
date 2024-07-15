@@ -44,7 +44,7 @@ export default function SignInPage() {
       onSuccess: (resp) => {
         dispatch(loginAction(resp));
 
-        const decodedToken = jwtDecode(resp.data.token);
+        const decodedToken = jwtDecode(resp?.data?.token);
         const userId = decodedToken.UserId;
         const email =  decodedToken.Email;
         const emailConfirmed = decodedToken.EmailConfirmed;

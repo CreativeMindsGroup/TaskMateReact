@@ -78,7 +78,7 @@ export default function Members() {
       .post("https://localhost:7101/api/Token")
       .then((response) => {
         setInviteUrl(
-          `http://localhost:3000/Invite/${response?.data.token}/${linkSelectedWorkspaceId}/${userId}`
+          `http://localhost:3000/Invite/${response?.data?.token}/${linkSelectedWorkspaceId}/${userId}`
         );
       })
       .catch((error) => {
@@ -558,12 +558,12 @@ export default function Members() {
                                     <div className={Styles.MemberContainer}>
                                       <Image
                                         className={Styles.UserImage}
-                                        src={`https://placehold.co/512x512/d9e3da/1d2125?text=${data.email.toUpperCase().slice(0, 1)}`}
+                                        src={`https://placehold.co/512x512/d9e3da/1d2125?text=${data?.email.toUpperCase().slice(0, 1)}`}
                                         rounded
                                       />
                                       <span className="ms-3">
-                                        <h2 className={Styles.UserDetailsEmail}>{data.email}</h2>
-                                        <h2 className={Styles.UserDetails}>{data.role}</h2>
+                                        <h2 className={Styles.UserDetailsEmail}>{data?.email}</h2>
+                                        <h2 className={Styles.UserDetails}>{data?.role}</h2>
                                         <p className={Styles.UserDetails}>
                                           Description here
                                         </p>
@@ -611,12 +611,12 @@ export default function Members() {
 
                                               </Select>
                                             </ChakraProvider>
-                                            <button onClick={() => { UpdateUserRoleFormik.setFieldValue("userId", data.id); handleDone() }} type="submit" disabled={UpdateUserRoleFormik.isSubmitting || RoleChangeLoading}>
+                                            <button onClick={() => { UpdateUserRoleFormik.setFieldValue("userId", data?.id); handleDone() }} type="submit" disabled={UpdateUserRoleFormik.isSubmitting || RoleChangeLoading}>
                                               Done
                                             </button>
                                           </Flex>
                                         )}
-                                        <Button style={{ maxHeight: "" }} onClick={() => handleRemoveUser(data.id)} type="submit" className={Styles.Button}>
+                                        <Button style={{ maxHeight: "" }} onClick={() => handleRemoveUser(data?.id)} type="submit" className={Styles.Button}>
                                           Remove user
                                         </Button>
                                       </Flex>

@@ -99,7 +99,7 @@ const Task = ({ task, index }) => {
                     select_check_box
                   </span>
                   <span style={{ fontSize: "14px", margin: "0", fontWeight: '400' }} >
-                    {Task.data.done} / {Task.data.total}
+                    {Task.data?.done} / {Task.data?.total}
                   </span>
                 </Flex>
               )}

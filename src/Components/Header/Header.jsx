@@ -286,7 +286,7 @@ export default function Header() {
               }
               <p className={Styles.WorkSpaceTitle} style={{ paddingBottom: "5px" }}>Your workspaces</p>
               {ALlworkspaces?.data?.length > 0 ? (
-                ALlworkspaces.data.map((workspace) => (
+                ALlworkspaces?.data?.map((workspace) => (
                   <WorkSpace
                     key={workspace.id}
                     WorkspaceTitle={workspace.title}
