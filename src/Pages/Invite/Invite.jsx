@@ -83,7 +83,7 @@ export default function Invite() {
             <h5 className="fw-bold">qweezSwe!</h5>
           </div>
           <p className="mt-1">
-            Looks like you need to be logged into your TaskAura account to join
+            Looks like you need to be logged into your TaskArua account to join
             this workspace.
           </p>
           <div className="col-6 d-flex justify-content-center mt-0">
@@ -95,7 +95,7 @@ export default function Invite() {
             </Button>
           </div>
           <a className="mt-1 btn-anchor" href="/">
-            Learn more about TaskAura
+            Learn more about TaskArua
           </a>
           {loginAccess && (
             <Col

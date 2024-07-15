@@ -71,7 +71,7 @@ export default function InviteBoard() {
             <h5 className="fw-bold">{domainTitle} workspace</h5>
           </div>
           <p className="mt-1">
-            Looks like you need to be logged into your TaskAura account to join this workspace.
+            Looks like you need to be logged into your TaskArua account to join this workspace.
           </p>
           <div className="col-6 d-flex justify-content-center mt-0">
             <Button onClick={userId ? handleJoin : () => navigate('/')} className="default-submit w-75 ms-2 fw-bold mt-1">
@@ -79,7 +79,7 @@ export default function InviteBoard() {
             </Button>
           </div>
           <a className="mt-1 btn-anchor" href="/">
-            Learn more about TaskAura
+            Learn more about TaskArua
           </a>
         </Col>
       ) : (
