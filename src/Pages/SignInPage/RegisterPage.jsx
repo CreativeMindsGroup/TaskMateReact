@@ -28,7 +28,6 @@ export default function RegisterPage() {
   const apiUrl = process.env.REACT_APP_API_HOST;
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
-  const navigate = useNavigate();
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
