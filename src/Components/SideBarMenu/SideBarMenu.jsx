@@ -143,14 +143,14 @@ const navigate = useNavigate()
   const HandeSellect = (data) => {
     dispatch(setData({ BoardId: data }));
     navigate(`/Boards/${data}`)
-    setImage(byBoard.data.find(board => board.id === data)?.theme);
+    setImage(byBoard.data?.find(board => board.id === data)?.theme);
     queryClient.refetchQueries("BoardInCardList");
 
   };
 
   useEffect(() => {
     dispatch(setData({ BoardId: id }));
-    const selectedBoard = byBoard?.data.find(board => board.id === id);
+    const selectedBoard = byBoard?.data?.find(board => board.id === id);
     if (selectedBoard) {
       setImage(selectedBoard.theme);
     }
@@ -178,7 +178,7 @@ const navigate = useNavigate()
 
                 <Card.Text className="mx-1 my-1 p-0 container-fluid"> Your Boards </Card.Text>
                 {Array.isArray(byBoard?.data) && byBoard?.data?.length ? (
-                  byBoard.data.map((board, index) => {
+                  byBoard?.data?.map((board, index) => {
                     return (
                       <NavDropdown.Item key={index}>
                         <Container onClick={() => { setImage(board.theme); HandeSellect(board.id); }} className="p-0 m-0 navbar-workspace-link">

@@ -68,7 +68,7 @@ export default function Checklist({ data }) {
     };
 
     const { mutate: deleteChecklist } = useMutation(
-        () => DeleteChecklist(data.id, userId, workspaceId),
+        () => DeleteChecklist(data?.id, userId, workspaceId),
         {
             onSuccess: () => {
                 queryClient.invalidateQueries("getAllCheklist");
@@ -86,7 +86,7 @@ export default function Checklist({ data }) {
     const formik = useFormik({
         initialValues: {
             text: "",
-            checklistId: data.id,
+            checklistId: data?.id,
         },
         onSubmit: async (values, { resetForm }) => {
             await AddChecklistItemMutation(values);
@@ -116,7 +116,7 @@ export default function Checklist({ data }) {
                             <span style={{ color: "#9fadbc", fontSize: "23px", position: "relative" }} className="material-symbols-outlined">
                                 check_box
                             </span>
-                            <h1 className={Styles.ListTitle}>{data.name}</h1>
+                            <h1 className={Styles.ListTitle}>{data?.name}</h1>
                         </Flex>
                         <button type='button' className={Styles.Button} onClick={handleDelete}>
                             Delete
