@@ -254,7 +254,7 @@ export default function Header() {
             ></path>
           </svg>{" "}
           <p style={{ margin: "0" }}>
-            TaskAura
+          TaskArua
           </p>
         </Navbar.Brand>
         {/* workspace Sellection */}
