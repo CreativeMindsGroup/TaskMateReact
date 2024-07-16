@@ -626,12 +626,6 @@ const Column = ({ column, index, filterData }) => {
     ['GetCustomFields', selectedTask?.id], // Unique key for the query
     () => selectedTask?.id ? GetCustomFields(selectedTask.id) : undefined, // Fetch only if selectedTask.id exists
     {
-      enabled: !!selectedTask?.id, // Enable the query only if selectedTask.id exists
-      staleTime: Infinity,
-      cacheTime: 1000 * 60 * 30 * 1,
-      onSuccess: (CustomFields) => {
-        
-      },
     }
   );
   const { mutate: updateChecklist } = useMutation(
@@ -730,6 +724,7 @@ const Column = ({ column, index, filterData }) => {
       values.cardId = selectedTask?.id
       if (values !== null) {
         await CreateCustomDropdownMutation(values);
+        queryClient.invalidateQueries(['GetCustomFields', selectedTask?.id]);
         resetForm();
       } else {
         toast.error('Title and at least one option are required.');
@@ -742,6 +737,7 @@ const Column = ({ column, index, filterData }) => {
     async (values) => CreateDropdown(values),
     {
       onSuccess: async (response) => {
+        queryClient.invalidateQueries(['GetCustomFields', selectedTask?.id]);
         onCustomFieldMenuClosed();
         onclose()
         setFieldType('');
@@ -751,7 +747,6 @@ const Column = ({ column, index, filterData }) => {
         setNewOptionColor('')
         setCustomfiledId('')
         CreateCustomField.resetForm();
-        queryClient.invalidateQueries(['GetCustomFields', selectedTask?.id]);
         toast.success("Created!");
       },
       onError: (err) => {
