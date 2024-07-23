@@ -202,7 +202,6 @@ export default function Members() {
     }),
     onSubmit: async (values) => {
       AddUserToWorkspaceMutation(values)
-      // console.log(values);
     }
   });
   const { mutate: AddUserToWorkspaceMutation, isLoading: AdduserLoading } =

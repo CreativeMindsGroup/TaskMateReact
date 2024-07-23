@@ -3,7 +3,7 @@
     display: flex;
 }
 
-.MainContainer {
+.MainContainer { 
     width: 100%;
 }
 
@@ -232,4 +232,24 @@
 .userAccount button {
     background-color: #384148;
     color: #9fadbc;
+}
+.ArchivedCardItem{
+    border-radius: 8px;
+    background-color: #22272b;
+    box-shadow: var(--ds-shadow-raised, 0px 1px 1px #091e4240, 0px 0px 1px #091e424f);
+    color: var(--ds-text, #b6c2cf);
+    scroll-margin: 8px;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+.ArchivedCardtitle{
+    font-size: 18px !important;
+    margin: 0;
+}
+.ArchivedText{
+    font-size: 14px !important;
+    margin: 0;
+}
+.ArchivedCardItem{
+    padding: 10px;
 }

@@ -4,25 +4,37 @@ import Container from 'react-bootstrap/Container';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Col from 'react-bootstrap/Col';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsis, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import Styles from '../../../Components/SideBarMenu/SideBarMenu.module.css';
 import CardList from '../CardList/CardList';
 import { useSelector } from 'react-redux';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { getBoardById } from '../../../Service/BoardService';
-import { Flex } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import { useNavigate, useParams } from 'react-router';
-
+import { ArchiveCard, GetArchivedCards, RemoveCard } from '../../../Service/CardService';
+import { Menu, MenuButton, MenuList, MenuItem, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure, ChakraProvider, Alert, AlertIcon, FormLabel, Input, FormControl, Flex } from '@chakra-ui/react'
+import { toast } from 'react-toastify';
 export default function Content() {
     const [filterData, setFilterData] = useState();
+    const { userId } = useSelector((x) => x.userCredentials);
+    const queryClient = useQueryClient()
     const { BoardId: boardId } = useParams()
     const { data: Data, isLoading, error, isSuccess } = useQuery(
         ["boardData", boardId],
         () => getBoardById(boardId),
         {
             keepPreviousData: true,
-            refetchOnWindowFocus: false
+            refetchOnWindowFocus: false,
+        }
+    );
+    const { data: archivedCards } = useQuery(
+        ["GetArhivedCards", boardId],
+        () => GetArchivedCards(boardId),
+        {
+            keepPreviousData: true,
+            refetchOnWindowFocus: false,
+            cacheTime: 1000
         }
     );
     const [boardData, setBoardData] = useState()
@@ -31,7 +43,6 @@ export default function Content() {
             setBoardData(Data);
         }
     }, [Data, isSuccess]);
-    console.log(boardData?.data?.id, boardId);
     const formik = useFormik({
         initialValues: {
             title: '',
@@ -43,6 +54,52 @@ export default function Content() {
     });
     const { workspaceId } = useSelector((x) => x.workspaceAndBoard)
     const navigate = useNavigate()
+
+    //arhive
+    //Archive Data
+    const ArchiveFormik = useFormik({
+        initialValues: {
+            isArchived: false,
+            cardId: '',
+            adminId: userId,
+            workspaceId: workspaceId
+        },
+        onSubmit: async (values) => {
+            ArchiveMutation(values);
+        },
+    });
+
+    const { mutate: ArchiveMutation } = useMutation(
+        (data) => ArchiveCard(data),
+        {
+            onSuccess: () => {
+                toast.success("Archived")
+                queryClient.invalidateQueries("boardData");
+                queryClient.invalidateQueries("GetArhivedCards");
+
+            },
+            onError: (err) => {
+                toast.error(`Error: ${err.message || "No Access!"}`);
+            },
+        }
+    );
+    //Delete card 
+    //remove card Formik 
+    const confirmDelete = (id) => {
+        RemoveCardMutation(id);
+    };
+    const { mutate: RemoveCardMutation } = useMutation(
+        (cardId) => RemoveCard(cardId, userId, workspaceId),
+        {
+            onSuccess: () => {
+                toast.success("Card deleted")
+                 queryClient.invalidateQueries("GetArhivedCards");
+            },
+            onError: (err) => {
+                toast.error("No Access!")
+            },
+        }
+    );
     return (
         <div className={Styles.MainContainer} style={{ overflow: 'hidden' }}>
             <Col lg={12} className={Styles.sideBarMenuTopMenuWrapper}>
@@ -105,8 +162,37 @@ export default function Content() {
                                                 Archived Cards
                                             </h1>
                                         </Flex>
-                                        <Flex>
-
+                                        <Flex flexDir={'column'} gap={5} p={'15px 0'}>
+                                            {archivedCards?.data?.length > 0 ? (
+                                                archivedCards?.data?.map((card, index) => (
+                                                    <>
+                                                        <div key={index} className={Styles.ArchivedCardItem}>
+                                                            <Flex align={'center'} justifyContent={'space-between'}>
+                                                                <div>
+                                                                    <p className={Styles.ArchivedCardtitle}>Card name : <b>{card.title}</b></p>
+                                                                    <Flex gap={5} align={'center'}>
+                                                                        <span style={{ fontSize: "17px" }} className="material-symbols-outlined">
+                                                                            inventory_2
+                                                                        </span>
+                                                                        <p className={Styles.ArchivedText}>Archived</p>
+                                                                    </Flex>
+                                                                </div>
+                                                                <Menu>
+                                                                    <MenuButton bgColor={'transparent'}>
+                                                                        <FontAwesomeIcon icon={faEllipsis} />
+                                                                    </MenuButton>
+                                                                    <MenuList w={"200px"} border={"#616466 1px solid"} borderRadius={4} pb={2} pt={2} gap={10} bgColor={'#1d2125'}>
+                                                                        <MenuItem type='submit' onClick={() => { ArchiveFormik.setFieldValue("cardId", card.id); ArchiveFormik.handleSubmit() }} backgroundColor={"transparent"} _hover={{ backgroundColor: "#616466" }} p={"0px 12px"}>Unarchive card</MenuItem>
+                                                                        <MenuItem type='submit' onClick={()=>{confirmDelete(card.id)}} backgroundColor={"transparent"} _hover={{ backgroundColor: "#616466" }} p={"0px 12px"}>Remove card</MenuItem>
+                                                                    </MenuList>
+                                                                </Menu>
+                                                            </Flex>
+                                                        </div>
+                                                    </>
+                                                ))
+                                            ) : (
+                                                <div>No archived cards found.</div>
+                                            )}
                                         </Flex>
                                     </form>
                                 </div>

@@ -3,7 +3,7 @@ import styles from './Task.module.css';
 import { Draggable } from '@hello-pangea/dnd';
 import { useQuery, useQueryClient } from 'react-query';
 import { GetAttachments, getCardListItomCount } from '../../../Service/CardService';
-import { Flex } from '@chakra-ui/react';
+import { Avatar, ChakraProvider, Container, Flex } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
@@ -45,6 +45,9 @@ const Task = ({ task, index }) => {
       cacheTime: 1000 * 60 * 30 * 1,
     }
   );
+
+  
+
   return (
     <div>
       <Draggable draggableId={task.id} index={index}>
@@ -103,6 +106,20 @@ const Task = ({ task, index }) => {
                   </span>
                 </Flex>
               )}
+              <ChakraProvider>
+                <Flex justifyContent={'flex-end'}>
+                  {task?.appUsers?.length > 0 && (<>
+                    <Flex maxW={'100%'} flexWrap={'wrap'} gap={1}>
+                      {task?.appUsers?.map((member, index) => (
+                        <>
+                          <Avatar key={index} border={'1px solid #74879c6c'} boxSize='24px' size={'s'} fontWeight={'600'} name={member.email} cursor="pointer" />
+                        </>
+                      ))}
+                    </Flex>
+                  </>
+                  )}
+                </Flex>
+              </ChakraProvider>
             </div>
           </div>
         )}

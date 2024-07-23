@@ -84,6 +84,9 @@
   max-height: max-content !important;
   min-height: max-content !important;
 }
+.DetailsContainer{
+  padding:0 15px;
+}
 
 .title {
   color: #9fadbc;
@@ -100,6 +103,12 @@
   color: #9fadbc !important;
   font-weight: 600 !important;
   background-color: #5b5e6136 !important;
+  padding: 7px 10px !important;
+  border-radius: 3px !important;
+  height: max-content !important;
+}
+.EditButtonDesc {
+  font-weight: 600 !important;
   padding: 7px 10px !important;
   border-radius: 3px !important;
   height: max-content !important;
@@ -158,13 +167,27 @@
 .inputTaskArea {
   border-radius: 6px;
   background-color: #22272B;
-  border: 1px solid #74879C;
+  border: 1px solid #74879c6c;
+  outline: none;
   padding: 3px 8px;
   color: #cee2fd;
   width: 100%;
   margin: 10px 0;
   min-height: 160px;
 }
+.inputTaskAreaClosed {
+  border-radius: 6px;
+  background-color: #262d316b;
+  border: 1px solid #74879c6c;
+  outline: none;
+  padding: 3px 8px;
+  color: #cee2fd;
+  width: 100%;
+  margin: 10px 0;
+  min-height: 160px;
+}
+
+
 
 .Text {
   color: #9fadbc;
@@ -188,6 +211,24 @@
   background-color: none !important;
 }
 .ChecklistModal {
+  padding: 12px;
+  width: 304px;
+  height: max-content;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Noto Sans', 'Ubuntu', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  font-display: swap;
+  background-color: var(--ds-surface-overlay, #282e33) !important;
+  border-radius: 8px;
+  color: var(--ds-text, #b6c2cf) !important;
+  box-shadow: var(--ds-shadow-overlay, 0px 8px 12px #29282826, 0px 0px 1px #afb2b64f);
+  border: 1px solid #b6c2cf0c !important;
+  box-sizing: border-box;
+  outline: 0;
+  overflow: hidden;
+}
+.PopoverMembers{
   padding: 12px;
   width: 304px;
   height: max-content;
@@ -249,7 +290,14 @@
   letter-spacing: -0.003em;
   color: #9fadbc;
 }
-
+.MembersTitle{
+  padding: 10px 0;
+  font-size: 13px !important;
+  font-weight: 500;
+  letter-spacing: -0.003em;
+  color: #9fadbc;
+  margin: 0;
+}
 .ChecklistModal input {
   background-color: #23282b !important;
   outline: none !important;
@@ -376,4 +424,7 @@
   font-weight: 500;
   width: 100%;
   border-radius: none !important;
+}
+.Option{
+  cursor: pointer !important;
 }
