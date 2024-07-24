@@ -154,7 +154,7 @@ export default function Checklist({ data }) {
                                             {item.text}
                                         </Text>
                                     </Flex>
-                                    <span onClick={() => onOpenChecklist()} style={{ color: "#9fadbc", cursor: 'pointer' }} class="material-symbols-outlined">
+                                    <span onClick={() => onOpenChecklist()} style={{ color: "#9fadbc", cursor: 'pointer' }} className="material-symbols-outlined">
                                         more_horiz
                                     </span>
                                     < Modal isOpen={isOpenChecklist} onClose={onCloseChecklist}  >

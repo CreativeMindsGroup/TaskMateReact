@@ -10,7 +10,6 @@ export default function BoardsPage() {
   const [image, setImage] = useState()
   const hangeChangeImage = (image) => {
     setImage(image)
-    console.log(image);
   }
   return (
     <>

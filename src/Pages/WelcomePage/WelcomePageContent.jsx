@@ -124,7 +124,6 @@ export default function WelcomePageContent() {
     );
     const navigate = useNavigate();
     const HandleNavigate = (data) => {
-        console.log('Testing navigation to homepage');
         navigate(data);
     };
     return (

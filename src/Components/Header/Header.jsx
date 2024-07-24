@@ -206,6 +206,7 @@ export default function Header() {
       setSelectedWorkspaceId(workspaceId);
       dispatch(setData({ workspaceId: workspaceId }));
     }
+    navigate('/')
     onWorkspacesClose();
   };
   const navigate = useNavigate()

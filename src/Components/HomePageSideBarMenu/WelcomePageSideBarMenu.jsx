@@ -118,24 +118,23 @@ export default function WelcomePageSideBarMenu() {
   }, [currentWorkspaceIndex])
   const navigate = useNavigate();
   const HandleNavigate = (data) => {
-    console.log('Testing navigation to homepage');
     navigate(data);
   };
   const [Data,SetData] = useState()
+
+  //get user info
   const handleGetRoles = (workspaceId) => {
-    getRolesMutation(workspaceId);
+    queryClient.invalidateQueries(["getUserById", workspaceId]);
   };
-  const { mutate: getRolesMutation } = useMutation(
-    (workspaceId) => GetUserById(userId, workspaceId),
+
+  const { data: UserData, isLoading, error, isSuccess } = useQuery(
+    ["getUserById", userId, workspaceId],
+    () => GetUserById(userId, workspaceId),
     {
-      onSuccess: (rolesData) => {
-        SetData(rolesData);
-      },
-      onError: (err) => {
-        console.error('Error fetching roles:', err);
-      },
+        keepPreviousData: true,
+        refetchOnWindowFocus: false
     }
-  );
+);
 
   return (
     <>
@@ -173,7 +172,7 @@ export default function WelcomePageSideBarMenu() {
                     </Accordion.Header>
                     <Accordion.Body className='d-flex flex-column p-0 mt-2'>
                       <Button onClick={() => HandleNavigate(`/members/${ALlworkspaces?.data[index]?.id}`)} className='fw-bold mb-1 w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faUserGroup} /></span>Members</Button>
-                      {Data?.data === "GlobalAdmin" ? (
+                      {UserData?.data === "GlobalAdmin" ? (
                         <>
                           <Button onClick={() => setModalShow(true)} className='fw-bold w-100 mb-1 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faTrashCan} /></span>Delete</Button>
                           <Button onClick={() => HandeUpdateClick(data?.id)} className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faEdit} /></span>Edit</Button>

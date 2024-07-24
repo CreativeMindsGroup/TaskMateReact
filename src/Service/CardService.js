@@ -87,14 +87,25 @@ export const UploadFile = (formData, cardId, FileName) => {
   });
 };
 export const ArchiveCard = (formData) => {
-  return httpClient.post(`/api/Cards/IsArchived`, formData, {
+  return httpClient.put(`/api/Cards/ChangeArchiceStatus`, formData, {
+  });
+};
+export const AddUserToCard = (formData) => {
+  return httpClient.post(`/api/Cards/addUserToCard`, formData, {
   });
 };
 export const CreateNumberCustomFiled = (data) => {
   return httpClient.post(`/api/CustomFields/CreateNumber`, data, {
   });
 };
+export const RemoveUserFromCard = (data) => {
+  return httpClient.post(`/api/Cards/removeUserFromCard`, data, {
+  });
+};
 export const CreateCheckListCustomFiled = (data) => {
   return httpClient.post(`/api/CustomFields/addChecklist`, data, {
   });
+};
+export const GetArchivedCards = (BoardId) => {
+  return httpClient.get(`/api/Boards/GetArchivedCards?boardId=${BoardId}`);
 };

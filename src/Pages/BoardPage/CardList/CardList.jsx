@@ -44,7 +44,6 @@ const CardList = ({ boardData }) => {
       newColumnOrder.splice(destination.index, 0, movedColumn);
 
       // Log column IDs and their order
-      console.log("New column order:", newColumnOrder.map(col => col.id));
 
       // Update the order of columns in the backend
       moveListMutation(
@@ -62,7 +61,6 @@ const CardList = ({ boardData }) => {
         newTaskIds.splice(destination.index, 0, movedTask);
 
         // Log task IDs and their order within the column
-        console.log("New task order in column:", newTaskIds.map(task => task.id));
 
         reorderCardsMutation({
           sourceColumnId: start.id,
@@ -134,7 +132,6 @@ const CardList = ({ boardData }) => {
         toast.success("Created!")
       },
       onError: (error) => {
-        console.log(error);
         cardListCreateFormik.resetForm()
         toast.error("no Access!")
       },

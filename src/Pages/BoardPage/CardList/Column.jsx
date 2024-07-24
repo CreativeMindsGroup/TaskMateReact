@@ -3,11 +3,12 @@ import Styles from './Column.module.css';
 import Task from './Task';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { AddCardDueDate, ArchiveCard, CreateCheckListCustomFiled, CreateNumberCustomFiled, DownloadFile, GetAttachments, GetCustomFields, RemoveCard, RemoveCustomField, RemoveFile, UpdateCardDesctiontion, UpdateChecklistCustomField, UpdateDateTime, UpdateTitle, UploadFile, createTask, getAllCardsByCardListId, getCardListItomCount } from "../../../Service/CardService";
+import { AddCardDueDate, AddUserToCard, ArchiveCard, CreateCheckListCustomFiled, CreateNumberCustomFiled, DownloadFile, GetAttachments, GetCustomFields, RemoveCard, RemoveCustomField, RemoveFile, RemoveUserFromCard, UpdateCardDesctiontion, UpdateChecklistCustomField, UpdateDateTime, UpdateTitle, UploadFile, createTask, getAllCardsByCardListId, getCardListItomCount } from "../../../Service/CardService";
 import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { CreateCover } from "../../../Service/CoverService";
-import { ChakraBaseProvider, ChakraProvider, CircularProgress, Container, Flex, PopoverArrow, PopoverBody, PopoverHeader, Portal, useDisclosure } from '@chakra-ui/react';
+import { ChakraBaseProvider, ChakraProvider, CircularProgress, Container, Flex, PopoverArrow, PopoverBody, PopoverHeader, Portal, Stack, useDisclosure, Wrap, WrapItem } from '@chakra-ui/react';
+import { Avatar, AvatarBadge, AvatarGroup } from '@chakra-ui/react'
 import {
   Modal,
   ModalOverlay,
@@ -23,7 +24,7 @@ import {
   PopoverCloseButton
 } from '@chakra-ui/react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faPalette, faSquareCheck, faUserGroup, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faPalette, faPeopleGroup, faPerson, faSquareCheck, faUserGroup, faXmark } from "@fortawesome/free-solid-svg-icons";
 import FocusLock from "react-focus-lock";
 import { useSelector } from 'react-redux';
 import { ToastContainer, toast, useToast } from 'react-toastify';
@@ -33,7 +34,10 @@ import { useNavigate } from 'react-router';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
-import { CreateDropdown, CreateDropdownOptions, SetOption, UpdateCustomNumber } from '../../../Service/CustomFieldService';
+import { CreateDropdown, CreateDropdownOptions, RemoveDropDown, SetOption, UpdateCustomNumber } from '../../../Service/CustomFieldService';
+import Dvider from '../../../Components/Dvider';
+import { AddUserToWorkspace } from '../../../Service/WorkSpaceService';
+import { httpClient } from '../../../Utils/HttpClient';
 
 const Column = ({ column, index, filterData }) => {
   const queryClient = useQueryClient();
@@ -97,7 +101,6 @@ const Column = ({ column, index, filterData }) => {
         queryClient.invalidateQueries(["boardData"]);
       },
       onError: (error) => {
-        console.log(error);
       },
     }
   );
@@ -112,11 +115,10 @@ const Column = ({ column, index, filterData }) => {
     (values) => UpdateCardDesctiontion(values),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["boardData"]);
+        queryClient.invalidateQueries("boardData");
         onClose();
       },
       onError: (error) => {
-        console.log(error);
       },
     }
   );
@@ -155,7 +157,6 @@ const Column = ({ column, index, filterData }) => {
       onSuccess: () => {
         queryClient.invalidateQueries(["boardData"]);
         onClose();
-        console.log(2);
       },
       onError: (error) => {
         toast.error("No Access")
@@ -203,7 +204,6 @@ const Column = ({ column, index, filterData }) => {
       },
       onError: (err) => {
         toast.error(`Error: ${err.message || "No Access!"}`);
-        console.log(err);
       },
     }
   );
@@ -252,7 +252,6 @@ const Column = ({ column, index, filterData }) => {
       },
       onError: (err) => {
         toast.error(`Error: ${err.message || "No Access!"}`);
-        console.log(err);
       },
     }
   );
@@ -300,7 +299,6 @@ const Column = ({ column, index, filterData }) => {
       },
       onError: (err) => {
         toast.error(`Error: ${err.message || "No Access!"}`);
-        console.log(err);
       },
     }
   );
@@ -338,7 +336,6 @@ const Column = ({ column, index, filterData }) => {
         isChecklistPopoverClose()
       },
       onError: (err) => {
-        console.log(err);
       },
     }
   );
@@ -368,7 +365,6 @@ const Column = ({ column, index, filterData }) => {
       },
       onError: (err) => {
         toast.error(`Error: ${err.message || "No Access!"}`);
-        console.log(err);
       },
     }
   );
@@ -387,7 +383,6 @@ const Column = ({ column, index, filterData }) => {
         queryClient.invalidateQueries("getAllCheklist");
       },
       onError: (err) => {
-        console.log(err);
         toast.error("No Access!")
       },
     }
@@ -427,7 +422,6 @@ const Column = ({ column, index, filterData }) => {
       },
       onError: (err) => {
         toast.error(`Error: ${err.message || "No Access!"}`);
-        console.log(err);
       },
     }
   );
@@ -437,7 +431,6 @@ const Column = ({ column, index, filterData }) => {
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     UploadFormik.setFieldValue('file', file)
-    console.log(file);
   };
 
   const { mutate: uploadFileMutate, isLoading: uploadLoading } = useMutation(
@@ -452,7 +445,6 @@ const Column = ({ column, index, filterData }) => {
       },
       onError: (err) => {
         toast.error(`Error: ${err.message || "No Access!"}`);
-        console.log(err);
       },
     }
   );
@@ -470,7 +462,6 @@ const Column = ({ column, index, filterData }) => {
         formData.append('file', values.file);
         uploadFileMutate({ formData, cardId: values.cardId, fileName: values.fileName });
         for (let pair of formData.entries()) {
-          console.log(`${pair[0]}: ${pair[1]}`);
         }
       } else {
         toast.error("File is required");
@@ -499,10 +490,11 @@ const Column = ({ column, index, filterData }) => {
         toast.success("Archived")
         onClose()
         queryClient.invalidateQueries("boardData");
+        queryClient.invalidateQueries("GetArhivedCards");
+
       },
       onError: (err) => {
         toast.error(`Error: ${err.message || "No Access!"}`);
-        console.log(err);
       },
     }
   );
@@ -528,7 +520,6 @@ const Column = ({ column, index, filterData }) => {
         onRemoveFileClose()
       },
       onError: (err) => {
-        console.log(err);
         toast.error("No Access!")
       },
     }
@@ -583,7 +574,6 @@ const Column = ({ column, index, filterData }) => {
           workspaceId: workspaceId,
           userId: userId,
         };
-        console.log(Data2);
         return CreateNumberCustomFiled(Data2);
       }
       if (data?.fieldType === "checkbox") {
@@ -595,7 +585,6 @@ const Column = ({ column, index, filterData }) => {
           workspaceId: workspaceId,
           userId: userId,
         };
-        console.log(Data);
         return CreateCheckListCustomFiled(Data);
       }
     },
@@ -610,7 +599,6 @@ const Column = ({ column, index, filterData }) => {
       },
       onError: (err) => {
         toast.error(`Error: ${err.message || "No Access!"}`);
-        console.log(err);
         CreateCustomField.resetForm()
       },
     }
@@ -696,7 +684,7 @@ const Column = ({ column, index, filterData }) => {
     if (newOptionName) {
       setDropdownOptionsList([
         ...dropdownOptionsList,
-        { optionName: newOptionName, color: newOptionColor }
+        { optionName: newOptionName, color: newOptionColor, order: dropdownOptionsList.length + 1 }
       ]);
       setNewOptionName('');
       setNewOptionColor('');
@@ -707,7 +695,8 @@ const Column = ({ column, index, filterData }) => {
     onColorSelectClose();
   };
   const handleDeleteOption = (index) => {
-    setDropdownOptionsList(dropdownOptionsList.filter((_, i) => i !== index));
+    const updatedOptions = dropdownOptionsList.filter((_, i) => i !== index).map((option, i) => ({ ...option, order: i + 1 }));
+    setDropdownOptionsList(updatedOptions);
   };
   const CreateCustomDropdown = useFormik({
     initialValues: {
@@ -731,7 +720,7 @@ const Column = ({ column, index, filterData }) => {
       }
     },
   });
-  
+
   const [responseData, setResponse] = useState('');
   const { mutate: CreateCustomDropdownMutation } = useMutation(
     async (values) => CreateDropdown(values),
@@ -758,7 +747,6 @@ const Column = ({ column, index, filterData }) => {
   const handleOptionChange = (DropdownId, OptionId) => {
     SetOption(DropdownId, OptionId)
       .then(response => {
-        console.log('Option set successfully:', response);
         queryClient.invalidateQueries(['GetCustomFields', selectedTask?.id]);
 
       })
@@ -768,6 +756,133 @@ const Column = ({ column, index, filterData }) => {
   };
 
   const [IdTodelete, setIdToDelete] = useState()
+
+  //memebers 
+  const { isOpen: isMemberAddOpened, onOpen: onMemberAddOpened, onClose: onMemberAddClosed } = useDisclosure();
+
+  const [searchValue, setSearchValue] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+  const [isMembersLoading, setIsMembersLoading] = useState(false);
+  const [loadingDots, setLoadingDots] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (searchValue.trim()) {
+        setIsMembersLoading(true);
+        try {
+          const response = await httpClient.get(
+            `api/AppUser/SearchUserByEmailorUsername?value=${searchValue}`
+          );
+          setSearchResult(response.data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+          setIsMembersLoading(false);
+        }
+      } else {
+        setSearchResult([]);
+      }
+    };
+
+    const delayDebounceFn = setTimeout(() => {
+      fetchData();
+    }, 1000);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchValue]);
+
+  useEffect(() => {
+    let interval;
+    if (isMembersLoading) {
+      interval = setInterval(() => {
+        setLoadingDots(prev => (prev.length < 3 ? prev + "." : ""));
+      }, 500);
+    } else {
+      setLoadingDots("");
+    }
+
+    return () => clearInterval(interval);
+  }, [isMembersLoading]);
+
+  const handleChange = (event) => {
+    setSearchValue(event.target.value);
+  };
+
+  const AddUserToCardFormik = useFormik({
+    initialValues: {
+      memberId: "",
+      cardId: '',
+      adminId: userId,
+      workspaceId: workspaceId
+    },
+    onSubmit: async (values) => {
+      await AddUserToCardMutation(values);
+    },
+  });
+
+  const { mutate: AddUserToCardMutation } = useMutation(
+    async (values) => AddUserToCard(values),
+    {
+      onSuccess: async (response) => {
+        toast.success("User added  successfully!");
+        queryClient.invalidateQueries(["boardData"]);
+        onClose()
+      },
+      onError: (err) => {
+      },
+    }
+  );
+  //remove User From Card 
+  const RemoveUserToWorkspaceFormik = useFormik({
+    initialValues: {
+      memberId: "",
+      cardId: '',
+      adminId: userId,
+      workspaceId: workspaceId
+    },
+    onSubmit: async (values) => {
+      await RemoveUserToCardMutation(values);
+    },
+  });
+
+  const { mutate: RemoveUserToCardMutation } = useMutation(
+    async (values) => RemoveUserFromCard(values),
+    {
+      onSuccess: async (response) => {
+        toast.success("User Removed successfully!");
+        queryClient.invalidateQueries(["boardData"]);
+        onClose()
+      },
+      onError: (err) => {
+      },
+    }
+  );
+  //RemoveDropDown 
+  const { isOpen: isRemoveDropdownOpen, onOpen: onRemoveDropdownOpen, onClose: onRemoveDropdownClose } = useDisclosure();
+  const RemoveDropDownFormik = useFormik({
+    initialValues: {
+      dropDownId: "",
+      userId: userId,
+      workspaceId: workspaceId
+    },
+    onSubmit: async (values) => {
+      await RemoveDropDownMutation(values);
+    },
+  });
+
+  const { mutate: RemoveDropDownMutation } = useMutation(
+    async (values) => RemoveDropDown(values),
+    {
+      onSuccess: async (response) => {
+        toast.success(" Removed successfully!");
+        queryClient.invalidateQueries(['GetCustomFields', selectedTask?.id]);
+        // onClose()
+        onRemoveDropdownClose()
+      },
+      onError: (err) => {
+      },
+    }
+  );
   return (
     <div>
       <Draggable draggableId={column?.id} index={index}>
@@ -794,7 +909,7 @@ const Column = ({ column, index, filterData }) => {
               ) : (
                 <Flex w={'100%'} alignItems={'center'} justifyContent={'space-between'}>
                   <h2 style={{ margin: "0" }} onClick={() => { handleTitleClick3(); setSelectedCardListId(column?.id) }}>{column.title}</h2>
-                  <span onClick={() => { onRemoveListOpen() }} style={{ cursor: 'pointer', color: '#9fadbc', fontSize: "18px" }} class="material-symbols-outlined">
+                  <span onClick={() => { onRemoveListOpen() }} style={{ cursor: 'pointer', color: '#9fadbc', fontSize: "18px" }} className="material-symbols-outlined">
                     more_vert
                   </span>
                   <ChakraProvider>
@@ -822,7 +937,7 @@ const Column = ({ column, index, filterData }) => {
 
                 <div style={{ minHeight: "20px" }} className={Styles.taskList} {...provided?.droppableProps} ref={provided.innerRef}>
                   {column?.tasks?.map((task, taskIndex) => (
-                    <div onClick={() => handleTaskClick(task)} >
+                    <div key={task.id} onClick={() => handleTaskClick(task)} >
                       <Task key={task.id} task={task} index={taskIndex} attachment={attachments?.data[0]?.id} />
                     </div>
                   ))}
@@ -908,7 +1023,7 @@ const Column = ({ column, index, filterData }) => {
                       <Flex gap={4} flex w={"100%"}>
                         <div style={{ width: "75%" }}>
                           {selectedTask?.dueDate && (
-                            <Flex p={'15px 0'} flexDir={'column'} className={Styles.DueDateContainer}>
+                            <Flex p={' 0'} flexDir={'column'} className={Styles.DueDateContainer}>
                               <p className={Styles.DueDateTitle}>Due date</p>
                               <Flex align={'center'} gap={2}>
                                 <input
@@ -936,11 +1051,95 @@ const Column = ({ column, index, filterData }) => {
                                   </Flex>
                                 </p>
                               </Flex>
+
                             </Flex>
                           )}
+                          <ChakraProvider>
+                            <Container w={"100%"} p={'10px 0'}>
+                              {selectedTask?.appUsers?.length > 0 && (<>
+                                <p style={{ margin: '5px 0', color: '#9fadbc' }}>Members</p>
+                                <Flex maxW={'100%'} flexWrap={'wrap'} gap={1}>
+                                  {selectedTask?.appUsers?.map((member, index) => (
+                                    <Popover arrowSize={0} closeOnBlur={true} key={index}>
+                                      <PopoverTrigger>
+                                        <Avatar border={'1px solid #74879c6c'} boxSize='33px' size={'s'} fontWeight={'600'} name={member.email} cursor="pointer" />
+                                      </PopoverTrigger>
+                                      <PopoverContent className={Styles.PopoverMembers}>
+                                        <PopoverCloseButton />
+                                        <PopoverBody paddingTop={4}>
+                                          <p style={{ margin: "0", fontSize: "16px" }}>
+                                            {member.email}
+                                          </p>
+                                          <Dvider color="rgb(159 173 188 / 24%)" m={"10px 0"} />
+                                          <button
+                                            onClick={() => {
+                                              RemoveUserToWorkspaceFormik.setFieldValue("memberId", member.id);
+                                              RemoveUserToWorkspaceFormik.setFieldValue("cardId", selectedTask?.id);
+                                              RemoveUserToWorkspaceFormik.handleSubmit()
+                                            }}>Remove from card</button>
+                                        </PopoverBody>
+                                      </PopoverContent>
+                                    </Popover>
+                                  ))}
+                                </Flex>
+                              </>
+                              )}
+                            </Container>
+                          </ChakraProvider>
+                          <form onSubmit={updateCardDescriptionFormik.handleSubmit}
+                          >
+                            <input
+                              type="hidden"
+                              name="cardId"
+                              value={updateCardDescriptionFormik.values.cardId}
+                              onChange={updateCardDescriptionFormik.handleChange}
+                            />
+                            <div>
+                              <Flex justifyContent={'space-between'} alignItems={'center'}>
+                                <Flex gap={2} alignItems={'center'}>
+                                  <span style={{ color: '#9fadbc', fontSize: "22px" }} className="material-symbols-outlined">
+                                    list
+                                  </span>
+                                  <label className={Styles.title}>Description</label>
+                                </Flex>
+                              </Flex>
+                              {isEditing ? (
+                                <div>
+                                  <textarea
+                                    name="description"
+                                    value={updateCardDescriptionFormik?.values?.description}
+                                    onChange={updateCardDescriptionFormik.handleChange}
+                                    className={Styles.inputTaskArea}
+                                  />
+                                  <Button onClick={updateCardDescriptionFormik.handleSubmit} className={Styles.EditButtonDesc} style={{ backgroundColor: '#67a6ff', color: "#ffff" }} type="submit" mr={3}>
+                                    Save
+                                  </Button>
+                                  <Button className={Styles.EditButtonDesc} variant='ghost' style={{ backgroundColor: '#5b5e6136', color: "#ffff" }} onClick={() => setIsEditing(false)}>Cancel</Button>
+                                </div>
+                              ) : (
+                                <textarea
+                                  name="description"
+                                  value={selectedTask?.description}
+                                  onChange={updateCardDescriptionFormik.handleChange}
+                                  className={Styles.inputTaskAreaClosed}
+                                  onClick={() => setIsEditing(true)}
+                                />
+                              )}
+                              <div>
+                                <div className={Styles.Checklist}>
+                                  {ChecklistData && ChecklistData.length > 0 &&
+                                    ChecklistData?.map((item, index) => (
+                                      <Checklist key={index} data={item} />
+                                    ))
+                                  }
+                                </div>
+                              </div>
+
+                            </div>
+                          </form>
                           {CustomFields?.data?.id && (
                             <div style={{ padding: "20px 0" }}>
-                              <Flex justifyContent={'space-between'} alignItems={'center'}>
+                              <Flex pb={3} justifyContent={'space-between'} alignItems={'center'}>
                                 <Flex gap={2} alignItems={'center'}>
                                   <span style={{ color: '#9fadbc', fontSize: "22px" }} className="material-symbols-outlined">
                                     folder_copy
@@ -953,15 +1152,14 @@ const Column = ({ column, index, filterData }) => {
                                   <Flex borderRadius={10} minW={'max-content'} width={'120px'} backgroundColor={"#4e575e9c"} p={'10px 10px'} gap={2} align={'start'} flexDirection={'column'} key={checkbox.id}>
                                     <Flex w={'100%'} alignItems={'center'} justifyContent={'space-between'}>
                                       <Flex gap={1} align={'center'}>
-                                        <span style={{ color: '#9fadbc', fontSize: "18px" }} class="material-symbols-outlined">
+                                        <span style={{ color: '#9fadbc', fontSize: "18px" }} className="material-symbols-outlined">
                                           task_alt
                                         </span>
                                         <p style={{ margin: 0, color: '#9fadbc', }}> {checkbox.title}</p>
                                       </Flex>
-                                      <span onClick={() => { setIdToDelete(checkbox.id); onRemoveCustomFieldOpen() }} style={{ cursor: 'pointer', color: '#9fadbc', fontSize: "18px" }} class="material-symbols-outlined">
+                                      <span onClick={() => { setIdToDelete(checkbox.id); onRemoveCustomFieldOpen() }} style={{ cursor: 'pointer', color: '#9fadbc', fontSize: "18px" }} className="material-symbols-outlined">
                                         more_vert
                                       </span>
-
                                     </Flex>
                                     <input
                                       type="checkbox"
@@ -970,25 +1168,45 @@ const Column = ({ column, index, filterData }) => {
                                     />
                                   </Flex>
                                 ))}
+                                <Modal isOpen={isRemoveDropdownOpen} onClose={onRemoveDropdownClose}>
+                                  <ModalOverlay />
+                                  <ModalContent color='#9fadbc' backgroundColor="#22272B">
+                                    <ModalHeader>Remove</ModalHeader>
+                                    <ModalCloseButton />
+                                    <ModalBody>Are you sure you want to remove this field?</ModalBody>
+                                    <ModalFooter>
+                                      <Button type='submit' colorScheme='red' mr={3} onClick={() => RemoveDropDownFormik.handleSubmit()}>
+                                        Delete
+                                      </Button>
+                                      <Button onClick={onRemoveDropdownClose}>Cancel</Button>
+                                    </ModalFooter>
+                                  </ModalContent>
+                                </Modal>
                                 {CustomFields?.data?.dropDownDto?.map(data => (
                                   <Flex flexDir={'column'} borderRadius={10} minW={'max-content'} width={'120px'} backgroundColor={"#4e575e9c"} p={'10px 10px'} gap={2} align={'start'} flexDirection={'column'} key={data?.id}>
-                                    <Flex w={'100%'} alignItems={'center'} gap={3}>
-                                      <span style={{ color: '#9fadbc', fontSize: "18px" }} class="material-symbols-outlined">
-                                        folder_copy
+                                    <Flex w={'100%'} alignItems={'center'} >
+                                      <Flex w={'100%'} alignItems={'center'} gap={3}>
+                                        <span style={{ color: '#9fadbc', fontSize: "18px" }} className="material-symbols-outlined">
+                                          folder_copy
+                                        </span>
+                                        <p style={{ margin: 0, color: '#9fadbc', }}> {data?.title}</p>
+                                      </Flex>
+                                      <span onClick={() => { RemoveDropDownFormik.setFieldValue("dropDownId", data.id); onRemoveDropdownOpen() }} style={{ cursor: 'pointer', color: '#9fadbc', fontSize: "18px" }} className="material-symbols-outlined">
+                                        more_vert
                                       </span>
-                                      <p style={{ margin: 0, color: '#9fadbc', }}> {data?.title}</p>
                                     </Flex>
                                     {data?.dropDownOptions.length > 0 ? (
                                       <select
                                         className={Styles.DropDownSellect}
-                                        style={{ color: 'white', backgroundColor: data?.color ? data?.color : "#4e575e9c" }}
+                                        style={{ color: 'white', backgroundColor: data?.color ? data?.color : "#4e575e9c", cursor: 'pointer' }}
                                         name="dropdownOptions"
                                         value={data?.selectedId}
                                         onChange={e => handleOptionChange(data?.id, e.target.value)}
+
                                       >
                                         <option style={{ backgroundColor: "#4e575e9c" }} value="" disabled>Select an option...</option>
                                         {data?.dropDownOptions.map(option => (
-                                          <option style={{ backgroundColor: option?.color }} key={option.order} value={option.id}>
+                                          <option style={{ backgroundColor: option?.color, cursor: 'pointer' }} key={option.id} value={option.id}>
                                             {option.optionName}
                                           </option>
                                         ))}
@@ -1001,7 +1219,6 @@ const Column = ({ column, index, filterData }) => {
                                         value={data?.selectedId}
                                         onChange={e => handleOptionChange(data?.id, e.target.value)}
                                         disabled
-                                        
                                       >
                                         <option style={{ backgroundColor: "#4e575e9c" }} value="">No options available</option>
                                       </select>
@@ -1013,18 +1230,18 @@ const Column = ({ column, index, filterData }) => {
                                   <Flex borderRadius={10} minW={'max-content'} width={'120px'} backgroundColor={"#4e575e9c"} p={'10px 10px'} gap={1} align={'start'} flexDirection={'column'} key={checkbox.id}>
                                     <Flex w={'100%'} alignItems={'center'} justifyContent={'space-between'}>
                                       <Flex gap={2} align={'center'}>
-                                        <span style={{ color: '#9fadbc', fontSize: "18px" }} class="material-symbols-outlined">
+                                        <span style={{ color: '#9fadbc', fontSize: "18px" }} className="material-symbols-outlined">
                                           folder_copy
                                         </span>
                                         <p style={{ margin: 0, color: '#9fadbc', }}> {checkbox.title}</p>
                                       </Flex>
-                                      <span onClick={() => { setIdToDelete(checkbox.id); onRemoveCustomFieldOpen() }} style={{ cursor: 'pointer', color: '#9fadbc', fontSize: "18px" }} class="material-symbols-outlined">
+                                      <span onClick={() => { setIdToDelete(checkbox.id); onRemoveCustomFieldOpen() }} style={{ cursor: 'pointer', color: '#9fadbc', fontSize: "18px" }} className="material-symbols-outlined">
                                         more_vert
                                       </span>
                                     </Flex>
-                                    <Flex onClick={() => handleTitleClick4(checkbox.id, checkbox.number)} maxW={'120px'} >
+                                    <Flex onClick={() => handleTitleClick4(checkbox.id, checkbox.number)} maxW={'100%'} >
                                       {isEditing4 && selectedCustomFieldId === checkbox.id || checkbox.number === '' ? (
-                                        <Flex w={"100%"} gap={2} alignItems={'center'}>
+                                        <Flex mw={"100%"} gap={2} alignItems={'center'}>
                                           <span style={{ color: '#9fadbc', fontSize: "20px" }} className="material-symbols-outlined">
                                             splitscreen_bottom
                                           </span>
@@ -1076,12 +1293,12 @@ const Column = ({ column, index, filterData }) => {
                               </Flex>
                               <div className={Styles.attachment}>
                                 {attachments?.data?.map((attachment, index) => (
-                                  < Flex onClick={() => setSellectedFileId(attachment.id)} gap={2} align={'center'} className={Styles.attachmentItem} >
+                                  < Flex key={index} onClick={() => setSellectedFileId(attachment.id)} gap={2} align={'center'} className={Styles.attachmentItem} >
                                     {attachment.fileName}
-                                    <span onClick={() => { handleDownload(attachment.fileName, selectedTask.id) }} style={{ cursor: 'pointer', fontSize: "18px" }} class="material-symbols-outlined">
+                                    <span onClick={() => { handleDownload(attachment.fileName, selectedTask.id) }} style={{ cursor: 'pointer', fontSize: "18px" }} className="material-symbols-outlined">
                                       download
                                     </span>
-                                    <span style={{ fontSize: "18px", cursor: 'pointer' }} onClick={() => onRemoveFileModalOpen()} class="material-symbols-outlined">
+                                    <span style={{ fontSize: "18px", cursor: 'pointer' }} onClick={() => onRemoveFileModalOpen()} className="material-symbols-outlined">
                                       delete
                                     </span>
                                   </Flex>
@@ -1103,71 +1320,122 @@ const Column = ({ column, index, filterData }) => {
                               </ModalFooter>
                             </ModalContent>
                           </Modal>
-                          <form onSubmit={updateCardDescriptionFormik.handleSubmit}>
-                            <input
-                              type="hidden"
-                              name="cardId"
-                              value={updateCardDescriptionFormik.values.cardId}
-                              onChange={updateCardDescriptionFormik.handleChange}
-                            />
-                            <div>
-                              <Flex justifyContent={'space-between'} alignItems={'center'}>
-                                <Flex gap={2} alignItems={'center'}>
-                                  <span style={{ color: '#9fadbc', fontSize: "22px" }} className="material-symbols-outlined">
-                                    list
-                                  </span>
-                                  <label className={Styles.title}>Description</label>
-                                </Flex>
-                                {!isEditing && (
-                                  <button
-                                    type="button"
-                                    className={Styles.EditButton}
-                                    onClick={() => setIsEditing(true)}
-                                  >
-                                    Edit
-                                  </button>
-                                )}
-                              </Flex>
-
-                              {isEditing ? (
-                                <div>
-                                  <textarea
-                                    name="description"
-                                    value={updateCardDescriptionFormik.values.description}
-                                    onChange={updateCardDescriptionFormik.handleChange}
-                                    className={Styles.inputTaskArea}
-                                  />
-                                  <Button onClick={updateCardDescriptionFormik.handleSubmit} className={Styles.EditButton} type="submit" colorScheme='blue' mr={3}>
-                                    Save
-                                  </Button>
-                                  <Button className={Styles.EditButton} variant='ghost' onClick={() => setIsEditing(false)}>Cancel</Button>
-                                </div>
-                              ) : (
-                                <p className={Styles.Text}>{selectedTask.description}</p>
-                              )}
-                              <div>
-                                <div className={Styles.Checklist}>
-                                  {ChecklistData && ChecklistData.length > 0 &&
-                                    ChecklistData?.map((item, index) => (
-                                      <Checklist key={index} data={item} />
-                                    ))
-                                  }
-                                </div>
-                              </div>
-
-                            </div>
-                          </form>
-
-
                         </div>
                         <div className={Styles.LeftContainer} style={{ width: "25%" }}>
                           <h1 className={Styles.MenuTitle}>Add to Card</h1>
-                          <div onClick={() => navigate(`/members/${workspaceId}`)} className={Styles.OptionSellectButton}>
-                            <FontAwesomeIcon
-                              className="me-2"
-                              icon={faUserGroup}
-                            />
-                            Members</div>
+                          <ChakraProvider>
+                            <Popover
+                              isOpen={isMemberAddOpened}
+                              initialFocusRef={firstFieldRef}
+                              onOpen={onMemberAddOpened}
+                              onClose={onMemberAddClosed}
+                              closeOnBlur={true}
+                            >
+                              <PopoverTrigger>
+                                <button className={Styles.OptionSellectButton}>
+                                  <FontAwesomeIcon
+                                    className="me-2"
+                                    icon={faUserGroup}
+                                  />
+                                  <p>
+                                    Members
+                                  </p>
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                className={Styles.ChecklistModal}
+                                p={5}
+                              >
+                                <Flex padding={'0px 0px 15px 0px'} align={'center'} justifyContent={"space-between"}>
+                                  <p>
+                                  </p>
+                                  <h1 className={Styles.CheckListHeader}>
+                                    Members
+                                  </h1>
+                                  <FontAwesomeIcon
+                                    onClick={() => onMemberAddClosed()}
+                                    className={Styles.XmarkIcon}
+                                    icon={faXmark}
+                                  />
+                                </Flex>
+                                <>
+                                  <input
+                                    onChange={handleChange}
+                                    className={Styles.InputCheck}
+                                    name="name"
+                                    type="text"
+                                    placeholder='Search members ...'
+                                  />
+                                  {searchValue && (
+                                    <>
+                                      <p className={Styles.MembersTitle}>Find members</p>
+                                      <Flex flexDir={'column'} gap={3}>
+                                        {isMembersLoading ? (
+                                          <p>Loading members{loadingDots}</p>
+                                        ) : searchResult.length > 0 ? (
+                                          searchResult.map((member, index) => (
+                                            <Flex
+                                              key={member.id} // Ensure unique key for each member
+                                              onClick={() => {
+                                                AddUserToCardFormik.setFieldValue("memberId", member.id);
+                                                AddUserToCardFormik.setFieldValue("cardId", selectedTask?.id);
+                                                AddUserToCardFormik.handleSubmit()
+                                              }}
+                                              cursor={'pointer'}
+                                              alignItems={'center'}
+                                              padding={'3px'}
+                                              borderRadius={"4px"}
+                                              justifyContent={'space-between'}
+                                            >
+                                              <Flex alignItems={'center'} gap={2}>
+                                                <Avatar
+                                                  border={'1px solid #74879c6c'}
+                                                  name={`${member.email}`}
+                                                  boxSize='30px'
+                                                  size={'x'}
+                                                  fontWeight={'600'}
+                                                  cursor="pointer"
+                                                />
+                                                <p style={{ margin: '0', fontSize: "14px" }}>{member.email}</p>
+                                              </Flex>
+                                            </Flex>
+                                          ))
+                                        ) : (
+                                          <p>No members found</p>
+                                        )}
+                                      </Flex>
+                                    </>
+                                  )}
+                                </>
+                                {selectedTask?.appUsers?.length > 0 && (
+                                  <>
+                                    <p className={Styles.MembersTitle}>Card members</p>
+                                    <Flex flexDir={'column'} gap={3}>
+                                      {selectedTask.appUsers.map((member, index) => (
+                                        <Flex key={index} padding={'3px'} borderRadius={"4px"} backgroundColor={"#68717b69"} alignItems={'center'} justifyContent={'space-between'}>
+                                          <Flex alignItems={'center'} gap={2}>
+                                            <Avatar border={'1px solid #74879c6c'} boxSize='30px' size={'x'} fontWeight={'600'} name={member.email} cursor="pointer" />
+                                            <p style={{ margin: '0', fontSize: "14px" }}> {member.email}</p>
+                                          </Flex>
+                                          <FontAwesomeIcon
+                                            fontSize={"17px"}
+                                            fontWeight={'300'}
+                                            onClick={() => {
+                                              RemoveUserToWorkspaceFormik.setFieldValue("memberId", member.id);
+                                              RemoveUserToWorkspaceFormik.setFieldValue("cardId", selectedTask?.id);
+                                              RemoveUserToWorkspaceFormik.handleSubmit()
+                                            }}
+                                            className={Styles.XmarkIcon}
+                                            icon={faXmark}
+                                          />
+                                        </Flex>
+                                      ))}
+                                    </Flex>
+                                  </>
+                                )}
+                              </PopoverContent>
+                            </Popover>
+                          </ChakraProvider>
                           <ChakraProvider>
                             <Popover
                               isOpen={isAttachmentPopoverOpen}
@@ -1178,7 +1446,7 @@ const Column = ({ column, index, filterData }) => {
                             >
                               <PopoverTrigger>
                                 <button className={Styles.OptionSellectButton}>
-                                  <span style={{ fontSize: "17px", marginRight: 8 }} class="material-symbols-outlined">
+                                  <span style={{ fontSize: "17px", marginRight: 8 }} className="material-symbols-outlined">
                                     attachment
                                   </span>
                                   Attachment
@@ -1436,7 +1704,7 @@ const Column = ({ column, index, filterData }) => {
                             >
                               <PopoverTrigger>
                                 <button className={Styles.OptionSellectButton}>
-                                  <span style={{ fontSize: "18px", paddingRight: "5px" }} class="material-symbols-outlined">
+                                  <span style={{ fontSize: "18px", paddingRight: "5px" }} className="material-symbols-outlined">
                                     folder_copy
                                   </span>
                                   Custom fields
@@ -1470,7 +1738,6 @@ const Column = ({ column, index, filterData }) => {
                                       name="fieldType"
                                       value={fieldType}
                                       onChange={handleSelectChange}
-                                      onClick={()=>console.log(selectedTask?.getCustomFieldDto?.id)}
                                     >
                                       <option value="">Select a field type...</option>
                                       <option value="number">Text</option>

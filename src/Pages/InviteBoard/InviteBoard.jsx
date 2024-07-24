@@ -26,13 +26,10 @@ export default function InviteBoard() {
       ...prevToken,
       Email: email
     }));
-    console.log(decodedToken);
 
     if (!userId) {
-      console.log('id not exists!');
       navigate('/');
     } else {
-      console.log('id exists');
       GetWorkSpaceById(decodedToken.WorkspaceId).then(workspace => {
         setDomainTitle(workspace?.data?.title);
       }).catch(error => {
@@ -56,7 +53,6 @@ export default function InviteBoard() {
   });
 
   const handleJoin = () => {
-    console.log('hello', decodedToken);
     mutate();
   };
 
