@@ -43,14 +43,30 @@ import {
   Select,
   Box,
   Spinner,
+  ModalContent,
+  ModalOverlay,
+  ModalCloseButton,
+  useDisclosure,
+  Portal,
 } from "@chakra-ui/react";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverHeader,
+  PopoverBody,
+  PopoverFooter,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverAnchor,
+} from '@chakra-ui/react'
 import { getbyWokrspaceInBoard } from "../../Service/BoardService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useQueryClient } from "react-query";
 import Dvider from "../Dvider";
 import { useParams } from "react-router";
-import { Pagination } from "react-bootstrap";
+import { ModalBody, ModalFooter, ModalHeader, Pagination } from "react-bootstrap";
 import { SeachUsers } from "../../Service/AuthService";
 import * as Yup from 'yup';
 
@@ -63,7 +79,7 @@ export default function Members() {
   const [MemberCount, setTotalMemberCount] = useState(0);
   const [GuestCount, setTotalGuestCount] = useState(0);
 
-
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const [inviteUrl, setInviteUrl] = useState(null);
   const [linkSelectedWorkspaceId, setLinkSelectedWorkspaceId] = useState(null);
   const handleLinkWorkspaceSelect = (Id) => {
@@ -339,11 +355,15 @@ export default function Members() {
         toast.error("You cant change user role!");
       }
     });
-  const [ShowRoleChange, SetShowRole] = useState(true)
-  const handleDone = () => {
-    UpdateUserRoleFormik.handleSubmit()
-    SetShowRole(!ShowRoleChange)
-  }
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const handleRoleChangeClick = (userId) => {
+    setSelectedUserId(selectedUserId === userId ? null : userId);
+  };
+
+  const handleDone = (userId) => {
+    UpdateUserRoleFormik.handleSubmit();
+    setSelectedUserId(null);
+  };
 
   const [userRole, setUserRole] = useState("0")
   const CreateUrlFormik = useFormik({
@@ -379,11 +399,6 @@ export default function Members() {
     workspaceAddUserFormik.setFieldValue('role', value)
     CreateUrlFormik.setFieldValue('role', value)
   }
-
-
-
-
-
   const handleRemoveUser = (Id) => {
     RemoveUserFormik.handleSubmit()
     RemoveUserFormik.setFieldValue("userId", Id)
@@ -415,8 +430,11 @@ export default function Members() {
         toast.error("no Access!");
       }
     });
-
-
+  const { isOpen: isOpenChecklist, onOpen: onOpenChecklist, onClose: onCloseChecklist } = useDisclosure();
+  const handleDeleteModalOpen = () => {
+    onOpen()
+    console.log('hello0');
+  }
 
   return (
     <>
@@ -570,9 +588,12 @@ export default function Members() {
                                     </div>
                                     <div>
                                       <Flex gap={20} alignItems={'center'}>
-
-                                        {ShowRoleChange &&
-                                          <Button onClick={() => SetShowRole(!ShowRoleChange)} type="submit" className={Styles.Button}>
+                                        {selectedUserId !== data?.id && (
+                                          <Button
+                                            onClick={() => handleRoleChangeClick(data?.id)}
+                                            type="submit"
+                                            className={Styles.Button}
+                                          >
                                             {AdduserLoading ? (
                                               <Spinner
                                                 thickness="3px"
@@ -585,8 +606,8 @@ export default function Members() {
                                               "Change Role"
                                             )}
                                           </Button>
-                                        }
-                                        {!ShowRoleChange && (
+                                        )}
+                                        {selectedUserId === data?.id && (
                                           <Flex gap={10}>
                                             <ChakraProvider>
                                               <Select
@@ -607,17 +628,44 @@ export default function Members() {
                                                 <option value="1">Member</option>
                                                 <option value="2">Admin</option>
                                                 <option value="3">GlobalAdmin</option>
-
                                               </Select>
                                             </ChakraProvider>
-                                            <button onClick={() => { UpdateUserRoleFormik.setFieldValue("userId", data?.id); handleDone() }} type="submit" disabled={UpdateUserRoleFormik.isSubmitting || RoleChangeLoading}>
+                                            <button
+                                              onClick={() => {
+                                                UpdateUserRoleFormik.setFieldValue("userId", data?.id);
+                                                handleDone(data?.id);
+                                              }}
+                                              type="submit"
+                                              disabled={UpdateUserRoleFormik.isSubmitting || RoleChangeLoading}
+                                            >
                                               Done
                                             </button>
                                           </Flex>
                                         )}
-                                        <Button style={{ maxHeight: "" }} onClick={() => handleRemoveUser(data?.id)} type="submit" className={Styles.Button}>
-                                          Remove user
-                                        </Button>
+                                        <ChakraProvider>
+                                          <Popover>
+                                            <PopoverTrigger>
+                                              <Button
+                                                style={{ maxHeight: "" }}
+
+                                                type="submit"
+                                                className={Styles.Button}
+                                              >
+                                                Remove user
+                                              </Button>
+                                            </PopoverTrigger>
+                                            <Portal>
+                                              <PopoverContent bgColor={"#384148 !important"} color="#d4d6d8">
+                                                <PopoverArrow />
+                                                <PopoverHeader>Are u sure u want to remove?</PopoverHeader>
+                                                <PopoverCloseButton />
+                                                <PopoverBody>
+                                                  <Button className={Styles.Button} onClick={() => handleRemoveUser(data?.id)}>remove</Button>
+                                                </PopoverBody>
+                                              </PopoverContent>
+                                            </Portal>
+                                          </Popover>
+                                        </ChakraProvider>
                                       </Flex>
                                     </div>
                                   </Flex>
@@ -821,7 +869,23 @@ export default function Members() {
           </Flex>
         </Modal.Body>
       </Modal>
-
+      <ChakraProvider>
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Modal Title</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+            </ModalBody>
+            <ModalFooter>
+              <Button colorScheme='blue' mr={3} onClick={onClose}>
+                Close
+              </Button>
+              <Button variant='ghost'>Secondary Action</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </ChakraProvider>
     </>
   );
 }

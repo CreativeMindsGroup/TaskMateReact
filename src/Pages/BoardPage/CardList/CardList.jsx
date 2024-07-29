@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { useParams } from "react-router-dom";
-import Column from "./Column";
+import Column from "./Column"; 
 import { moveCard, moveCardList } from "../../../Service/BoardService";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -66,7 +66,9 @@ const CardList = ({ boardData }) => {
           sourceColumnId: start.id,
           destinationColumnId: start.id,
           cardId: draggableId,
-          newIndex: destination.index
+          newIndex: destination.index,
+          workspaceId:workspaceId ,
+          userId:userId
         });
       } else {
         // Moving tasks between different columns
@@ -79,7 +81,9 @@ const CardList = ({ boardData }) => {
           sourceColumnId: start.id,
           destinationColumnId: finish.id,
           cardId: draggableId,
-          newIndex: destination.index
+          newIndex: destination.index,
+          workspaceId:workspaceId ,
+          userId:userId
         });
       }
     }

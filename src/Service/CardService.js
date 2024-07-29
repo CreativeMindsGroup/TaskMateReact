@@ -56,8 +56,8 @@ export const GetAttachments = (cardListId) => {
 export const GetCustomFields = (CardId) => {
   return httpClient.get(`/api/CustomFields?cardId=${CardId}`);
 };
-export const UpdateChecklistCustomField = (CardId, value) => {
-  return httpClient.put(`/api/CustomFields/UpdateChecklist?value=${value}&id=${CardId}`);
+export const UpdateChecklistCustomField = (CardId, value,userId,workspaceId) => {
+  return httpClient.put(`/api/CustomFields/UpdateChecklist?value=${value}&id=${CardId}&UserId=${userId}&WorkspaceId=${workspaceId}`);
 };
 export const RemoveCustomField = ({ fieldId, userId, workspaceId }) => {
   return httpClient.delete('/api/CustomFields/RemoveCustomField', {
@@ -79,8 +79,8 @@ export const AddCardDueDate = (data) => {
 export const UpdateDateTime = (data) => {
   return httpClient.put(`/api/Cards/DueDateUpdated`, data);
 };
-export const UploadFile = (formData, cardId, FileName) => {
-  return httpClient.post(`/api/Cards/UploadAttacment?CardId=${cardId}&FileName=${FileName}`, formData, {
+export const UploadFile = (formData, cardId, FileName,userId,workspaceId) => {
+  return httpClient.post(`/api/Cards/UploadAttacment?CardId=${cardId}&FileName=${FileName}&UserId=${userId}&WorkspaceId=${workspaceId}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

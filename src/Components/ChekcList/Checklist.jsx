@@ -44,7 +44,7 @@ export default function Checklist({ data }) {
         updateCheckItem({ id, newState: isChecked });
     };
     const { mutate: updateCheckItem, isLoading } = useMutation(
-        ({ id, newState }) => CheckItemUpdate(id, newState),
+        ({ id, newState }) => CheckItemUpdate(id, newState,userId,workspaceId),
         {
             onSuccess: () => {
                 toast.success("Checklist item updated successfully!");
