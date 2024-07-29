@@ -210,9 +210,9 @@ color: #e5e9ee;
     font-weight: 500 !important;
     color: #9fadbc !important;
     background-color: #38414868 !important;
-    border: none !important;
     padding: 5px 10px ;
     border-radius: 2px !important;
+    border: 1px solid #808d97 !important;
   }
   .Select{
     background-color: #384148;

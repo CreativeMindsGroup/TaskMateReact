@@ -3,8 +3,8 @@ import { httpClient } from "../Utils/HttpClient";
 export const getCardInCustomFields = (cardId) => {
   return httpClient.get(`api/CustomFields?CardId=${cardId}`);
 };
-export const UpdateCustomNumber = (Id,value) => {
-  return httpClient.put(`/api/CustomFields/UpdateNumberField?value=${value}&Id=${Id}`);
+export const UpdateCustomNumber = (Id,value,UserId,WorkspaceId) => {
+  return httpClient.put(`/api/CustomFields/UpdateNumberField?value=${value}&Id=${Id}&UserId=${UserId}&WorkspaceId=${WorkspaceId}`);
 };
 export const CreateDropdown = (value) => {
   return httpClient.post(`/api/CustomFields/CreateDropdown`,value);
@@ -12,6 +12,6 @@ export const CreateDropdown = (value) => {
 export const RemoveDropDown = (value) => {
   return httpClient.post(`/api/CustomFields/RemoveDropDown`,value);
 };
-export const SetOption = (DropdownId,OptionId) => {
-  return httpClient.post(`/api/CustomFields/SetOptionToDropdown?dropDownId=${DropdownId}&dropdownOptionId=${OptionId}`);
+export const SetOption = (DropdownId,OptionId,UserId,WorkspaceId) => {
+  return httpClient.post(`/api/CustomFields/SetOptionToDropdown?dropDownId=${DropdownId}&dropdownOptionId=${OptionId}&UserId=${UserId}&WorkspaceId=${WorkspaceId}`);
 };

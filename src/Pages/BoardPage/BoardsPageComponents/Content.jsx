@@ -92,8 +92,9 @@ export default function Content() {
         (cardId) => RemoveCard(cardId, userId, workspaceId),
         {
             onSuccess: () => {
-                toast.success("Card deleted")
+                toast.success("Card deleted !")
                  queryClient.invalidateQueries("GetArhivedCards");
+                 queryClient.invalidateQueries("boardData");
             },
             onError: (err) => {
                 toast.error("No Access!")

@@ -107,7 +107,7 @@ const Column = ({ column, index, filterData }) => {
 
   const handleTaskClick = (task) => {
     setSelectedTask(task);
-    updateCardDescriptionFormik.setValues({ cardId: task.id, description: task.description || '' });
+    updateCardDescriptionFormik.setValues({ userId:userId,workspcaeId:workspaceId,cardId: task.id, description: task.description || '' });
     onOpen();
   };
 
@@ -119,6 +119,7 @@ const Column = ({ column, index, filterData }) => {
         onClose();
       },
       onError: (error) => {
+        toast.error("No Access")
       },
     }
   );
@@ -126,7 +127,9 @@ const Column = ({ column, index, filterData }) => {
   const updateCardDescriptionFormik = useFormik({
     initialValues: {
       cardId: '',
-      description: ''
+      description: '',
+      userId:userId,
+      workspcaeId:workspaceId
     },
     validationSchema: Yup.object({
       // description: Yup.string().required('Description is required')
@@ -194,7 +197,7 @@ const Column = ({ column, index, filterData }) => {
   };
 
   const { mutate: UpdateTitleMutation4 } = useMutation(
-    (data) => UpdateCustomNumber(selectedCustomFieldId, editedTitle4),
+    (data) => UpdateCustomNumber(selectedCustomFieldId, editedTitle4,userId,workspaceId),
     {
       onSuccess: () => {
         toast.success("Title updated successfully");
@@ -380,7 +383,9 @@ const Column = ({ column, index, filterData }) => {
       onSuccess: () => {
         toast.success("CardDeleted")
         onClose()
+        onCloseModalDeletModal()
         queryClient.invalidateQueries("getAllCheklist");
+        queryClient.invalidateQueries("boardData");
       },
       onError: (err) => {
         toast.error("No Access!")
@@ -434,7 +439,7 @@ const Column = ({ column, index, filterData }) => {
   };
 
   const { mutate: uploadFileMutate, isLoading: uploadLoading } = useMutation(
-    ({ formData, cardId, fileName }) => UploadFile(formData, cardId, fileName),
+    ({ formData, cardId, fileName,userId,workspaceId }) => UploadFile(formData, cardId, fileName,userId,workspaceId),
     {
       onSuccess: () => {
         toast.success("Uploaded successfully");
@@ -444,7 +449,7 @@ const Column = ({ column, index, filterData }) => {
         isAttachmentPopoverClose();
       },
       onError: (err) => {
-        toast.error(`Error: ${err.message || "No Access!"}`);
+        toast.error(`${"No Access!"}`);
       },
     }
   );
@@ -460,7 +465,7 @@ const Column = ({ column, index, filterData }) => {
       const formData = new FormData();
       if (values.file) {
         formData.append('file', values.file);
-        uploadFileMutate({ formData, cardId: values.cardId, fileName: values.fileName });
+        uploadFileMutate({ formData, cardId: values.cardId, fileName: values.fileName , userId:userId,workspaceId:workspaceId});
         for (let pair of formData.entries()) {
         }
       } else {
@@ -617,7 +622,7 @@ const Column = ({ column, index, filterData }) => {
     }
   );
   const { mutate: updateChecklist } = useMutation(
-    ({ id, value }) => UpdateChecklistCustomField(id, value),
+    ({ id, value }) => UpdateChecklistCustomField(id, value,userId,workspaceId),
     {
       onSuccess: () => {
         queryClient.invalidateQueries(['GetCustomFields', selectedTask?.id]);
@@ -745,7 +750,7 @@ const Column = ({ column, index, filterData }) => {
   );
 
   const handleOptionChange = (DropdownId, OptionId) => {
-    SetOption(DropdownId, OptionId)
+    SetOption(DropdownId, OptionId,userId,workspaceId)
       .then(response => {
         queryClient.invalidateQueries(['GetCustomFields', selectedTask?.id]);
 
@@ -1813,6 +1818,7 @@ const Column = ({ column, index, filterData }) => {
                                       type="submit"
                                       onClick={() => {
                                         CreateCustomDropdown.handleSubmit();
+                                        CreateCustomField.setFieldValue("cardId", selectedTask?.id);
                                       }}
                                     >
                                       Create
@@ -1821,7 +1827,6 @@ const Column = ({ column, index, filterData }) => {
                                     <button
                                       type="submit"
                                       onClick={() => {
-                                        CreateCustomDropdown.handleSubmit();
                                         CreateCustomField.handleSubmit();
                                         CreateCustomField.setFieldValue("cardId", selectedTask?.id);
                                       }}
