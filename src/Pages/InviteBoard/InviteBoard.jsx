@@ -41,7 +41,6 @@ export default function InviteBoard() {
   const queryClient = useQueryClient();
   const { mutate, isLoading } = useMutation(() => AcceptInvite(token,email), {
     onSuccess: () => {
-      toast.success("Joined!");
       setTimeout(() => {
         navigate('/');
       }, 1000);

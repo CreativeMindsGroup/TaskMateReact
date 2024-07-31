@@ -17,6 +17,16 @@
     font-size: 15px;
     margin: 0;
 }
+.Input{
+    background-color: transparent;
+    border: 1px solid #4f5a64;
+    color: #9fadbc !important;
+    outline: none;
+    border-radius: 3px;
+    padding: 0px 10px;
+    margin:0 10px;
+    width: 100% !important;
+  }
 .Button2{
     color: #9fadbc !important;
     font-weight: 600 !important;

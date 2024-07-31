@@ -73,7 +73,6 @@ export default function Content() {
         (data) => ArchiveCard(data),
         {
             onSuccess: () => {
-                toast.success("Archived")
                 queryClient.invalidateQueries("boardData");
                 queryClient.invalidateQueries("GetArhivedCards");
 
@@ -92,7 +91,6 @@ export default function Content() {
         (cardId) => RemoveCard(cardId, userId, workspaceId),
         {
             onSuccess: () => {
-                toast.success("Card deleted !")
                  queryClient.invalidateQueries("GetArhivedCards");
                  queryClient.invalidateQueries("boardData");
             },

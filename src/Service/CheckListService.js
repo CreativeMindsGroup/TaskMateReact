@@ -38,9 +38,6 @@ export const CreateChecklistitem = async (formData) => {
 //     }
 // };
 
-export const UpdateChecklistItem = (data) => {
-    return httpClient.put(`/api/CardLists/update`, data);
-};
 export const RemoveCardList = ({ CardlistId, userId, workspaceId }) => {
     return httpClient.delete(`/api/CardLists/remove?CardlistId=${CardlistId}&WorkspaceId=${workspaceId}&UserId=${userId}`, {
     });
@@ -77,3 +74,9 @@ export const CheckItemUpdate = async (Id, data) => {
     }
 };
 
+export const UpdateChecklistItem = (data) => {
+    httpClient.put(`/api/Checkitems/ChangeChecklistItemTitle`, data);
+};
+export const UpdateChecklist = (data) => {
+    httpClient.put(`/api/Checklists/ChangeChecklistTitle`, data);
+};

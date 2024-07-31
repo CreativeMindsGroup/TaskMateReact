@@ -106,7 +106,6 @@ export default function Members() {
   const handleWorkspaceCopyLink = () => {
     if (inviteUrl) {
       navigator.clipboard.writeText(inviteUrl);
-      toast.success("Link copied to clipboard!");
     }
   };
 
@@ -145,7 +144,6 @@ export default function Members() {
   const handleBoardCopyLink = () => {
     if (inviteBoardUrl) {
       navigator.clipboard.writeText(inviteBoardUrl);
-      toast.success("Link copied to clipboard!");
     }
   };
 
@@ -227,7 +225,6 @@ export default function Members() {
       onSuccess: () => {
         queryClient.invalidateQueries("getAllusersOfWorkspce");
         queryClient.invalidateQueries("UsersCount");
-        toast.success("User Added!");
       },
       onError: () => {
         toast.error("no Access!");
@@ -342,7 +339,6 @@ export default function Members() {
       toast.error("no Access!");
     }, onSuccess: (value) => {
 
-      toast.success("RoleChanged !");
       queryClient.invalidateQueries("getAllusersOfWorkspce");
 
     },
@@ -350,7 +346,6 @@ export default function Members() {
   const { mutate: UpdateUserRoleMutation, isLoading: RoleChangeLoading } =
     useMutation((values) => ChangeUserRoleInWorkspace(values), {
       onSuccess: () => {
-        toast.success("Role Changed!");
         queryClient.invalidateQueries("getAllusersOfWorkspce");
       },
       onError: () => {
@@ -391,7 +386,6 @@ export default function Members() {
     useMutation((values) => GenerateLinkToJoinWorkspace(values), {
       onSuccess: (value) => {
         navigator.clipboard.writeText(value.inviteLink)
-        toast.success("Code Generated");
       },
       onError: () => {
         toast.error("no Access!");
@@ -425,7 +419,6 @@ export default function Members() {
     useMutation((values) => DeleteUserFromWorkspace(values), {
       onSuccess: (value) => {
         navigator.clipboard.writeText(value.inviteLink)
-        toast.success("User removed !");
         queryClient.invalidateQueries("getAllusersOfWorkspce");
       },
       onError: () => {

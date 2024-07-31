@@ -19,7 +19,6 @@ const CardList = ({ boardData }) => {
   const [openCreateMenu, setOpenCreateMenu] = useState(false);
   const { mutate: reorderCardsMutation } = useMutation(data => moveCard(data), {
     onSuccess: () => {
-      toast.success("Done!")
       queryClient.invalidateQueries(["boardData"]);
     },
     onError: (error) => {
@@ -93,7 +92,6 @@ const CardList = ({ boardData }) => {
 
   const { mutate: moveListMutation } = useMutation(data => moveCardList(boardId, data), {
     onSuccess: () => {
-      toast.success("List moved successfully!");
       queryClient.invalidateQueries("boardData");
     },
     onError: (error) => {
@@ -133,7 +131,6 @@ const CardList = ({ boardData }) => {
         setOpenCreateMenu(false);
         queryClient.invalidateQueries(["boardData"]);
         cardListCreateFormik.resetForm()
-        toast.success("Created!")
       },
       onError: (error) => {
         cardListCreateFormik.resetForm()
