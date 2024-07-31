@@ -7,12 +7,12 @@ import {
     CircularProgress
 } from '@chakra-ui/react';
 import { useMutation, useQueryClient } from 'react-query';
-import { CheckItemUpdate, CreateChecklistitem, DeleteChecklist, DeleteChecklistItem } from '../../Service/CheckListService';
+import { CheckItemUpdate, CreateChecklistitem, DeleteChecklist, UpdateChecklist, UpdateChecklistItem, UpdateCheklistItemTitle } from '../../Service/CheckListService';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 
-export default function Checklist({ data }) {
+export default function Checklist({ data, Refetch }) {
     const queryClient = useQueryClient();
     const { workspaceId } = useSelector((x) => x.workspaceAndBoard);
     const { userId } = useSelector((x) => x.userCredentials);
@@ -21,15 +21,14 @@ export default function Checklist({ data }) {
 
     const [isDeleting, setIsDeleting] = useState(false);
     const [showAddItem, setShowAddItem] = useState(false);
-    const [checkboxes, setCheckboxes] = useState({});
+    const [editedText, setEditedText] = useState("");
 
     const { mutate: deleteChecklistItem } = useMutation(
-        (itemId) => DeleteChecklistItem(itemId),
+        (itemId) => deleteChecklist(itemId),
         {
             onSuccess: () => {
                 queryClient.invalidateQueries("getAllCheklist");
                 queryClient.invalidateQueries("ChecklistCount");
-                toast.success("Checklist item deleted successfully!");
                 onCloseChecklist();  // Close the modal after deletion
 
             },
@@ -41,13 +40,13 @@ export default function Checklist({ data }) {
     );
 
     const handleCheckboxChange = (id, isChecked) => {
-        updateCheckItem({ id, newState: isChecked });
+        updateCheckItemMutation({ id, newState: isChecked });
     };
-    const { mutate: updateCheckItem, isLoading } = useMutation(
-        ({ id, newState }) => CheckItemUpdate(id, newState,userId,workspaceId),
+
+    const { mutate: updateCheckItemMutation, isLoading } = useMutation(
+        ({ id, newState }) => CheckItemUpdate(id, newState, userId, workspaceId),
         {
             onSuccess: () => {
-                toast.success("Checklist item updated successfully!");
                 queryClient.invalidateQueries("getAllCheklist");
                 queryClient.invalidateQueries("ChecklistCount");
             },
@@ -57,6 +56,7 @@ export default function Checklist({ data }) {
             }
         }
     );
+
     const handleDelete = (event) => {
         event.stopPropagation();
         setIsDeleting(true);
@@ -72,7 +72,6 @@ export default function Checklist({ data }) {
         {
             onSuccess: () => {
                 queryClient.invalidateQueries("getAllCheklist");
-                toast.success("Deleted");
                 onClose();
             },
             onError: (err) => {
@@ -107,6 +106,98 @@ export default function Checklist({ data }) {
             },
         }
     );
+    // Edit Check item Title
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedTitle, setEditedTitle] = useState("");
+    const [editingItemId, setEditingItemId] = useState(null);
+
+    const handleTitleClick = (item) => {
+        setIsEditing(true);
+        setEditingItemId(item.id);
+        setEditedTitle(item.text);
+    };
+
+    const handleInputChange = (e) => {
+        setEditedTitle(e.target.value);
+    };
+
+    const handleInputBlur = () => {
+        setIsEditing(false);
+        const initialValues = {
+            id: editingItemId,
+            title: editedTitle,
+            userId: userId,
+            workspaceId: workspaceId
+        };
+        UpdateCheklistTitleMutation(initialValues);
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleInputBlur();
+        }
+    };
+    const { mutate: UpdateCheklistTitleMutation } = useMutation(
+        (MutationData) => { UpdateChecklistItem(MutationData); },
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries({ queryKey: ['getAllCheklist'] }, data.id);
+                setEditingItemId(null);
+                Refetch(data.id)
+            },
+            onError: (err) => {
+                toast.error(`Error: ${err.message || "No Access!"}`);
+                setEditingItemId(null);
+                toast.success('No Access!')
+            },
+        }
+    );
+    // Edit CheckList Title
+    const [isEditing2, setIsEditing2] = useState(false);
+    const [editedTitle2, setEditedTitle2] = useState("");
+    const [editingItemId2, setEditingItemId2] = useState(null);
+
+    const handleTitleClick2 = (item) => {
+        setIsEditing2(true);
+        setEditingItemId2(item.id);
+        setEditedTitle2(item.name);
+    };
+
+    const handleInputChange2 = (e) => {
+        setEditedTitle2(e.target.value);
+    };
+
+    const handleInputBlur2 = () => {
+        setIsEditing2(false);
+        const initialValues = {
+            id: editingItemId2,
+            title: editedTitle2,
+            userId: userId,
+            workspaceId: workspaceId
+        };
+        UpdateCheklistTitleMutation2(initialValues);
+    };
+
+    const handleKeyPress2 = (e) => {
+        if (e.key === 'Enter') {
+            handleInputBlur2();
+        }
+    };
+    const { mutate: UpdateCheklistTitleMutation2 } = useMutation(
+        (MutationData) => { UpdateChecklist(MutationData); },
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries({ queryKey: ['getAllCheklist'] }, data.id);
+                setEditingItemId2(null);
+                Refetch(data.id)
+            },
+            onError: (err) => {
+                toast.error(`Error: ${err.message || "No Access!"}`);
+                setEditingItemId2(null);
+                toast.success('No Access!')
+            },
+        }
+    );
     return (
         <div>
             <div className={Styles.TitleContainer}>
@@ -116,7 +207,19 @@ export default function Checklist({ data }) {
                             <span style={{ color: "#9fadbc", fontSize: "23px", position: "relative" }} className="material-symbols-outlined">
                                 check_box
                             </span>
-                            <h1 className={Styles.ListTitle}>{data?.name}</h1>
+                            {isEditing2 && editingItemId2 === data.id ? (
+                                <input
+                                    type="text"
+                                    value={editedTitle2}
+                                    onChange={handleInputChange2}
+                                    onBlur={handleInputBlur2}
+                                    onKeyPress={handleKeyPress2}
+                                    className={Styles.Input}
+                                    autoFocus
+                                />
+                            ) : (
+                                <h1 onClick={() => handleTitleClick2(data)} className={Styles.ListTitle}>{data?.name}</h1>
+                            )}
                         </Flex>
                         <button type='button' className={Styles.Button} onClick={handleDelete}>
                             Delete
@@ -138,26 +241,39 @@ export default function Checklist({ data }) {
                                             checked={item.check}
                                             onChange={(e) => handleCheckboxChange(item.id, e.target.checked)}
                                         />
-                                        <Text
-                                            className={Styles.ChecklistTitle}
-                                            userSelect={"none"}
-                                            borderRadius={10}
-                                            cursor={"pointer"}
-                                            w={"100%"}
-                                            m="0"
-                                            p={"6px 12px"}
-                                            _hover={{
-                                                background:
-                                                    "var(--ds-background-neutral, #A1BDD914)",
-                                            }}
-                                        >
-                                            {item.text}
-                                        </Text>
+                                        {editingItemId === item.id ? (
+                                            <input
+                                                type="text"
+                                                value={editedTitle}
+                                                onChange={handleInputChange}
+                                                onBlur={handleInputBlur}
+                                                onKeyPress={handleKeyPress}
+                                                className={Styles.Input}
+                                                autoFocus
+                                            />
+                                        ) : (
+                                            <Text
+                                                onClick={() => handleTitleClick(item)}
+                                                className={Styles.ChecklistTitle}
+                                                userSelect={"none"}
+                                                borderRadius={10}
+                                                cursor={"pointer"}
+                                                w={"100%"}
+                                                m="0"
+                                                p={"6px 12px"}
+                                                _hover={{
+                                                    background:
+                                                        "var(--ds-background-neutral, #A1BDD914)",
+                                                }}
+                                            >
+                                                {item.text}
+                                            </Text>
+                                        )}
                                     </Flex>
                                     <span onClick={() => onOpenChecklist()} style={{ color: "#9fadbc", cursor: 'pointer' }} className="material-symbols-outlined">
                                         more_horiz
                                     </span>
-                                    < Modal isOpen={isOpenChecklist} onClose={onCloseChecklist}  >
+                                    <Modal isOpen={isOpenChecklist} onClose={onCloseChecklist} >
                                         <ModalOverlay />
                                         <ModalContent style={{ color: '#9fadbc', backgroundColor: "#22272B" }}>
                                             <ModalHeader>Delete Checklist item</ModalHeader>
@@ -195,7 +311,7 @@ export default function Checklist({ data }) {
                                     name="text"
                                 />
                                 <Flex justifyContent={"space-between"} alignItems={"center"}>
-                                    <Button className={Styles.Button2} onClick={formik.handleSubmit} colorScheme="blue">
+                                    <Button className={Styles.Button2} onClick={() => { formik.setFieldValue('checklistId', data?.id); formik.handleSubmit(); }} colorScheme="blue">
                                         Add
                                     </Button>
                                     <Button className={Styles.Button2} onClick={() => setShowAddItem(false)} colorScheme="gray">
@@ -208,7 +324,7 @@ export default function Checklist({ data }) {
                 </Flex>
             </div >
             {/* Confirmation Modal */}
-            < Modal isOpen={isOpen} onClose={onClose} >
+            <Modal isOpen={isOpen} onClose={onClose} >
                 <ModalOverlay />
                 <ModalContent style={{ color: '#9fadbc', backgroundColor: "#22272B" }}>
                     <ModalHeader>Delete Checklist</ModalHeader>
@@ -218,8 +334,9 @@ export default function Checklist({ data }) {
                     </ModalBody>
                     <ModalFooter>
                         <Button
+                            colorScheme='red' mr={3}
                             disabled={isLoading}
-                            isLoading={isLoading} onClick={onClose}>
+                            isLoading={isLoading} onClick={() => confirmDelete()}>
                             {isLoading ? <CircularProgress isIndeterminate size="24px" color="#579dff" /> : "Delete"}
                         </Button>
                         <Button isLoading={isLoading} onClick={onClose}>Cancel</Button>

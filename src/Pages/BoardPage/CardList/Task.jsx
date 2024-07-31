@@ -96,13 +96,13 @@ const Task = ({ task, index }) => {
                   </span>
                 )}
               </Flex>
-              {Task?.data && Task.data !== "0" && (
+              {task.checklistTotalCount != "0" && (
                 <Flex alignItems={'center'} gap={10}>
                   <span style={{ fontSize: "15px", margin: "0" }} className="material-symbols-outlined">
                     select_check_box
                   </span>
                   <span style={{ fontSize: "14px", margin: "0", fontWeight: '400' }} >
-                    {Task.data?.done} / {Task.data?.total}
+                    {task?.checklistTotalCount} / {task?.checklistDoneCount}
                   </span>
                 </Flex>
               )}

@@ -57,7 +57,6 @@ export default function SideBarMenu({ setImage, id }) {
       onSuccess: () => {
         queryClient.invalidateQueries("GetBoartsInWorkspace");
         queryClient.invalidateQueries("worspacedata");
-        toast.success("Deleted!")
       },
       onError:() =>{
         toast.error("No Access!")
@@ -70,7 +69,6 @@ export default function SideBarMenu({ setImage, id }) {
     {
       onSuccess: (values) => {
         window.location.reload();
-        toast.success("Updated!")
       },
       onError:() =>{
         toast.error("No Access!")

@@ -107,7 +107,7 @@ const Column = ({ column, index, filterData }) => {
 
   const handleTaskClick = (task) => {
     setSelectedTask(task);
-    updateCardDescriptionFormik.setValues({ userId:userId,workspcaeId:workspaceId,cardId: task.id, description: task.description || '' });
+    updateCardDescriptionFormik.setValues({ userId: userId, workspcaeId: workspaceId, cardId: task.id, description: task.description || '' });
     onOpen();
   };
 
@@ -128,8 +128,8 @@ const Column = ({ column, index, filterData }) => {
     initialValues: {
       cardId: '',
       description: '',
-      userId:userId,
-      workspcaeId:workspaceId
+      userId: userId,
+      workspcaeId: workspaceId
     },
     validationSchema: Yup.object({
       // description: Yup.string().required('Description is required')
@@ -197,10 +197,9 @@ const Column = ({ column, index, filterData }) => {
   };
 
   const { mutate: UpdateTitleMutation4 } = useMutation(
-    (data) => UpdateCustomNumber(selectedCustomFieldId, editedTitle4,userId,workspaceId),
+    (data) => UpdateCustomNumber(selectedCustomFieldId, editedTitle4, userId, workspaceId),
     {
       onSuccess: () => {
-        toast.success("Title updated successfully");
         queryClient.invalidateQueries("GetCustomFields");
         setIsEditing4(false);
         setEditedTitle4("");
@@ -249,7 +248,6 @@ const Column = ({ column, index, filterData }) => {
     (data) => UpdateChecklistItem(data),
     {
       onSuccess: () => {
-        toast.success("Title updated successfully");
         queryClient.invalidateQueries("boardData");
         onClose();
       },
@@ -296,7 +294,6 @@ const Column = ({ column, index, filterData }) => {
     (data) => UpdateTitle(data),
     {
       onSuccess: () => {
-        toast.success("Title updated successfully");
         queryClient.invalidateQueries("boardData");
         onClose()
       },
@@ -311,11 +308,23 @@ const Column = ({ column, index, filterData }) => {
     ['getAllCheklist', selectedTask?.id], // First parameter is a unique key for the query
     () => GetAllChecklist(selectedTask?.id),
     {
-      enabled: !!selectedTask?.id, // The query will only run if taskId is truthy
-      staleTime: Infinity, // Specify how long the data is fresh and doesn't need refetching
-      cacheTime: 1000 * 60 * 30 * 1, // Cache the data for 24 hours
+      enabled: !!selectedTask?.id, 
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      cacheTime: 1000 * 60 * 10, // 10 minutes
     }
   );
+  const Refetch = (Id) =>{
+    setTimeout(() => {
+      queryClient.invalidateQueries('getAllCheklist',Id)
+    }, 1400);
+    console.log('send');
+  }
+  const [Checklists, setChecklistsData] = useState();
+  useEffect(() => {
+    setChecklistsData(ChecklistData)
+    
+    console.log("gonderdi2");
+  }, [ChecklistData])
 
   //Create Fromik
   const CreateChecklistFormik = useFormik({
@@ -335,7 +344,6 @@ const Column = ({ column, index, filterData }) => {
       onSuccess: () => {
         queryClient.invalidateQueries("getAllCheklist");
         queryClient.invalidateQueries("ChecklistCount");
-        toast.success("Added Checklist")
         isChecklistPopoverClose()
       },
       onError: (err) => {
@@ -363,7 +371,6 @@ const Column = ({ column, index, filterData }) => {
     (data) => AddCardDueDate(data),
     {
       onSuccess: () => {
-        toast.success("Due date added successfully")
         queryClient.invalidateQueries("boardData");
       },
       onError: (err) => {
@@ -381,7 +388,6 @@ const Column = ({ column, index, filterData }) => {
     (cardId) => RemoveCard(cardId, userId, workspaceId),
     {
       onSuccess: () => {
-        toast.success("CardDeleted")
         onClose()
         onCloseModalDeletModal()
         queryClient.invalidateQueries("getAllCheklist");
@@ -439,10 +445,9 @@ const Column = ({ column, index, filterData }) => {
   };
 
   const { mutate: uploadFileMutate, isLoading: uploadLoading } = useMutation(
-    ({ formData, cardId, fileName,userId,workspaceId }) => UploadFile(formData, cardId, fileName,userId,workspaceId),
+    ({ formData, cardId, fileName, userId, workspaceId }) => UploadFile(formData, cardId, fileName, userId, workspaceId),
     {
       onSuccess: () => {
-        toast.success("Uploaded successfully");
         queryClient.invalidateQueries("boardData");
         queryClient.invalidateQueries("GetAttachments");
         // Close the popover or any UI element if needed
@@ -465,7 +470,7 @@ const Column = ({ column, index, filterData }) => {
       const formData = new FormData();
       if (values.file) {
         formData.append('file', values.file);
-        uploadFileMutate({ formData, cardId: values.cardId, fileName: values.fileName , userId:userId,workspaceId:workspaceId});
+        uploadFileMutate({ formData, cardId: values.cardId, fileName: values.fileName, userId: userId, workspaceId: workspaceId });
         for (let pair of formData.entries()) {
         }
       } else {
@@ -492,7 +497,6 @@ const Column = ({ column, index, filterData }) => {
     (data) => ArchiveCard(data),
     {
       onSuccess: () => {
-        toast.success("Archived")
         onClose()
         queryClient.invalidateQueries("boardData");
         queryClient.invalidateQueries("GetArhivedCards");
@@ -520,7 +524,6 @@ const Column = ({ column, index, filterData }) => {
     () => RemoveFile(sellectedFileId, userId, workspaceId),
     {
       onSuccess: () => {
-        toast.success("Removed File!")
         queryClient.invalidateQueries("GetAttachments");
         onRemoveFileClose()
       },
@@ -596,7 +599,6 @@ const Column = ({ column, index, filterData }) => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries("GetCustomFields", selectedTask?.id);
-        toast.success("Custom Field Created");
         onCustomFieldMenuClosed();
         CreateCustomField.resetForm()
         setFieldType('')
@@ -622,11 +624,10 @@ const Column = ({ column, index, filterData }) => {
     }
   );
   const { mutate: updateChecklist } = useMutation(
-    ({ id, value }) => UpdateChecklistCustomField(id, value,userId,workspaceId),
+    ({ id, value }) => UpdateChecklistCustomField(id, value, userId, workspaceId),
     {
       onSuccess: () => {
         queryClient.invalidateQueries(['GetCustomFields', selectedTask?.id]);
-        toast.success("Checklist updated successfully");
       },
       onError: (error) => {
         toast.error(`Error: ${error.message || "Failed to update checklist"}`);
@@ -644,7 +645,6 @@ const Column = ({ column, index, filterData }) => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(['GetCustomFields', selectedTask?.id]);
-        toast.success("deleted");
         onRemoveCustomfiledClose()
       },
       onError: (error) => {
@@ -667,7 +667,6 @@ const Column = ({ column, index, filterData }) => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries("boardData");
-        toast.success("deleted");
         onRemoveCustomfiledClose()
       },
       onError: (error) => {
@@ -741,7 +740,6 @@ const Column = ({ column, index, filterData }) => {
         setNewOptionColor('')
         setCustomfiledId('')
         CreateCustomField.resetForm();
-        toast.success("Created!");
       },
       onError: (err) => {
         CreateCustomField.resetForm()
@@ -750,7 +748,7 @@ const Column = ({ column, index, filterData }) => {
   );
 
   const handleOptionChange = (DropdownId, OptionId) => {
-    SetOption(DropdownId, OptionId,userId,workspaceId)
+    SetOption(DropdownId, OptionId, userId, workspaceId)
       .then(response => {
         queryClient.invalidateQueries(['GetCustomFields', selectedTask?.id]);
 
@@ -829,7 +827,6 @@ const Column = ({ column, index, filterData }) => {
     async (values) => AddUserToCard(values),
     {
       onSuccess: async (response) => {
-        toast.success("User added  successfully!");
         queryClient.invalidateQueries(["boardData"]);
         onClose()
       },
@@ -854,7 +851,6 @@ const Column = ({ column, index, filterData }) => {
     async (values) => RemoveUserFromCard(values),
     {
       onSuccess: async (response) => {
-        toast.success("User Removed successfully!");
         queryClient.invalidateQueries(["boardData"]);
         onClose()
       },
@@ -879,7 +875,6 @@ const Column = ({ column, index, filterData }) => {
     async (values) => RemoveDropDown(values),
     {
       onSuccess: async (response) => {
-        toast.success(" Removed successfully!");
         queryClient.invalidateQueries(['GetCustomFields', selectedTask?.id]);
         // onClose()
         onRemoveDropdownClose()
@@ -1132,9 +1127,9 @@ const Column = ({ column, index, filterData }) => {
                               )}
                               <div>
                                 <div className={Styles.Checklist}>
-                                  {ChecklistData && ChecklistData.length > 0 &&
-                                    ChecklistData?.map((item, index) => (
-                                      <Checklist key={index} data={item} />
+                                  {Checklists && Checklists.length > 0 &&
+                                    Checklists.map((item) => (
+                                      <Checklist Refetch={Refetch} key={item.id} data={item} />
                                     ))
                                   }
                                 </div>
