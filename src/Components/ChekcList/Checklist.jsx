@@ -7,7 +7,7 @@ import {
     CircularProgress
 } from '@chakra-ui/react';
 import { useMutation, useQueryClient } from 'react-query';
-import { CheckItemUpdate, CreateChecklistitem, DeleteChecklist, UpdateChecklist, UpdateChecklistItem, UpdateCheklistItemTitle } from '../../Service/CheckListService';
+import { CheckItemUpdate, CreateChecklistitem, DeleteChecklist, DeleteChecklistItem, UpdateChecklist, UpdateChecklistItem, UpdateCheklistItemTitle } from '../../Service/CheckListService';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
@@ -22,9 +22,9 @@ export default function Checklist({ data, Refetch }) {
     const [isDeleting, setIsDeleting] = useState(false);
     const [showAddItem, setShowAddItem] = useState(false);
     const [editedText, setEditedText] = useState("");
-
-    const { mutate: deleteChecklistItem } = useMutation(
-        (itemId) => deleteChecklist(itemId),
+    const [deletingItemId, setDeletingItemId] = useState(null);
+    const { mutate: deleteChecklistItemMutation } = useMutation(
+        (itemId) => DeleteChecklistItem(deletingItemId),
         {
             onSuccess: () => {
                 queryClient.invalidateQueries("getAllCheklist");
@@ -48,7 +48,7 @@ export default function Checklist({ data, Refetch }) {
         {
             onSuccess: () => {
                 queryClient.invalidateQueries("getAllCheklist");
-                queryClient.invalidateQueries("ChecklistCount");
+                queryClient.invalidateQueries("boardData");
             },
             onError: (error) => {
                 toast.error("Failed to update checklist item.");
@@ -56,7 +56,10 @@ export default function Checklist({ data, Refetch }) {
             }
         }
     );
-
+    const handleDeleteChecklistItem = (id) => {
+        setDeletingItemId(id)
+        onOpenChecklist();
+    };
     const handleDelete = (event) => {
         event.stopPropagation();
         setIsDeleting(true);
@@ -99,6 +102,7 @@ export default function Checklist({ data, Refetch }) {
         {
             onSuccess: () => {
                 queryClient.invalidateQueries("getAllCheklist");
+                queryClient.invalidateQueries("boardData");
                 formik.resetForm();
             },
             onError: (err) => {
@@ -234,63 +238,66 @@ export default function Checklist({ data, Refetch }) {
                         </Flex>
                         <ChakraProvider>
                             {data?.getCheckitemDtos?.map((item) => (
-                                <Flex justifyContent={'space-between'} key={item.id} alignItems={'center'}>
-                                    <Flex key={item.id} alignItems={'center'}>
-                                        <input
-                                            type="checkbox"
-                                            checked={item.check}
-                                            onChange={(e) => handleCheckboxChange(item.id, e.target.checked)}
-                                        />
-                                        {editingItemId === item.id ? (
+                                <>
+                                    <Flex justifyContent={'space-between'} key={item.id} alignItems={'center'}>
+                                        <Flex key={item.id} alignItems={'center'}>
                                             <input
-                                                type="text"
-                                                value={editedTitle}
-                                                onChange={handleInputChange}
-                                                onBlur={handleInputBlur}
-                                                onKeyPress={handleKeyPress}
-                                                className={Styles.Input}
-                                                autoFocus
+                                                type="checkbox"
+                                                checked={item.check}
+                                                onChange={(e) => handleCheckboxChange(item.id, e.target.checked)}
                                             />
-                                        ) : (
-                                            <Text
-                                                onClick={() => handleTitleClick(item)}
-                                                className={Styles.ChecklistTitle}
-                                                userSelect={"none"}
-                                                borderRadius={10}
-                                                cursor={"pointer"}
-                                                w={"100%"}
-                                                m="0"
-                                                p={"6px 12px"}
-                                                _hover={{
-                                                    background:
-                                                        "var(--ds-background-neutral, #A1BDD914)",
-                                                }}
-                                            >
-                                                {item.text}
-                                            </Text>
-                                        )}
+                                            {editingItemId === item.id ? (
+                                                <input
+                                                    type="text"
+                                                    value={editedTitle}
+                                                    onChange={handleInputChange}
+                                                    onBlur={handleInputBlur}
+                                                    onKeyPress={handleKeyPress}
+                                                    className={Styles.Input}
+                                                    autoFocus
+                                                />
+                                            ) : (
+                                                <Text
+                                                    onClick={() => handleTitleClick(item)}
+                                                    className={Styles.ChecklistTitle}
+                                                    userSelect={"none"}
+                                                    borderRadius={10}
+                                                    cursor={"pointer"}
+                                                    w={"100%"}
+                                                    m="0"
+                                                    p={"6px 12px"}
+                                                    _hover={{
+                                                        background:
+                                                            "var(--ds-background-neutral, #A1BDD914)",
+                                                    }}
+                                                >
+                                                    {item.text}
+                                                </Text>
+                                            )}
+                                        </Flex>
+                                        <span onClick={() => { handleDeleteChecklistItem(item.id) }} style={{ color: "#9fadbc", cursor: 'pointer' }} className="material-symbols-outlined">
+                                            more_horiz
+                                        </span>
+
                                     </Flex>
-                                    <span onClick={() => onOpenChecklist()} style={{ color: "#9fadbc", cursor: 'pointer' }} className="material-symbols-outlined">
-                                        more_horiz
-                                    </span>
-                                    <Modal isOpen={isOpenChecklist} onClose={onCloseChecklist} >
-                                        <ModalOverlay />
-                                        <ModalContent style={{ color: '#9fadbc', backgroundColor: "#22272B" }}>
-                                            <ModalHeader>Delete Checklist item</ModalHeader>
-                                            <ModalCloseButton />
-                                            <ModalBody>
-                                                Are you sure you want to delete this checklist item?
-                                            </ModalBody>
-                                            <ModalFooter>
-                                                <Button colorScheme='red' mr={3} onClick={() => { deleteChecklistItem(item.id) }}>
-                                                    Delete
-                                                </Button>
-                                                <Button onClick={onCloseChecklist}>Cancel</Button>
-                                            </ModalFooter>
-                                        </ModalContent>
-                                    </Modal >
-                                </Flex>
+                                </>
                             ))}
+                            <Modal isOpen={isOpenChecklist} onClose={onCloseChecklist} >
+                                <ModalOverlay />
+                                <ModalContent style={{ color: '#9fadbc', backgroundColor: "#22272B" }}>
+                                    <ModalHeader>Delete Checklist item</ModalHeader>
+                                    <ModalCloseButton />
+                                    <ModalBody>
+                                        Are you sure you want to delete this checklist item?
+                                    </ModalBody>
+                                    <ModalFooter>
+                                        <Button colorScheme='red' mr={3} onClick={() => { deleteChecklistItemMutation() }}>
+                                            Delete
+                                        </Button>
+                                        <Button onClick={onCloseChecklist}>Cancel</Button>
+                                    </ModalFooter>
+                                </ModalContent>
+                            </Modal >
                         </ChakraProvider>
                         {!showAddItem && (
                             <Button m={"10px 0 !important"} isLoading={isAddingItem} className={Styles.Button} onClick={() => setShowAddItem(true)} style={{ margin: "20px 10px" }}>
@@ -330,7 +337,7 @@ export default function Checklist({ data, Refetch }) {
                     <ModalHeader>Delete Checklist</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        Are you sure you want to delete this checklist item?
+                        Are you sure you want to delete this checklist?
                     </ModalBody>
                     <ModalFooter>
                         <Button
